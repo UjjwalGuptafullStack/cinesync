@@ -4,28 +4,22 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
-  darkMode: 'class',
+  darkMode: 'class', // This is crucial for the toggle to work
   theme: {
     extend: {
       colors: {
-        // McLaren Palette
         papaya: {
-          DEFAULT: '#FF8700', // Primary Action
+          DEFAULT: '#FF8700', // McLaren Orange
           dark: '#CC6C00',
         },
         anthracite: {
-          DEFAULT: '#111827', // Main Background
-          light: '#1F2937',   // Card/Navbar Background
+          DEFAULT: '#111827', // Main Background (Dark)
+          light: '#1F2937',   // Card/Header Background (Lighter Dark)
         },
-        white: '#F9FAFB',
+        // We force standard colors to match the theme
         gray: {
-          400: '#9CA3AF',
-          600: '#4B5563',
-          700: '#374151',
-          800: '#1F2937',
-        },
-        red: {
-          500: '#EF4444', // Spoilers/Errors
+          800: '#1F2937', 
+          900: '#111827',
         }
       },
       fontFamily: {

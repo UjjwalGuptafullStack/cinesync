@@ -66,55 +66,54 @@ function Profile() {
   return (
     <div className="max-w-4xl mx-auto pb-20">
       {/* 1. Header Section */}
-      <div className="relative overflow-hidden bg-white dark:bg-anthracite-light rounded-xl border border-gray-200 dark:border-gray-800 mb-8">
-        {/* Decorative Top Border */}
-        <div className="h-2 w-full bg-gradient-to-r from-papaya to-red-600"></div>
+      <div className="bg-anthracite-light p-8 rounded-xl shadow-lg mb-8 flex flex-col md:flex-row items-center gap-8 border border-gray-800 relative overflow-hidden">
         
-        <div className="p-8 flex flex-col md:flex-row items-center gap-8">
-          {/* Avatar */}
-          <div className="w-24 h-24 rounded-full border-4 border-white dark:border-anthracite shadow-xl bg-gradient-to-tr from-gray-800 to-black flex items-center justify-center text-3xl font-bold text-white relative z-10">
-            {profile.username.charAt(0).toUpperCase()}
-          </div>
+        {/* The Orange Top Border Accent */}
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-papaya to-red-600"></div>
 
-          {/* Info */}
-          <div className="flex-1 text-center md:text-left z-10">
-            <h1 className="text-4xl font-black text-gray-900 dark:text-white mb-1 tracking-tight">@{profile.username}</h1>
-            <p className="text-gray-500 text-sm uppercase tracking-widest font-bold mb-6">
-              Rookie Driver • Joined {new Date(profile.createdAt).getFullYear()}
-            </p>
-            
-            {/* Dashboard Stats */}
-            <div className="flex justify-center md:justify-start gap-4">
-              {[
-                { label: 'Watched', value: profile.stats.watchedCount },
-                { label: 'Audience', value: profile.stats.audienceCount },
-                { label: 'Tracking', value: profile.stats.trackingCount },
-              ].map((stat) => (
-                <div key={stat.label} className="bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 px-6 py-3 rounded min-w-[100px] text-center">
-                  <span className="block text-2xl font-black text-papaya">{stat.value}</span>
-                  <span className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">{stat.label}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-          
-          {/* Request Access Button */}
-          {profile.isPrivate && (
-            <div className="mt-6">
-              <button 
-                onClick={handleFollowRequest}
-                disabled={requestSent}
-                className={`px-8 py-3 rounded font-bold uppercase tracking-wider transition shadow-lg ${
-                  requestSent 
-                    ? 'bg-gray-600 text-gray-300 cursor-not-allowed' 
-                    : 'bg-papaya hover:bg-papaya-dark text-black'
-                }`}
-              >
-                {requestSent ? 'Request Pending' : 'Request Access'}
-              </button>
-            </div>
-          )}
+        {/* Avatar Section */}
+        <div className="w-24 h-24 bg-gradient-to-tr from-papaya to-red-600 rounded-full flex items-center justify-center text-4xl font-bold text-white shadow-lg z-10">
+          {profile.username.charAt(0).toUpperCase()}
         </div>
+
+        {/* Text Info */}
+        <div className="flex-1 text-center md:text-left z-10">
+          <h1 className="text-3xl font-bold text-white mb-2">@{profile.username}</h1>
+          <p className="text-gray-400 text-sm mb-4 uppercase tracking-widest font-bold">
+            Joined {new Date(profile.createdAt).getFullYear()}
+          </p>
+
+          {/* Stats Boxes */}
+          <div className="flex justify-center md:justify-start gap-4">
+            {[
+              { label: 'Watched', value: profile.stats.watchedCount },
+              { label: 'Audience', value: profile.stats.audienceCount },
+              { label: 'Tracking', value: profile.stats.trackingCount },
+            ].map((stat) => (
+              <div key={stat.label} className="bg-gray-900 border border-gray-700 px-6 py-3 rounded text-center min-w-[100px]">
+                <span className="block text-2xl font-bold text-papaya">{stat.value}</span>
+                <span className="text-[10px] text-gray-400 uppercase tracking-widest">{stat.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        
+        {/* Request Access Button */}
+        {profile.isPrivate && (
+          <div className="mt-6 md:mt-0">
+            <button 
+              onClick={handleFollowRequest}
+              disabled={requestSent}
+              className={`px-8 py-3 rounded font-bold uppercase tracking-wider transition shadow-lg ${
+                requestSent 
+                  ? 'bg-gray-600 text-gray-300 cursor-not-allowed' 
+                  : 'bg-papaya hover:bg-papaya-dark text-black'
+              }`}
+            >
+              {requestSent ? 'Request Pending' : 'Request Access'}
+            </button>
+          </div>
+        )}
       </div>
 
       {/* 2. Navigation Tabs (Sharp & Fast) */}

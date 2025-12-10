@@ -1,11 +1,16 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 @layer base {
+  /* Default to Dark Mode styles immediately */
   body {
-    background-color: #111827;
-    color: #F9FAFB;
-    font-family: Inter, system-ui, sans-serif;
-    -webkit-font-smoothing: antialiased;
+    @apply bg-anthracite text-white font-sans antialiased;
+  }
+  
+  /* Manual override to ensure light mode works when the class is added */
+  :root.light body {
+    @apply bg-gray-100 text-gray-900;
   }
 }
 
@@ -14,89 +19,8 @@
   width: 8px;
 }
 ::-webkit-scrollbar-track {
-  background-color: #111827;
+  @apply bg-anthracite;
 }
 ::-webkit-scrollbar-thumb {
-  background-color: #FF8700;
-  border-radius: 9999px;
-}
-
-/* Utility Class for Inputs */
-.input-dark {
-  width: 100%;
-  padding: 0.75rem;
-  background-color: #374151;
-  border: 1px solid #4B5563;
-  border-radius: 0.375rem;
-  color: #F9FAFB;
-  transition: border-color 0.3s, box-shadow 0.3s;
-}
-
-.input-dark:focus {
-  outline: none;
-  border-color: #FF8700;
-  box-shadow: 0 0 0 1px #FF8700;
-}
-
-/* Utility Class for Buttons */
-.btn-papaya {
-  background-color: #FF8700;
-  color: #000000;
-  font-weight: 700;
-  padding: 0.5rem 1.5rem;
-  border-radius: 0.375rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-size: 0.875rem;
-  transition: background-color 0.3s;
-}
-
-.btn-papaya:hover {
-  background-color: #CC6C00;
-}
-
-/* Common Utility Classes for cleaner inputs */
-@layer components {
-  .input-field {
-    width: 100%;
-    padding: 0.75rem;
-    background-color: rgb(31 41 55);
-    border-radius: 0.5rem;
-    border: 1px solid rgb(55 65 81);
-    color: white;
-    outline: none;
-    transition: all 0.15s;
-  }
-  
-  .input-field:focus {
-    ring: 2px solid rgb(59 130 246);
-    box-shadow: 0 0 0 2px rgb(59 130 246 / 0.5);
-  }
-  
-  .btn-primary {
-    background-color: rgb(37 99 235);
-    color: white;
-    font-weight: 600;
-    padding: 0.5rem 1.5rem;
-    border-radius: 0.5rem;
-    transition: background-color 0.2s;
-    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-  }
-  
-  .btn-primary:hover {
-    background-color: rgb(29 78 216);
-  }
-  
-  .btn-secondary {
-    background-color: rgb(55 65 81);
-    color: rgb(229 231 235);
-    font-weight: 500;
-    padding: 0.5rem 1rem;
-    border-radius: 0.5rem;
-    transition: background-color 0.2s;
-  }
-  
-  .btn-secondary:hover {
-    background-color: rgb(75 85 99);
-  }
+  @apply bg-papaya rounded-full;
 }
