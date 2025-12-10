@@ -6,6 +6,8 @@ const userRoutes = require('./routes/userRoutes');
 const mediaRoutes = require('./routes/mediaRoutes');
 const postRoutes = require('./routes/postRoutes');
 const socialRoutes = require('./routes/socialRoutes');
+const commentRoutes = require('./routes/commentRoutes');
+const notificationRoutes = require('./routes/notificationRoutes');
 
 // Load environment variables
 dotenv.config();
@@ -27,6 +29,8 @@ app.use('/api/users', userRoutes);
 app.use('/api/media', mediaRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/social', socialRoutes);
+app.use('/api/comments', commentRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // Simple Route for testing
 app.get('/', (req, res) => {

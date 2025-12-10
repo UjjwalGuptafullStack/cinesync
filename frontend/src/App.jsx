@@ -10,6 +10,7 @@ import CreatePost from './pages/CreatePost';
 import FindFriends from './pages/FindFriends';
 import FriendRequests from './pages/FriendRequests';
 import Profile from './pages/Profile';
+import NotificationPage from './pages/NotificationPage';
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
               <Route path="/find-friends" element={<FindFriends />} />
               <Route path="/requests" element={<FriendRequests />} />
               <Route path="/profile/:username" element={<Profile />} />
+              <Route path="/notifications" element={<NotificationPage />} />
             </Routes>
           </main>
         </div>

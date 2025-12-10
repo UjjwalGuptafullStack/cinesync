@@ -2,15 +2,44 @@
 @config "../tailwind.config.js";
 
 @layer base {
-  /* Default to Dark Mode styles immediately */
+  /* DARK MODE (Default): Black Major, Orange Secondary */
   body {
     @apply bg-anthracite text-white font-sans antialiased;
   }
   
-  /* Manual override to ensure light mode works when the class is added */
+  /* LIGHT MODE: White/Orange Major, Black Secondary */
   :root.light body {
-    @apply bg-gray-100 text-gray-900;
+    @apply bg-gray-100 text-black;
   }
+}
+
+/* --- THEMED UTILITIES --- */
+
+/* 1. The Dynamic Container (Card) */
+/* Dark: Black/Gray card. Light: White card with Orange border/accent */
+.card-theme {
+  @apply bg-anthracite-light border border-gray-800 rounded-lg shadow-lg text-white transition-colors duration-300;
+}
+:root.light .card-theme {
+  @apply bg-white border border-gray-200 text-black shadow-md;
+}
+
+/* 2. The Dynamic Input */
+/* Dark: Dark gray input. Light: White input with Black text */
+.input-theme {
+  @apply w-full p-3 bg-gray-700 border border-gray-600 rounded text-white focus:outline-none focus:border-papaya focus:ring-1 focus:ring-papaya transition-colors;
+}
+:root.light .input-theme {
+  @apply bg-white border-gray-300 text-black focus:border-papaya focus:ring-papaya;
+}
+
+/* 3. The "Action" Button */
+/* Dark: Orange Button (Secondary Color). Light: Black Button (Secondary Color) */
+.btn-primary {
+  @apply bg-papaya text-black font-bold py-2 px-6 rounded hover:bg-papaya-dark transition-colors uppercase tracking-wide text-sm;
+}
+:root.light .btn-primary {
+  @apply bg-black text-papaya hover:bg-gray-800;
 }
 
 /* Custom Scrollbar */

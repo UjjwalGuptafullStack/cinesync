@@ -44,9 +44,9 @@ function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
-      <div className="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-md">
-        <h1 className="text-3xl font-bold mb-6 text-center text-blue-500">
+    <div className="min-h-[80vh] flex items-center justify-center">
+      <div className="card-theme p-8 rounded-lg shadow-lg w-full max-w-md border border-gray-200 dark:border-gray-700">
+        <h1 className="text-3xl font-bold mb-6 text-center text-papaya">
           Login 🎬
         </h1>
         
@@ -54,7 +54,7 @@ function Login() {
           <div>
             <input
               type="email"
-              className="input-field"
+              className="input-theme w-full p-3 rounded"
               placeholder="Email"
               name="email"
               value={email}
@@ -65,7 +65,7 @@ function Login() {
           <div>
             <input
               type="password"
-              className="input-field"
+              className="input-theme w-full p-3 rounded"
               placeholder="Password"
               name="password"
               value={password}
@@ -75,15 +75,15 @@ function Login() {
           </div>
           <button
             type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded transition duration-300"
+            className="btn-primary w-full py-3 rounded font-bold transition duration-300"
           >
             Login
           </button>
         </form>
 
-        <p className="mt-4 text-center text-gray-400">
+        <p className="mt-4 text-center text-gray-600 dark:text-gray-400">
           New here?{' '}
-          <Link to="/register" className="text-blue-500 hover:text-blue-400">
+          <Link to="/register" className="text-papaya hover:text-papaya-dark font-bold">
             Create an account
           </Link>
         </p>

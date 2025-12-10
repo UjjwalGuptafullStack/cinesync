@@ -14,11 +14,14 @@ function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-anthracite-light border-b border-gray-800 shadow-md">
+    <header className="sticky top-0 z-50 shadow-md transition-colors duration-300 
+      bg-papaya border-b border-papaya-dark text-black
+      dark:bg-anthracite-light dark:border-gray-800 dark:text-white">
+      
       <div className="container mx-auto px-4 h-16 flex justify-between items-center">
         {/* Logo */}
-        <Link to="/" className="text-2xl font-bold text-white tracking-tight hover:opacity-80 transition">
-          Cine<span className="text-papaya">Sync</span>
+        <Link to="/" className="text-2xl font-bold tracking-tight hover:opacity-80 transition text-black dark:text-white">
+          Cine<span className="text-white dark:text-papaya">Sync</span>
         </Link>
 
         {/* Navigation */}
@@ -27,43 +30,43 @@ function Header() {
             <>
               {/* Links */}
               <li>
-                <Link to="/find-friends" className="text-gray-400 hover:text-papaya text-lg transition" title="Find Friends">
+                <Link to="/find-friends" className="text-black/70 hover:text-black dark:text-gray-400 dark:hover:text-papaya text-lg transition" title="Find Friends">
                   <FaSearch />
                 </Link>
               </li>
               <li>
-                <Link to="/requests" className="text-gray-400 hover:text-papaya text-lg transition" title="Requests">
+                <Link to="/notifications" className="text-black/70 hover:text-black dark:text-gray-400 dark:hover:text-papaya text-lg transition" title="Notifications">
                   <FaBell />
                 </Link>
               </li>
               <li>
-                <Link to="/create" className="text-gray-400 hover:text-papaya font-bold transition">
+                <Link to="/create" className="text-black/70 hover:text-black dark:text-gray-400 dark:hover:text-papaya font-bold transition">
                   + POST
                 </Link>
               </li>
 
               {/* Profile Link */}
               <li>
-                <Link to={`/profile/${user.username}`} className="text-white font-bold hover:text-papaya transition flex items-center gap-2">
-                  <FaUser className="text-papaya" />
+                <Link to={`/profile/${user.username}`} className="text-black dark:text-white font-bold hover:text-white dark:hover:text-papaya transition flex items-center gap-2">
+                  <FaUser className="text-white dark:text-papaya" />
                   <span className="hidden md:inline">{user.username}</span>
                 </Link>
               </li>
 
               {/* Actions */}
-              <div className="flex items-center gap-4 border-l border-gray-700 pl-4 ml-2">
-                <button onClick={toggleTheme} className="text-gray-400 hover:text-papaya transition">
+              <div className="flex items-center gap-4 border-l border-black/20 dark:border-gray-700 pl-4 ml-2">
+                <button onClick={toggleTheme} className="text-black hover:text-white dark:text-gray-400 dark:hover:text-papaya transition">
                   {theme === 'dark' ? <FaSun /> : <FaMoon />}
                 </button>
-                <button onClick={onLogout} className="text-gray-400 hover:text-red-500 transition" title="Logout">
+                <button onClick={onLogout} className="text-black/70 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-500 transition" title="Logout">
                   <FaSignOutAlt />
                 </button>
               </div>
             </>
           ) : (
             <div className="flex gap-4">
-              <Link to="/login" className="text-gray-300 hover:text-white font-medium">Login</Link>
-              <Link to="/register" className="bg-papaya text-black px-4 py-2 rounded font-bold hover:bg-papaya-dark transition">
+              <Link to="/login" className="text-black dark:text-gray-300 hover:text-white dark:hover:text-white font-medium">Login</Link>
+              <Link to="/register" className="bg-black text-papaya dark:bg-papaya dark:text-black px-4 py-2 rounded font-bold hover:bg-gray-800 dark:hover:bg-papaya-dark transition">
                 Get Started
               </Link>
             </div>

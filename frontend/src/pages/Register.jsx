@@ -46,12 +46,12 @@ function Register() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
-      <div className="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-md">
-        <h1 className="text-3xl font-bold mb-6 text-center text-blue-500">
+    <div className="min-h-[80vh] flex items-center justify-center">
+      <div className="card-theme p-8 rounded-lg shadow-lg w-full max-w-md border border-gray-200 dark:border-gray-700">
+        <h1 className="text-3xl font-bold mb-6 text-center text-papaya">
           Join CineSync 🎬
         </h1>
-        <p className="text-center text-gray-400 mb-6">
+        <p className="text-center text-gray-600 dark:text-gray-400 mb-6">
           Start tracking your binge journey.
         </p>
 
@@ -59,7 +59,7 @@ function Register() {
           <div>
             <input
               type="text"
-              className="input-field"
+              className="input-theme w-full p-3 rounded"
               placeholder="Username"
               name="username"
               value={username}
@@ -70,7 +70,7 @@ function Register() {
           <div>
             <input
               type="email"
-              className="input-field"
+              className="input-theme w-full p-3 rounded"
               placeholder="Email"
               name="email"
               value={email}
@@ -81,7 +81,7 @@ function Register() {
           <div>
             <input
               type="password"
-              className="input-field"
+              className="input-theme w-full p-3 rounded"
               placeholder="Password"
               name="password"
               value={password}
@@ -92,7 +92,7 @@ function Register() {
           <div>
             <input
               type="password"
-              className="input-field"
+              className="input-theme w-full p-3 rounded"
               placeholder="Confirm Password"
               name="confirmPassword"
               value={confirmPassword}
@@ -102,15 +102,15 @@ function Register() {
           </div>
           <button
             type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded transition duration-300"
+            className="btn-primary w-full py-3 rounded font-bold transition duration-300"
           >
             Sign Up
           </button>
         </form>
 
-        <p className="mt-4 text-center text-gray-400">
+        <p className="mt-4 text-center text-gray-600 dark:text-gray-400">
           Already have an account?{' '}
-          <Link to="/login" className="text-blue-500 hover:text-blue-400">
+          <Link to="/login" className="text-papaya hover:text-papaya-dark font-bold">
             Login
           </Link>
         </p>

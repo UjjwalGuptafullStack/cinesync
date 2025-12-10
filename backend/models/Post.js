@@ -24,6 +24,11 @@ const postSchema = mongoose.Schema(
     },
     season: { type: Number }, // Optional (only for TV)
     episode: { type: Number }, // Optional (only for TV)
+
+    // NEW ENGAGEMENT FIELDS
+    likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    dislikes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }], // Optional ref array for speed
   },
   {
     timestamps: true, // Auto-create createdAt/updatedAt

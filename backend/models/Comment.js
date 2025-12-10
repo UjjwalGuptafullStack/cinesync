@@ -1,0 +1,14 @@
+const mongoose = require('mongoose');
+
+const commentSchema = mongoose.Schema(
+  {
+    post: { type: mongoose.Schema.Types.ObjectId, ref: 'Post', required: true },
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    content: { type: String, required: [true, 'Comment cannot be empty'] },
+    likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    dislikes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  },
+  { timestamps: true }
+);
+
+module.exports = mongoose.model('Comment', commentSchema);

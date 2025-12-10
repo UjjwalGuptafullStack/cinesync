@@ -4,21 +4,28 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
-  darkMode: 'class', // This is crucial for the toggle to work
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
         papaya: {
           DEFAULT: '#FF8700', // McLaren Orange
-          dark: '#CC6C00',
+          light: '#FFB84D',   // Softer Orange
+          dark: '#CC6C00',    // Deep Orange
         },
         anthracite: {
-          DEFAULT: '#111827', // Main Background (Dark)
-          light: '#1F2937',   // Card/Header Background (Lighter Dark)
+          DEFAULT: '#111827', // Dark Mode Bg
+          light: '#1F2937',   // Dark Mode Card Bg
         },
-        // We force standard colors to match the theme
+        black: '#000000',     // Pure Black
+        white: '#FFFFFF',
+        // Standard Grays
         gray: {
-          800: '#1F2937', 
+          100: '#F3F4F6',
+          200: '#E5E7EB',
+          300: '#D1D5DB',
+          700: '#374151',
+          800: '#1F2937',
           900: '#111827',
         }
       },
