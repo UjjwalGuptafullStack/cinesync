@@ -54,7 +54,7 @@ function Login() {
           <div>
             <input
               type="email"
-              className="w-full p-3 bg-gray-700 rounded border border-gray-600 focus:outline-none focus:border-blue-500"
+              className="input-field"
               placeholder="Email"
               name="email"
               value={email}
@@ -65,7 +65,7 @@ function Login() {
           <div>
             <input
               type="password"
-              className="w-full p-3 bg-gray-700 rounded border border-gray-600 focus:outline-none focus:border-blue-500"
+              className="input-field"
               placeholder="Password"
               name="password"
               value={password}

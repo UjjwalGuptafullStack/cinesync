@@ -1,3 +1,69 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+body {
+  background-color: rgb(17 24 39);
+  color: rgb(243 244 246);
+  font-family: system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Custom Scrollbar for a sleeker look */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background-color: rgb(17 24 39);
+}
+::-webkit-scrollbar-thumb {
+  background-color: rgb(55 65 81);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(75 85 99);
+}
+
+/* Common Utility Classes for cleaner inputs */
+@layer components {
+  .input-field {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: rgb(31 41 55);
+    border-radius: 0.5rem;
+    border: 1px solid rgb(55 65 81);
+    color: white;
+    outline: none;
+    transition: all 0.15s;
+  }
+  
+  .input-field:focus {
+    ring: 2px solid rgb(59 130 246);
+    box-shadow: 0 0 0 2px rgb(59 130 246 / 0.5);
+  }
+  
+  .btn-primary {
+    background-color: rgb(37 99 235);
+    color: white;
+    font-weight: 600;
+    padding: 0.5rem 1.5rem;
+    border-radius: 0.5rem;
+    transition: background-color 0.2s;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  }
+  
+  .btn-primary:hover {
+    background-color: rgb(29 78 216);
+  }
+  
+  .btn-secondary {
+    background-color: rgb(55 65 81);
+    color: rgb(229 231 235);
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    transition: background-color 0.2s;
+  }
+  
+  .btn-secondary:hover {
+    background-color: rgb(75 85 99);
+  }
+}

@@ -14,9 +14,16 @@ const postSchema = mongoose.Schema(
     
     // User Content
     content: { type: String, required: [true, 'Please add some text'] },
-    season: { type: Number }, // Optional
-    episode: { type: Number }, // Optional
     isSpoiler: { type: Boolean, default: false },
+
+    // NEW: Smart Context Fields
+    mediaType: { 
+      type: String, 
+      enum: ['movie', 'tv'], // Only allow these two values
+      required: true 
+    },
+    season: { type: Number }, // Optional (only for TV)
+    episode: { type: Number }, // Optional (only for TV)
   },
   {
     timestamps: true, // Auto-create createdAt/updatedAt

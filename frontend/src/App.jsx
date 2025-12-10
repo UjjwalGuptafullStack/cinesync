@@ -6,6 +6,8 @@ import Register from './pages/Register';
 import Login from './pages/Login';
 import Home from './pages/Home';
 import CreatePost from './pages/CreatePost';
+import FindFriends from './pages/FindFriends';
+import FriendRequests from './pages/FriendRequests';
 
 function App() {
   return (
@@ -19,6 +21,8 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
             <Route path="/create" element={<CreatePost />} />
+            <Route path="/find-friends" element={<FindFriends />} />
+            <Route path="/requests" element={<FriendRequests />} />
           </Routes>
         </div>
       </Router>

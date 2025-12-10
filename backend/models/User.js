@@ -16,6 +16,9 @@ const userSchema = mongoose.Schema(
       type: String,
       required: [true, 'Please add a password'],
     },
+    // NEW: Social Graph
+    followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   },
   {
     timestamps: true, // Automatically creates 'createdAt' and 'updatedAt' fields

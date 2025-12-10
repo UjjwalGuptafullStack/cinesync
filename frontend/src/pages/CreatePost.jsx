@@ -10,8 +10,40 @@ function CreatePost() {
   const [content, setContent] = useState('');
   const [isSpoiler, setIsSpoiler] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [postContext, setPostContext] = useState('general');
+  const [seasonsTotal, setSeasonsTotal] = useState(0);
+  const [selectedSeason, setSelectedSeason] = useState('');
+  const [episodesTotal, setEpisodesTotal] = useState(0);
+  const [selectedEpisode, setSelectedEpisode] = useState('');
 
   const navigate = useNavigate();
+
+  // Triggered when a TV Show is selected from search
+  const onMediaSelect = async (media) => {
+    setSelectedMedia(media);
+    
+    // If it's a TV show, fetch its details to know how many seasons it has
+    if (media.media_type === 'tv' || !media.title) {
+       try {
+         const response = await axios.get(`http://localhost:5000/api/media/tv/${media.id}`);
+         setSeasonsTotal(response.data.number_of_seasons);
+       } catch (err) {
+         console.error("Could not fetch seasons");
+       }
+    }
+  };
+
+  // Triggered when a specific Season is selected
+  const onSeasonSelect = async (seasonNum) => {
+    setSelectedSeason(seasonNum);
+    // Fetch episodes for this season
+    try {
+       const response = await axios.get(`http://localhost:5000/api/media/tv/${selectedMedia.id}/season/${seasonNum}`);
+       setEpisodesTotal(response.data.episodes.length);
+    } catch (err) {
+       console.error("Could not fetch episodes");
+    }
+  };
 
   // 1. SEARCH FUNCTION
   const searchMedia = async (e) => {
@@ -49,6 +81,9 @@ function CreatePost() {
         posterPath: selectedMedia.poster_path,
         content,
         isSpoiler,
+        mediaType: selectedMedia.title ? 'movie' : 'tv',
+        season: (postContext !== 'general' && selectedSeason) ? Number(selectedSeason) : undefined,
+        episode: (postContext === 'episode' && selectedEpisode) ? Number(selectedEpisode) : undefined,
       };
 
       // Send to Backend with the Bearer Token
@@ -95,7 +130,7 @@ function CreatePost() {
               <div
                 key={media.id}
                 className="flex items-center gap-4 p-3 hover:bg-gray-700 rounded cursor-pointer transition"
-                onClick={() => setSelectedMedia(media)}
+                onClick={() => onMediaSelect(media)}
               >
                 {media.poster_path ? (
                   <img
@@ -139,6 +174,70 @@ function CreatePost() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            {/* SMART CONTEXT SELECTOR (Only for TV Shows) */}
+            {(!selectedMedia.title) && (
+              <div className="mb-4 space-y-3 bg-gray-700 p-4 rounded">
+                <label className="block text-sm font-bold text-gray-300">What are you posting about?</label>
+                
+                {/* 1. Scope Selector */}
+                <div className="flex gap-4">
+                  <button 
+                    type="button"
+                    onClick={() => { setPostContext('general'); setSelectedSeason(''); setSelectedEpisode(''); }}
+                    className={`px-3 py-1 rounded text-sm ${postContext === 'general' ? 'bg-blue-500 text-white' : 'bg-gray-600 text-gray-300'}`}
+                  >
+                    Whole Series
+                  </button>
+                  <button 
+                     type="button"
+                     onClick={() => setPostContext('season')}
+                     className={`px-3 py-1 rounded text-sm ${postContext === 'season' ? 'bg-blue-500 text-white' : 'bg-gray-600 text-gray-300'}`}
+                  >
+                    Specific Season
+                  </button>
+                  <button 
+                     type="button"
+                     onClick={() => setPostContext('episode')}
+                     className={`px-3 py-1 rounded text-sm ${postContext === 'episode' ? 'bg-blue-500 text-white' : 'bg-gray-600 text-gray-300'}`}
+                  >
+                    Specific Episode
+                  </button>
+                </div>
+
+                {/* 2. Season Dropdown (Shows if context is Season or Episode) */}
+                {postContext !== 'general' && (
+                  <div>
+                    <select 
+                      className="w-full p-2 bg-gray-600 rounded text-white border border-gray-500"
+                      value={selectedSeason}
+                      onChange={(e) => onSeasonSelect(e.target.value)}
+                    >
+                      <option value="">Select Season ({seasonsTotal} available)</option>
+                      {[...Array(seasonsTotal)].map((_, i) => (
+                        <option key={i + 1} value={i + 1}>Season {i + 1}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                {/* 3. Episode Dropdown (Shows only if context is Episode AND Season is selected) */}
+                {postContext === 'episode' && selectedSeason && (
+                  <div>
+                    <select 
+                      className="w-full p-2 bg-gray-600 rounded text-white border border-gray-500"
+                      value={selectedEpisode}
+                      onChange={(e) => setSelectedEpisode(e.target.value)}
+                    >
+                      <option value="">Select Episode ({episodesTotal} available)</option>
+                      {[...Array(episodesTotal)].map((_, i) => (
+                        <option key={i + 1} value={i + 1}>Episode {i + 1}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+              </div>
+            )}
+
             <textarea
               className="w-full p-4 bg-gray-700 rounded border border-gray-600 h-32 text-white"
               placeholder="What did you think? (No spoilers unless you tag it!)"

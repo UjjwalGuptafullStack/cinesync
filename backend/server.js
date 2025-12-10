@@ -5,6 +5,7 @@ const connectDB = require('./config/db');
 const userRoutes = require('./routes/userRoutes');
 const mediaRoutes = require('./routes/mediaRoutes');
 const postRoutes = require('./routes/postRoutes');
+const socialRoutes = require('./routes/socialRoutes');
 
 // Load environment variables
 dotenv.config();
@@ -22,6 +23,7 @@ app.use(cors()); // Allows frontend requests
 app.use('/api/users', userRoutes);
 app.use('/api/media', mediaRoutes);
 app.use('/api/posts', postRoutes);
+app.use('/api/social', socialRoutes);
 
 // Simple Route for testing
 app.get('/', (req, res) => {

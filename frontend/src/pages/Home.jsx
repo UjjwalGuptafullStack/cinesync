@@ -10,7 +10,16 @@ function Home() {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/posts');
+        const user = JSON.parse(localStorage.getItem('user'));
+        const token = user?.token;
+
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
+
+        const response = await axios.get('http://localhost:5000/api/posts', config);
         setPosts(response.data);
       } catch (error) {
         console.error('Error fetching posts:', error);
