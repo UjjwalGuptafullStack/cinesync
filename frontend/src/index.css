@@ -1,25 +1,30 @@
 @import "tailwindcss";
 
-body {
-  background-color: rgb(17 24 39);
-  color: rgb(243 244 246);
-  font-family: system-ui, -apple-system, sans-serif;
-  -webkit-font-smoothing: antialiased;
+@layer base {
+  body {
+    @apply transition-colors duration-300;
+  }
+  
+  /* Light Mode Defaults */
+  html.light body {
+    @apply bg-glacier text-anthracite;
+  }
+
+  /* Dark Mode Defaults */
+  html.dark body {
+    @apply bg-carbon text-gray-100;
+  }
 }
 
-/* Custom Scrollbar for a sleeker look */
+/* Custom Scrollbar (Themed) */
 ::-webkit-scrollbar {
   width: 8px;
 }
 ::-webkit-scrollbar-track {
-  background-color: rgb(17 24 39);
+  @apply bg-transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background-color: rgb(55 65 81);
-  border-radius: 9999px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background-color: rgb(75 85 99);
+  @apply bg-papaya rounded-full hover:bg-papaya-dark;
 }
 
 /* Common Utility Classes for cleaner inputs */

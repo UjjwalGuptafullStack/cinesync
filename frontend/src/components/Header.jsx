@@ -1,9 +1,11 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { FaSignInAlt, FaSignOutAlt, FaUser, FaUsers, FaBell } from 'react-icons/fa';
+import { FaSignInAlt, FaSignOutAlt, FaUser, FaUsers, FaBell, FaSun, FaMoon } from 'react-icons/fa';
 import { toast } from 'react-toastify';
+import { useTheme } from '../context/ThemeContext';
 
 function Header() {
   const navigate = useNavigate();
+  const { theme, toggleTheme } = useTheme();
   
   // Check if user is logged in by looking at localStorage
   // (In a real app, we'd use a Context/Redux store, but this works for MVP)
@@ -35,6 +37,13 @@ function Header() {
               
               {/* Action Icons */}
               <div className="flex items-center space-x-4 border-l border-gray-700 pl-4">
+                <button 
+                  onClick={toggleTheme} 
+                  className="p-2 rounded-full transition-colors hover:bg-gray-200 dark:hover:bg-gray-700 text-papaya text-xl"
+                  title="Toggle Theme"
+                >
+                  {theme === 'dark' ? <FaSun /> : <FaMoon />}
+                </button>
                 <Link to="/find-friends" className="text-gray-400 hover:text-blue-400 transition text-xl p-2 rounded-full hover:bg-gray-800" title="Find Friends">
                   <FaUsers />
                 </Link>

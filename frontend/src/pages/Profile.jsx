@@ -3,12 +3,14 @@ import { useParams } from 'react-router-dom';
 import api from '../api';
 import PostItem from '../components/PostItem';
 import { FaUserSecret, FaLock } from 'react-icons/fa';
+import { toast } from 'react-toastify';
 
 function Profile() {
   const { username } = useParams(); // Get username from URL
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('posts'); // 'posts', 'library', 'network'
+  const [requestSent, setRequestSent] = useState(false); // Track if follow request sent
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -33,60 +35,107 @@ function Profile() {
     fetchProfile();
   }, [username]); // Re-run if username changes
 
+  const handleFollowRequest = async () => {
+    try {
+      await api.post(`/api/social/follow/${profile._id}`);
+      toast.success('Request transmitted successfully.');
+      setRequestSent(true);
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Transmission failed');
+    }
+  };
+
+  // Classified Overlay Component
+  const ClassifiedOverlay = () => (
+    <div className="flex flex-col items-center justify-center py-16 bg-gray-100 dark:bg-white/5 rounded-lg border border-gray-200 dark:border-gray-800 border-dashed">
+      <div className="w-16 h-16 bg-gray-200 dark:bg-white/10 rounded-full flex items-center justify-center mb-4 text-gray-400">
+        <FaLock className="text-2xl" />
+      </div>
+      <h3 className="text-xl font-bold text-gray-900 dark:text-white uppercase tracking-widest mb-2">
+        Data Classified
+      </h3>
+      <p className="text-gray-500 max-w-sm text-center">
+        You must be tracking this driver to view their telemetry and library data.
+      </p>
+    </div>
+  );
+
   if (loading) return <div className="text-center mt-20 text-xl text-gray-400 animate-pulse">Loading Profile...</div>;
   if (!profile) return <div className="text-center mt-20 text-2xl text-red-400">User not found 😢</div>;
 
   return (
     <div className="max-w-4xl mx-auto pb-20">
       {/* 1. Header Section */}
-      <div className="bg-gray-800 p-8 rounded-xl shadow-lg mb-8 flex flex-col md:flex-row items-center gap-8 border border-gray-700">
-        {/* Avatar */}
-        <div className="w-24 h-24 bg-gradient-to-tr from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-4xl font-bold text-white shadow-lg">
-          {profile.username.charAt(0).toUpperCase()}
-        </div>
+      <div className="relative overflow-hidden bg-white dark:bg-anthracite-light rounded-xl border border-gray-200 dark:border-gray-800 mb-8">
+        {/* Decorative Top Border */}
+        <div className="h-2 w-full bg-gradient-to-r from-papaya to-red-600"></div>
+        
+        <div className="p-8 flex flex-col md:flex-row items-center gap-8">
+          {/* Avatar */}
+          <div className="w-24 h-24 rounded-full border-4 border-white dark:border-anthracite shadow-xl bg-gradient-to-tr from-gray-800 to-black flex items-center justify-center text-3xl font-bold text-white relative z-10">
+            {profile.username.charAt(0).toUpperCase()}
+          </div>
 
-        {/* Stats & Info */}
-        <div className="flex-1 text-center md:text-left">
-          <h1 className="text-3xl font-bold text-white mb-2">@{profile.username}</h1>
-          <p className="text-gray-400 text-sm mb-4">Joined {new Date(profile.createdAt).toLocaleDateString()}</p>
-          
-          <div className="flex justify-center md:justify-start gap-8">
-            <div className="text-center p-2 rounded hover:bg-gray-700/50 transition">
-              <span className="block text-2xl font-bold text-white">{profile.stats.watchedCount}</span>
-              <span className="text-xs text-gray-400 uppercase tracking-wide">Watched</span>
-            </div>
-            <div className="text-center p-2 rounded hover:bg-gray-700/50 transition">
-              <span className="block text-2xl font-bold text-white">{profile.stats.audienceCount}</span>
-              <span className="text-xs text-gray-400 uppercase tracking-wide">Audience</span>
-            </div>
-            <div className="text-center p-2 rounded hover:bg-gray-700/50 transition">
-              <span className="block text-2xl font-bold text-white">{profile.stats.trackingCount}</span>
-              <span className="text-xs text-gray-400 uppercase tracking-wide">Tracking</span>
+          {/* Info */}
+          <div className="flex-1 text-center md:text-left z-10">
+            <h1 className="text-4xl font-black text-gray-900 dark:text-white mb-1 tracking-tight">@{profile.username}</h1>
+            <p className="text-gray-500 text-sm uppercase tracking-widest font-bold mb-6">
+              Rookie Driver • Joined {new Date(profile.createdAt).getFullYear()}
+            </p>
+            
+            {/* Dashboard Stats */}
+            <div className="flex justify-center md:justify-start gap-4">
+              {[
+                { label: 'Watched', value: profile.stats.watchedCount },
+                { label: 'Audience', value: profile.stats.audienceCount },
+                { label: 'Tracking', value: profile.stats.trackingCount },
+              ].map((stat) => (
+                <div key={stat.label} className="bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 px-6 py-3 rounded min-w-[100px] text-center">
+                  <span className="block text-2xl font-black text-papaya">{stat.value}</span>
+                  <span className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">{stat.label}</span>
+                </div>
+              ))}
             </div>
           </div>
+          
+          {/* Request Access Button */}
+          {profile.isPrivate && (
+            <div className="mt-6">
+              <button 
+                onClick={handleFollowRequest}
+                disabled={requestSent}
+                className={`px-8 py-3 rounded font-bold uppercase tracking-wider transition shadow-lg ${
+                  requestSent 
+                    ? 'bg-gray-600 text-gray-300 cursor-not-allowed' 
+                    : 'bg-papaya hover:bg-papaya-dark text-black'
+                }`}
+              >
+                {requestSent ? 'Request Pending' : 'Request Access'}
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* 2. Navigation Tabs */}
-      <div className="flex border-b border-gray-700 mb-6 sticky top-[80px] bg-gray-900 z-10">
-        <button 
-          onClick={() => setActiveTab('posts')}
-          className={`flex-1 py-4 font-bold transition border-b-2 ${activeTab === 'posts' ? 'text-blue-500 border-blue-500' : 'text-gray-400 border-transparent hover:text-gray-200'}`}
-        >
-          Reviews
-        </button>
-        <button 
-          onClick={() => setActiveTab('library')}
-          className={`flex-1 py-4 font-bold transition border-b-2 ${activeTab === 'library' ? 'text-blue-500 border-blue-500' : 'text-gray-400 border-transparent hover:text-gray-200'}`}
-        >
-          Library
-        </button>
-        <button 
-          onClick={() => setActiveTab('network')}
-          className={`flex-1 py-4 font-bold transition border-b-2 ${activeTab === 'network' ? 'text-blue-500 border-blue-500' : 'text-gray-400 border-transparent hover:text-gray-200'}`}
-        >
-          Network
-        </button>
+      {/* 2. Navigation Tabs (Sharp & Fast) */}
+      <div className="flex border-b border-gray-200 dark:border-gray-800 mb-8 sticky top-[80px] bg-glacier dark:bg-carbon z-20">
+        {['posts', 'library', 'network'].map((tab) => (
+          <button 
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            className={`flex-1 py-4 font-bold uppercase tracking-wider text-sm transition-all relative ${
+              activeTab === tab 
+                ? 'text-papaya' 
+                : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-200'
+            }`}
+          >
+            {tab}
+            {/* Active Indicator Line */}
+            {activeTab === tab && (
+              <span className="absolute bottom-0 left-0 w-full h-1 bg-papaya"></span>
+            )}
+          </button>
+        ))}
       </div>
 
       {/* 3. Content Sections */}
@@ -94,63 +143,73 @@ function Profile() {
       {/* REVIEWS TAB */}
       {activeTab === 'posts' && (
         <div className="space-y-6">
-          {profile.posts.length > 0 ? (
-            profile.posts.map(post => (
-              <PostItem key={post._id} post={post} />
-            ))
+          {profile.isPrivate ? (
+            <ClassifiedOverlay />
           ) : (
-            <div className="text-center py-10 bg-gray-800 rounded-lg">
-              <p className="text-gray-400">User hasn't posted any reviews yet.</p>
-            </div>
+            profile.posts.length > 0 ? (
+              profile.posts.map(post => (
+                <PostItem key={post._id} post={post} />
+              ))
+            ) : (
+              <div className="text-center py-10 bg-white dark:bg-anthracite-light rounded-lg border border-gray-200 dark:border-gray-800">
+                <p className="text-gray-400">No telemetry data available.</p>
+              </div>
+            )
           )}
         </div>
       )}
 
       {/* LIBRARY TAB (Unique Watched List) */}
       {activeTab === 'library' && (
-        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
-          {profile.watchedList.length > 0 ? (
-            profile.watchedList.map(item => (
-              <div key={item.tmdbId} className="relative group">
-                 {item.poster ? (
-                   <img 
-                     src={`https://image.tmdb.org/t/p/w200${item.poster}`} 
-                     alt={item.title}
-                     className="rounded-lg shadow-md transition transform group-hover:scale-105 w-full h-auto object-cover aspect-[2/3]"
-                   />
-                 ) : (
-                   <div className="h-full w-full bg-gray-700 rounded flex items-center justify-center aspect-[2/3]">🎬</div>
-                 )}
-                 {/* Hover Overlay */}
-                 <div className="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition flex items-center justify-center rounded-lg p-2">
-                   <span className="text-xs font-bold text-center text-white">{item.title}</span>
-                 </div>
-              </div>
-            ))
+        <div>
+          {profile.isPrivate ? (
+            <ClassifiedOverlay />
           ) : (
-             <p className="col-span-full text-center py-10 text-gray-500 bg-gray-800 rounded-lg">Library is empty.</p>
+            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
+              {profile.watchedList.length > 0 ? (
+                profile.watchedList.map(item => (
+                  <div key={item.tmdbId} className="relative group">
+                    {item.poster ? (
+                      <img 
+                        src={`https://image.tmdb.org/t/p/w200${item.poster}`} 
+                        alt={item.title}
+                        className="rounded-lg shadow-md transition transform group-hover:scale-105 w-full h-auto object-cover aspect-[2/3]"
+                      />
+                    ) : (
+                      <div className="h-full w-full bg-gray-700 rounded flex items-center justify-center aspect-[2/3]">🎬</div>
+                    )}
+                    {/* Hover Overlay */}
+                    <div className="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition flex items-center justify-center rounded-lg p-2">
+                      <span className="text-xs font-bold text-center text-white">{item.title}</span>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <p className="col-span-full text-center py-10 text-gray-500 bg-white dark:bg-anthracite-light rounded-lg border border-gray-200 dark:border-gray-800">Library is empty.</p>
+              )}
+            </div>
           )}
         </div>
       )}
 
       {/* NETWORK TAB (Privacy Protected) */}
       {activeTab === 'network' && (
-        <div className="bg-gray-800 p-6 rounded-lg min-h-[200px]">
+        <div className="bg-white dark:bg-anthracite-light p-6 rounded-lg border border-gray-200 dark:border-gray-800 min-h-[200px]">
           {profile.network ? (
             <div className="grid md:grid-cols-2 gap-8">
               {/* Tracking List */}
               <div>
-                <h3 className="font-bold text-gray-300 mb-4 border-b border-gray-700 pb-2 flex justify-between">
+                <h3 className="font-bold text-gray-700 dark:text-gray-300 mb-4 border-b border-gray-300 dark:border-gray-700 pb-2 flex justify-between">
                     <span>Tracking</span>
-                    <span className="bg-gray-700 text-xs px-2 py-1 rounded-full">{profile.stats.trackingCount}</span>
+                    <span className="bg-gray-200 dark:bg-gray-700 text-xs px-2 py-1 rounded-full">{profile.stats.trackingCount}</span>
                 </h3>
                 <ul className="space-y-3">
                   {profile.network.tracking.map(u => (
-                    <li key={u._id} className="flex items-center gap-3 group cursor-pointer hover:bg-gray-700 p-2 rounded transition">
-                       <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-xs font-bold">
+                    <li key={u._id} className="flex items-center gap-3 group cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700/50 p-2 rounded transition">
+                       <div className="w-8 h-8 bg-papaya rounded-full flex items-center justify-center text-xs font-bold text-black">
                            {u.username.charAt(0).toUpperCase()}
                        </div>
-                       <a href={`/profile/${u.username}`} className="text-blue-400 group-hover:text-white transition">
+                       <a href={`/profile/${u.username}`} className="text-papaya-dark dark:text-papaya group-hover:text-papaya transition">
                            @{u.username}
                        </a>
                     </li>
@@ -161,17 +220,17 @@ function Profile() {
 
               {/* Audience List */}
               <div>
-                <h3 className="font-bold text-gray-300 mb-4 border-b border-gray-700 pb-2 flex justify-between">
+                <h3 className="font-bold text-gray-700 dark:text-gray-300 mb-4 border-b border-gray-300 dark:border-gray-700 pb-2 flex justify-between">
                     <span>Audience</span>
-                    <span className="bg-gray-700 text-xs px-2 py-1 rounded-full">{profile.stats.audienceCount}</span>
+                    <span className="bg-gray-200 dark:bg-gray-700 text-xs px-2 py-1 rounded-full">{profile.stats.audienceCount}</span>
                 </h3>
                 <ul className="space-y-3">
                   {profile.network.audience.map(u => (
-                    <li key={u._id} className="flex items-center gap-3 group cursor-pointer hover:bg-gray-700 p-2 rounded transition">
-                       <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-xs font-bold">
+                    <li key={u._id} className="flex items-center gap-3 group cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700/50 p-2 rounded transition">
+                       <div className="w-8 h-8 bg-gradient-to-tr from-gray-700 to-black rounded-full flex items-center justify-center text-xs font-bold text-white">
                            {u.username.charAt(0).toUpperCase()}
                        </div>
-                       <a href={`/profile/${u.username}`} className="text-purple-400 group-hover:text-white transition">
+                       <a href={`/profile/${u.username}`} className="text-gray-700 dark:text-gray-300 group-hover:text-papaya transition">
                            @{u.username}
                        </a>
                     </li>
@@ -182,8 +241,8 @@ function Profile() {
             </div>
           ) : (
             <div className="text-center py-10 flex flex-col items-center">
-              <FaLock className="text-5xl text-gray-600 mb-4" />
-              <h3 className="text-xl font-bold text-gray-400">Network Hidden</h3>
+              <FaLock className="text-5xl text-gray-400 mb-4" />
+              <h3 className="text-xl font-bold text-gray-700 dark:text-gray-400 uppercase tracking-wider">Network Hidden</h3>
               <p className="text-gray-500 mt-2 max-w-sm">
                 @{profile.username}'s network is private. You can only view it if they are tracking you.
               </p>

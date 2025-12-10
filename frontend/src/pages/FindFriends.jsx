@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import api from '../api';
 import { toast } from 'react-toastify';
-import { FaUserPlus, FaSearch } from 'react-icons/fa';
+import { FaSearch, FaChevronRight } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
 
 function FindFriends() {
   const [query, setQuery] = useState('');
@@ -14,13 +15,7 @@ function FindFriends() {
 
     setLoading(true);
     try {
-      const user = JSON.parse(localStorage.getItem('user'));
-      const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      
-      const response = await api.get(
-        `/api/social/search?query=${query}`,
-        config
-      );
+      const response = await api.get(`/api/social/search?query=${query}`);
       setUsers(response.data);
     } catch (error) {
       toast.error('Search failed');
@@ -29,78 +24,62 @@ function FindFriends() {
     }
   };
 
-  const sendRequest = async (userId) => {
-    try {
-      const user = JSON.parse(localStorage.getItem('user'));
-      const config = { headers: { Authorization: `Bearer ${user.token}` } };
-
-      await api.post(
-        `/api/social/follow/${userId}`,
-        {}, // Empty body
-        config
-      );
-      
-      toast.success('Friend request sent!');
-      // Optional: Remove user from list or change button state
-      setUsers(users.filter((u) => u._id !== userId));
-    } catch (error) {
-      toast.error(error.response?.data?.message || 'Failed to send request');
-    }
-  };
-
   return (
-    <div className="max-w-2xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6 flex items-center gap-2">
-        <FaSearch className="text-blue-500" /> Find Friends
-      </h1>
+    <div className="max-w-3xl mx-auto mt-8">
+      <h1 className="text-4xl font-black text-anthracite dark:text-white mb-2 uppercase tracking-tight">Driver Database</h1>
+      <p className="text-gray-500 mb-8">Locate other users to track their telemetry.</p>
 
-      {/* Search Bar */}
-      <div className="bg-gray-800 p-6 rounded-lg shadow-lg mb-8">
+      {/* 1. Command Line Search */}
+      <div className="bg-white dark:bg-anthracite-light p-2 rounded-lg shadow-xl border border-gray-200 dark:border-gray-800 mb-8">
         <form onSubmit={handleSearch} className="flex gap-2">
-          <input
-            type="text"
-            className="flex-1 p-3 bg-gray-700 rounded border border-gray-600 text-white focus:outline-none focus:border-blue-500"
-            placeholder="Search by username..."
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-          />
+          <div className="flex-1 flex items-center px-4 bg-gray-50 dark:bg-black/20 rounded">
+            <FaSearch className="text-gray-400" />
+            <input
+              type="text"
+              className="flex-1 p-4 bg-transparent text-lg text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none font-medium"
+              placeholder="Enter username..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              autoFocus
+            />
+          </div>
           <button
             type="submit"
-            className="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded font-bold transition"
+            className="bg-papaya hover:bg-papaya-dark text-black font-bold px-8 py-2 rounded transition uppercase tracking-wide"
           >
-            {loading ? '...' : 'Search'}
+            {loading ? 'Scanning...' : 'Search'}
           </button>
         </form>
       </div>
 
-      {/* Results List */}
-      <div className="space-y-4">
-        {users.length > 0 ? (
-          users.map((user) => (
-            <div
-              key={user._id}
-              className="flex justify-between items-center bg-gray-800 p-4 rounded-lg shadow hover:bg-gray-750 transition"
-            >
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center font-bold text-lg">
-                  {user.username.charAt(0).toUpperCase()}
-                </div>
-                <span className="font-bold text-lg">{user.username}</span>
+      {/* 2. Driver Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {users.map((user) => (
+          <div
+            key={user._id}
+            className="flex items-center justify-between bg-white dark:bg-anthracite-light p-5 rounded-lg border-l-4 border-transparent hover:border-l-papaya shadow-sm hover:shadow-md transition group"
+          >
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-gradient-to-tr from-gray-700 to-black rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg">
+                {user.username.charAt(0).toUpperCase()}
               </div>
-              
-              <button
-                onClick={() => sendRequest(user._id)}
-                className="flex items-center gap-2 bg-gray-700 hover:bg-green-600 text-white px-4 py-2 rounded transition group"
-              >
-                <FaUserPlus className="text-green-400 group-hover:text-white" />
-                <span>Follow</span>
-              </button>
+              <div>
+                <h3 className="font-bold text-lg text-gray-900 dark:text-white">{user.username}</h3>
+                <Link 
+                  to={`/profile/${user.username}`}
+                  className="text-xs text-gray-500 group-hover:text-papaya uppercase font-bold tracking-wider flex items-center gap-1"
+                >
+                  View Profile <FaChevronRight size={10} />
+                </Link>
+              </div>
             </div>
-          ))
-        ) : (
-          query && !loading && (
-            <p className="text-center text-gray-500">No users found.</p>
-          )
+          </div>
+        ))}
+        
+        {users.length === 0 && query && !loading && (
+           <div className="col-span-full text-center py-10 text-gray-400 font-mono">
+             No drivers found matching query.
+           </div>
         )}
       </div>
     </div>

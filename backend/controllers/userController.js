@@ -103,21 +103,25 @@ const getUserProfile = async (req, res) => {
     });
     const watchedList = Array.from(watchedMap.values());
 
-    // 4. Privacy Logic for "Tracking List"
-    // Rule: Can view network if I am tracking the target user, OR if I AM the target user.
+    // 4. Privacy Logic
     const amTrackingTarget = targetUser.audience.includes(req.user.id);
     const isMe = targetUser._id.equals(req.user.id);
-    const canViewNetwork = amTrackingTarget || isMe;
+    const canViewFullProfile = amTrackingTarget || isMe;
     
     let networkData = null;
-    if (canViewNetwork) {
-      // If allowed, populate the actual lists
+    let safePosts = [];
+    let safeWatchedList = [];
+
+    if (canViewFullProfile) {
+      // ACCESS GRANTED: Show everything
       await targetUser.populate('tracking', 'username');
       await targetUser.populate('audience', 'username');
       networkData = {
         tracking: targetUser.tracking,
         audience: targetUser.audience,
       };
+      safePosts = posts;
+      safeWatchedList = watchedList;
     }
 
     // 5. Send Response
@@ -126,13 +130,14 @@ const getUserProfile = async (req, res) => {
       username: targetUser.username,
       createdAt: targetUser.createdAt,
       stats: {
-        trackingCount: targetUser.tracking.length, // Always visible
-        audienceCount: targetUser.audience.length, // Always visible
-        watchedCount: watchedList.length,
+        trackingCount: targetUser.tracking.length,
+        audienceCount: targetUser.audience.length,
+        watchedCount: watchedList.length, // We still show the COUNT, just not the items
       },
-      network: networkData, // Null if not allowed
-      watchedList, // The unique list of shows
-      posts, // All their reviews
+      isPrivate: !canViewFullProfile, // Flag for Frontend
+      network: networkData, 
+      watchedList: safeWatchedList, // Empty if private
+      posts: safePosts, // Empty if private
     });
 
   } catch (error) {
