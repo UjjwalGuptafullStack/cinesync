@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
+const Post = require('../models/Post');
 
 // @desc    Register new user
 // @route   POST /api/users
@@ -67,6 +68,78 @@ const loginUser = async (req, res) => {
   }
 };
 
+// @desc    Get User Profile (Info, Stats, Watched List)
+// @route   GET /api/users/profile/:username
+// @access  Private
+const getUserProfile = async (req, res) => {
+  const { username } = req.params;
+
+  try {
+    // 1. Find the target user (exclude password)
+    const targetUser = await User.findOne({ username }).select('-password');
+
+    if (!targetUser) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // 2. Fetch all posts by this user
+    // Populate the user field in the post so the PostItem component still works
+    const posts = await Post.find({ user: targetUser._id })
+      .populate('user', 'username') 
+      .sort({ createdAt: -1 });
+
+    // 3. Generate "Watched List" (Unique shows/movies from posts)
+    // Map ensures no duplicates based on tmdbId
+    const watchedMap = new Map();
+    posts.forEach((post) => {
+      if (!watchedMap.has(post.tmdbId)) {
+        watchedMap.set(post.tmdbId, {
+          tmdbId: post.tmdbId,
+          title: post.mediaTitle,
+          poster: post.posterPath,
+          type: post.mediaType,
+        });
+      }
+    });
+    const watchedList = Array.from(watchedMap.values());
+
+    // 4. Privacy Logic for "Tracking List"
+    // Rule: Can view network if I am tracking the target user, OR if I AM the target user.
+    const amTrackingTarget = targetUser.audience.includes(req.user.id);
+    const isMe = targetUser._id.equals(req.user.id);
+    const canViewNetwork = amTrackingTarget || isMe;
+    
+    let networkData = null;
+    if (canViewNetwork) {
+      // If allowed, populate the actual lists
+      await targetUser.populate('tracking', 'username');
+      await targetUser.populate('audience', 'username');
+      networkData = {
+        tracking: targetUser.tracking,
+        audience: targetUser.audience,
+      };
+    }
+
+    // 5. Send Response
+    res.json({
+      _id: targetUser._id,
+      username: targetUser.username,
+      createdAt: targetUser.createdAt,
+      stats: {
+        trackingCount: targetUser.tracking.length, // Always visible
+        audienceCount: targetUser.audience.length, // Always visible
+        watchedCount: watchedList.length,
+      },
+      network: networkData, // Null if not allowed
+      watchedList, // The unique list of shows
+      posts, // All their reviews
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // Generate JWT
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -77,4 +150,5 @@ const generateToken = (id) => {
 module.exports = {
   registerUser,
   loginUser,
+  getUserProfile,
 };

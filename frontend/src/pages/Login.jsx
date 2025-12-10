@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import axios from 'axios';
+import api from '../api';
 
 function Login() {
   const [formData, setFormData] = useState({
@@ -26,7 +26,7 @@ function Login() {
       const userData = { email, password };
       
       // 1. Send Login Request
-      const response = await axios.post('http://localhost:5000/api/users/login', userData);
+      const response = await api.post('/api/users/login', userData);
 
       // 2. SAVE THE DATA (The "Magic" Step) 💾
       // We store the entire user object (including the token) in localStorage

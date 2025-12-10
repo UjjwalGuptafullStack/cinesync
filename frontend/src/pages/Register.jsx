@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import axios from 'axios';
+import api from '../api';
 
 function Register() {
   const [formData, setFormData] = useState({
@@ -35,8 +35,7 @@ function Register() {
       const userData = { username, email, password };
       
       // CALL THE BACKEND API
-      // Note: We use the full URL of your backend
-      await axios.post('http://localhost:5000/api/users', userData);
+      await api.post('/api/users', userData);
 
       toast.success('Registration successful! Please login.');
       navigate('/login'); // Redirect to login page

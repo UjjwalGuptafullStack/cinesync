@@ -6,11 +6,11 @@ const Post = require('../models/Post');
 // @access  Private
 const getPosts = async (req, res) => {
   try {
-    // 1. Get the current user to find who they follow
+    // 1. Get the current user to find who they're tracking
     const currentUser = await User.findById(req.user.id);
     
-    // 2. Create a list of IDs: My ID + Everyone I follow
-    const userIds = [req.user.id, ...currentUser.following];
+    // 2. Create a list of IDs: My ID + Everyone I'm tracking
+    const userIds = [req.user.id, ...currentUser.tracking];
 
     // 3. Find posts where the 'user' is in that list
     const posts = await Post.find({ user: { $in: userIds } })

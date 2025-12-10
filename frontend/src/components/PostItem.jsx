@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 function PostItem({ post }) {
   // Each post tracks its own "isRevealed" state
@@ -27,7 +28,9 @@ function PostItem({ post }) {
         <div className="mb-4 border-b border-gray-700 pb-3">
           <div className="flex items-center justify-between mb-1">
             <span className="text-sm text-gray-400">
-              <span className="text-blue-400 font-semibold">@{post.user?.username || 'Unknown'}</span> watched
+              <Link to={`/profile/${post.user?.username}`} className="text-blue-400 font-semibold hover:text-blue-300 hover:underline transition">
+                @{post.user?.username || 'Unknown'}
+              </Link> watched
             </span>
             {post.isSpoiler && (
               <span className="bg-red-600 text-xs text-white px-2 py-0.5 rounded-full uppercase font-bold tracking-wider">

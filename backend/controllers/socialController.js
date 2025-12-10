@@ -30,10 +30,10 @@ const sendRequest = async (req, res) => {
   const senderId = req.user.id;
 
   try {
-    // 1. Check if already following
+    // 1. Check if already tracking
     const sender = await User.findById(senderId);
-    if (sender.following.includes(receiverId)) {
-      return res.status(400).json({ message: 'You are already following this user' });
+    if (sender.tracking.includes(receiverId)) {
+      return res.status(400).json({ message: 'You are already tracking this user' });
     }
 
     // 2. Check if request already exists
@@ -92,14 +92,14 @@ const acceptRequest = async (req, res) => {
       return res.status(401).json({ message: 'Not authorized' });
     }
 
-    // 1. Update Sender's 'following' list
+    // 1. Update Sender's 'tracking' list
     await User.findByIdAndUpdate(request.sender, {
-      $push: { following: req.user.id },
+      $push: { tracking: req.user.id },
     });
 
-    // 2. Update Receiver's (My) 'followers' list
+    // 2. Update Receiver's (My) 'audience' list
     await User.findByIdAndUpdate(req.user.id, {
-      $push: { followers: request.sender },
+      $push: { audience: request.sender },
     });
 
     // 3. Delete the request (or mark accepted)

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { Link } from 'react-router-dom';
 import PostItem from '../components/PostItem';
 
@@ -19,7 +19,7 @@ function Home() {
           },
         };
 
-        const response = await axios.get('http://localhost:5000/api/posts', config);
+        const response = await api.get('/api/posts', config);
         setPosts(response.data);
       } catch (error) {
         console.error('Error fetching posts:', error);

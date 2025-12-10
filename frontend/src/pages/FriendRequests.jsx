@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { toast } from 'react-toastify';
 import { FaCheck, FaTimes, FaBell } from 'react-icons/fa';
 
@@ -17,8 +17,8 @@ function FriendRequests() {
       const user = JSON.parse(localStorage.getItem('user'));
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
       
-      const response = await axios.get(
-        'http://localhost:5000/api/social/requests',
+      const response = await api.get(
+        '/api/social/requests',
         config
       );
       setRequests(response.data);
@@ -34,8 +34,8 @@ function FriendRequests() {
       const user = JSON.parse(localStorage.getItem('user'));
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
 
-      await axios.post(
-        `http://localhost:5000/api/social/accept/${requestId}`,
+      await api.post(
+        `/api/social/accept/${requestId}`,
         {},
         config
       );

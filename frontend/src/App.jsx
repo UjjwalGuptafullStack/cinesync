@@ -8,6 +8,7 @@ import Home from './pages/Home';
 import CreatePost from './pages/CreatePost';
 import FindFriends from './pages/FindFriends';
 import FriendRequests from './pages/FriendRequests';
+import Profile from './pages/Profile';
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
             <Route path="/create" element={<CreatePost />} />
             <Route path="/find-friends" element={<FindFriends />} />
             <Route path="/requests" element={<FriendRequests />} />
+            <Route path="/profile/:username" element={<Profile />} />
           </Routes>
         </div>
       </Router>

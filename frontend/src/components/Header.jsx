@@ -28,7 +28,9 @@ function Header() {
           {user ? (
             <>
               <li className="hidden md:block text-gray-400 text-sm">
-                 Hey, <span className="text-white font-semibold">{user.username}</span>
+                 Hey, <Link to={`/profile/${user.username}`} className="text-white font-semibold hover:text-blue-400 hover:underline transition">
+                   {user.username}
+                 </Link>
               </li>
               
               {/* Action Icons */}

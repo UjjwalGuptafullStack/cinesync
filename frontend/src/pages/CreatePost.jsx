@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
@@ -25,7 +25,7 @@ function CreatePost() {
     // If it's a TV show, fetch its details to know how many seasons it has
     if (media.media_type === 'tv' || !media.title) {
        try {
-         const response = await axios.get(`http://localhost:5000/api/media/tv/${media.id}`);
+         const response = await api.get(`/api/media/tv/${media.id}`);
          setSeasonsTotal(response.data.number_of_seasons);
        } catch (err) {
          console.error("Could not fetch seasons");
@@ -38,7 +38,7 @@ function CreatePost() {
     setSelectedSeason(seasonNum);
     // Fetch episodes for this season
     try {
-       const response = await axios.get(`http://localhost:5000/api/media/tv/${selectedMedia.id}/season/${seasonNum}`);
+       const response = await api.get(`/api/media/tv/${selectedMedia.id}/season/${seasonNum}`);
        setEpisodesTotal(response.data.episodes.length);
     } catch (err) {
        console.error("Could not fetch episodes");
@@ -53,7 +53,7 @@ function CreatePost() {
     setLoading(true);
     try {
       // Call your backend proxy (not TMDB directly!)
-      const response = await axios.get(`http://localhost:5000/api/media/search?query=${query}`);
+      const response = await api.get(`/api/media/search?query=${query}`);
       setResults(response.data);
     } catch (error) {
       toast.error('Failed to search media');
@@ -93,9 +93,9 @@ function CreatePost() {
         },
       };
 
-      await axios.post('http://localhost:5000/api/posts', postData, config);
+      await api.post('/api/posts', postData, config);
 
-      toast.success('Entry logged successfully! 🎬');
+      toast.success('Post created successfully!');
       navigate('/'); // Go back to feed
     } catch (error) {
       toast.error(error.response?.data?.message || 'Failed to create post');

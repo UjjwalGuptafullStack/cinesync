@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { toast } from 'react-toastify';
 import { FaUserPlus, FaSearch } from 'react-icons/fa';
 
@@ -17,8 +17,8 @@ function FindFriends() {
       const user = JSON.parse(localStorage.getItem('user'));
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
       
-      const response = await axios.get(
-        `http://localhost:5000/api/social/search?query=${query}`,
+      const response = await api.get(
+        `/api/social/search?query=${query}`,
         config
       );
       setUsers(response.data);
@@ -34,8 +34,8 @@ function FindFriends() {
       const user = JSON.parse(localStorage.getItem('user'));
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
 
-      await axios.post(
-        `http://localhost:5000/api/social/follow/${userId}`,
+      await api.post(
+        `/api/social/follow/${userId}`,
         {}, // Empty body
         config
       );
