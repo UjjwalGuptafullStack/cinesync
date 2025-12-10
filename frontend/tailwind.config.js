@@ -4,26 +4,32 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
-  darkMode: 'class', // IMPORTANT: This enables manual toggling of dark mode
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
-        // The McLaren F1 Palette
+        // McLaren Palette
         papaya: {
-          DEFAULT: '#FF8700', // The iconic McLaren Orange
-          light: '#FFA533',   // A slightly lighter shade for hovers
-          dark: '#CC6C00',    // A darker shade for active states
+          DEFAULT: '#FF8700', // Primary Action
+          dark: '#CC6C00',
         },
         anthracite: {
-          DEFAULT: '#111827', // Your primary dark background (approx Gray-900)
-          light: '#1F2937',   // Secondary dark (for cards/modals)
+          DEFAULT: '#111827', // Main Background
+          light: '#1F2937',   // Card/Navbar Background
         },
-        carbon: '#000000',    // Deepest black for contrast
-        phantom: '#435761',   // McLaren Blue-Grey (Optional accent)
-        glacier: '#F3F4F6',   // Light mode background
+        white: '#F9FAFB',
+        gray: {
+          400: '#9CA3AF',
+          600: '#4B5563',
+          700: '#374151',
+          800: '#1F2937',
+        },
+        red: {
+          500: '#EF4444', // Spoilers/Errors
+        }
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'], // Clean, modern, fast
+        sans: ['Inter', 'system-ui', 'sans-serif'],
       },
     },
   },

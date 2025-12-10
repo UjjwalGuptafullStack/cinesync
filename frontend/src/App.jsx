@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { ThemeProvider } from './context/ThemeContext';
-import Layout from './components/Layout';
+import Header from './components/Header';
 import Register from './pages/Register';
 import Login from './pages/Login';
 import Home from './pages/Home';
@@ -15,22 +15,25 @@ function App() {
   return (
     <ThemeProvider>
       <Router>
-        <Routes>
-          {/* PUBLIC ROUTES (No Sidebar needed) */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-
-          {/* PROTECTED ROUTES (Wrapped in Layout Cockpit) */}
-          <Route element={<Layout />}>
-            <Route path="/" element={<Home />} />
-            <Route path="/create" element={<CreatePost />} />
-            <Route path="/find-friends" element={<FindFriends />} />
-            <Route path="/requests" element={<FriendRequests />} />
-            <Route path="/profile/:username" element={<Profile />} />
-          </Route>
-        </Routes>
+        <div className="min-h-screen bg-anthracite text-white">
+          <Header />
+          
+          <main className="container mx-auto px-4 py-8 max-w-4xl">
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              
+              {/* Protected Routes */}
+              <Route path="/" element={<Home />} />
+              <Route path="/create" element={<CreatePost />} />
+              <Route path="/find-friends" element={<FindFriends />} />
+              <Route path="/requests" element={<FriendRequests />} />
+              <Route path="/profile/:username" element={<Profile />} />
+            </Routes>
+          </main>
+        </div>
+        <ToastContainer position="bottom-right" theme="dark" />
       </Router>
-      <ToastContainer position="bottom-right" theme="dark" />
     </ThemeProvider>
   );
 }
