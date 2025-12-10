@@ -116,23 +116,19 @@ function Profile() {
         )}
       </div>
 
-      {/* 2. Navigation Tabs (Sharp & Fast) */}
-      <div className="flex border-b border-gray-200 dark:border-gray-800 mb-8 sticky top-[80px] bg-glacier dark:bg-carbon z-20">
-        {['posts', 'library', 'network'].map((tab) => (
+      {/* 2. Standard Navigation Tabs */}
+      <div className="flex border-b border-gray-800 mb-8 sticky top-16 bg-anthracite z-20">
+        {['reviews', 'library', 'network'].map((tab) => (
           <button 
             key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`flex-1 py-4 font-bold uppercase tracking-wider text-sm transition-all relative ${
-              activeTab === tab 
-                ? 'text-papaya' 
-                : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-200'
+            onClick={() => setActiveTab(tab === 'reviews' ? 'posts' : tab)} // Map 'reviews' UI to 'posts' state logic
+            className={`flex-1 py-4 font-bold uppercase tracking-wider text-sm transition-all border-b-2 ${
+              (activeTab === tab || (tab === 'reviews' && activeTab === 'posts'))
+                ? 'text-papaya border-papaya' 
+                : 'text-gray-400 border-transparent hover:text-white hover:border-gray-700'
             }`}
           >
             {tab}
-            {/* Active Indicator Line */}
-            {activeTab === tab && (
-              <span className="absolute bottom-0 left-0 w-full h-1 bg-papaya"></span>
-            )}
           </button>
         ))}
       </div>

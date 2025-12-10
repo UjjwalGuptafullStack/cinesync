@@ -37,7 +37,7 @@ function PostItem({ post }) {
                 <span>{new Date(post.createdAt).toLocaleDateString()}</span>
               </div>
               
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mt-1 group-hover:text-papaya transition-colors">
+              <h3 className="text-xl font-bold text-papaya mt-1 transition-colors">
                 {post.mediaTitle}
               </h3>
               
@@ -67,7 +67,7 @@ function PostItem({ post }) {
           </div>
 
           {/* Content Sector */}
-          <div className="text-gray-600 dark:text-gray-300 leading-relaxed text-sm mt-3">
+          <div className="text-gray-300 leading-relaxed text-sm mt-3">
             {post.isSpoiler && !isRevealed ? (
               <button 
                 onClick={() => setIsRevealed(true)}

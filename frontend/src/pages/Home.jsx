@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import api from '../api';
-import { Link } from 'react-router-dom';
 import PostItem from '../components/PostItem';
+import { FaStream } from 'react-icons/fa';
 
 function Home() {
   const [posts, setPosts] = useState([]);
@@ -10,16 +10,7 @@ function Home() {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const user = JSON.parse(localStorage.getItem('user'));
-        const token = user?.token;
-
-        const config = {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        };
-
-        const response = await api.get('/api/posts', config);
+        const response = await api.get('/api/posts');
         setPosts(response.data);
       } catch (error) {
         console.error('Error fetching posts:', error);
@@ -32,25 +23,32 @@ function Home() {
   }, []);
 
   if (loading) {
-    return <div className="text-center mt-20 text-2xl animate-pulse">Loading Feed... 🍿</div>;
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-papaya"></div>
+      </div>
+    );
   }
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Global Feed 🌎</h1>
-        <Link to="/create" className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded transition">
-          + Log Entry
-        </Link>
+    <div className="max-w-2xl mx-auto">
+      {/* Header */}
+      <div className="flex items-center gap-3 mb-8 border-b border-gray-800 pb-4">
+        <FaStream className="text-papaya text-xl" />
+        <h1 className="text-2xl font-bold text-white tracking-wide">Your Feed</h1>
       </div>
 
+      {/* Posts Feed */}
       <div className="space-y-6">
         {posts.length > 0 ? (
           posts.map((post) => (
             <PostItem key={post._id} post={post} />
           ))
         ) : (
-          <p className="text-center text-gray-400 mt-10">No posts yet. Be the first to share!</p>
+          <div className="text-center py-16 bg-anthracite-light rounded-lg border border-gray-800">
+            <h3 className="text-xl font-bold text-white mb-2">No activity yet</h3>
+            <p className="text-gray-400">Follow users to see their reviews here.</p>
+          </div>
         )}
       </div>
     </div>
