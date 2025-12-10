@@ -25,60 +25,60 @@ function FindFriends() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto mt-8">
-      <h1 className="text-4xl font-black text-anthracite dark:text-white mb-2 uppercase tracking-tight">Driver Database</h1>
-      <p className="text-gray-500 mb-8">Locate other users to track their telemetry.</p>
+    <div className="max-w-2xl mx-auto mt-8">
+      <h1 className="text-3xl font-bold text-white mb-2">Find Friends</h1>
+      <p className="text-gray-400 mb-8">Search for users to follow.</p>
 
-      {/* 1. Command Line Search */}
-      <div className="bg-white dark:bg-anthracite-light p-2 rounded-lg shadow-xl border border-gray-200 dark:border-gray-800 mb-8">
-        <form onSubmit={handleSearch} className="flex gap-2">
-          <div className="flex-1 flex items-center px-4 bg-gray-50 dark:bg-black/20 rounded">
-            <FaSearch className="text-gray-400" />
-            <input
-              type="text"
-              className="flex-1 p-4 bg-transparent text-lg text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none font-medium"
-              placeholder="Enter username..."
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              autoFocus
-            />
-          </div>
+      {/* Search Bar */}
+      <div className="bg-anthracite-light p-4 rounded-lg shadow-lg border border-gray-800 mb-8">
+        <form onSubmit={handleSearch} className="flex gap-3">
+          <input
+            type="text"
+            className="flex-1 p-3 bg-gray-900 text-white placeholder-gray-400 rounded border border-gray-700 focus:outline-none focus:border-papaya transition"
+            placeholder="Enter username..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            autoFocus
+          />
           <button
             type="submit"
-            className="bg-papaya hover:bg-papaya-dark text-black font-bold px-8 py-2 rounded transition uppercase tracking-wide"
+            className="bg-papaya hover:bg-papaya-dark text-black font-bold px-6 py-3 rounded transition uppercase tracking-wide"
           >
-            {loading ? 'Scanning...' : 'Search'}
+            {loading ? 'Searching...' : 'Search'}
           </button>
         </form>
       </div>
 
-      {/* 2. Driver Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* User Results */}
+      <div className="space-y-4">
         {users.map((user) => (
           <div
             key={user._id}
-            className="flex items-center justify-between bg-white dark:bg-anthracite-light p-5 rounded-lg border-l-4 border-transparent hover:border-l-papaya shadow-sm hover:shadow-md transition group"
+            className="flex items-center justify-between bg-anthracite-light p-4 rounded-lg border border-gray-800 hover:border-papaya transition shadow-sm group"
           >
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-gradient-to-tr from-gray-700 to-black rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg">
+              {/* Simple Avatar Circle */}
+              <div className="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center text-white font-bold text-lg">
                 {user.username.charAt(0).toUpperCase()}
               </div>
+              
               <div>
-                <h3 className="font-bold text-lg text-gray-900 dark:text-white">{user.username}</h3>
-                <Link 
-                  to={`/profile/${user.username}`}
-                  className="text-xs text-gray-500 group-hover:text-papaya uppercase font-bold tracking-wider flex items-center gap-1"
-                >
-                  View Profile <FaChevronRight size={10} />
-                </Link>
+                <h3 className="font-bold text-lg text-white group-hover:text-papaya transition">{user.username}</h3>
               </div>
             </div>
+
+            <Link 
+              to={`/profile/${user.username}`}
+              className="text-sm font-bold text-gray-400 group-hover:text-white flex items-center gap-1 transition"
+            >
+              View Profile <FaChevronRight size={12} />
+            </Link>
           </div>
         ))}
         
         {users.length === 0 && query && !loading && (
-           <div className="col-span-full text-center py-10 text-gray-400 font-mono">
-             No drivers found matching query.
+           <div className="text-center py-10 text-gray-500">
+             No users found.
            </div>
         )}
       </div>

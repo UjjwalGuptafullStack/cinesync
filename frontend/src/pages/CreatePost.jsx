@@ -104,19 +104,17 @@ function CreatePost() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6">Log a New Entry 🖊️</h1>
-
       {/* STEP 1: SEARCH & SELECT */}
       {!selectedMedia ? (
-        <div className="max-w-2xl mx-auto mt-10">
-          <h1 className="text-4xl font-black text-anthracite dark:text-white mb-2">New Log Entry</h1>
-          <p className="text-gray-500 mb-8">Search the database to begin transmission.</p>
+        <div className="max-w-2xl mx-auto mt-8">
+          <h1 className="text-3xl font-bold text-white mb-2">Create New Post</h1>
+          <p className="text-gray-400 mb-8">Search for a movie or TV show to talk about.</p>
 
-          <div className="bg-white dark:bg-anthracite-light p-1 rounded-lg shadow-xl border border-gray-200 dark:border-gray-800">
-            <form onSubmit={searchMedia} className="flex">
+          <div className="bg-anthracite-light p-6 rounded-lg border border-gray-800 shadow-lg">
+            <form onSubmit={searchMedia} className="flex gap-3">
               <input
                 type="text"
-                className="flex-1 p-4 bg-transparent text-xl text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none font-medium"
+                className="flex-1 p-3 bg-gray-900 text-white placeholder-gray-400 rounded border border-gray-700 focus:outline-none focus:border-papaya transition"
                 placeholder="Type movie or show name..."
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
@@ -124,33 +122,33 @@ function CreatePost() {
               />
               <button
                 type="submit"
-                className="bg-papaya hover:bg-papaya-dark text-black font-bold px-8 py-2 rounded transition uppercase tracking-wide"
+                className="bg-papaya hover:bg-papaya-dark text-black font-bold px-6 py-3 rounded transition uppercase tracking-wide"
               >
-                {loading ? 'Scanning...' : 'Search'}
+                {loading ? 'Searching...' : 'Search'}
               </button>
             </form>
           </div>
-
-          {/* Search Results (Grid) */}
+          
+          {/* Results Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
             {results.map((media) => (
               <div
                 key={media.id}
-                className="flex items-center gap-4 p-4 bg-white dark:bg-anthracite-light border border-transparent hover:border-papaya cursor-pointer transition rounded shadow-sm group"
+                className="flex items-center gap-4 p-3 bg-anthracite-light border border-gray-800 rounded hover:border-papaya cursor-pointer transition"
                 onClick={() => onMediaSelect(media)}
               >
                 {media.poster_path ? (
                   <img
                     src={`https://image.tmdb.org/t/p/w92${media.poster_path}`}
                     alt={media.title}
-                    className="w-12 h-18 object-cover shadow-sm group-hover:scale-105 transition"
+                    className="w-12 h-18 object-cover shadow-sm"
                   />
                 ) : (
                   <div className="w-12 h-18 bg-gray-700"></div>
                 )}
                 <div>
-                  <h3 className="font-bold text-gray-900 dark:text-white group-hover:text-papaya transition">{media.title || media.name}</h3>
-                  <p className="text-xs text-gray-500 font-mono">
+                  <h3 className="font-bold text-white group-hover:text-papaya transition">{media.title || media.name}</h3>
+                  <p className="text-xs text-gray-500">
                     {media.release_date ? media.release_date.split('-')[0] : 'Unknown'} • {media.media_type === 'tv' ? 'TV Series' : 'Movie'}
                   </p>
                 </div>
@@ -270,7 +268,7 @@ function CreatePost() {
               type="submit"
               className="w-full bg-papaya hover:bg-papaya-dark text-black font-bold py-3 rounded text-lg transition uppercase tracking-wider"
             >
-              Post Entry 🚀
+              Post Review 🚀
             </button>
           </form>
         </div>
