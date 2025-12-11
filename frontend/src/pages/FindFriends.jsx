@@ -1,13 +1,28 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import api from '../api';
 import { toast } from 'react-toastify';
 import { FaSearch, FaChevronRight } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 function FindFriends() {
   const [query, setQuery] = useState('');
   const [users, setUsers] = useState([]);
+  const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchSuggestions();
+  }, []);
+
+  const fetchSuggestions = async () => {
+    try {
+      const res = await api.get('/api/social/suggestions');
+      setSuggestions(res.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -28,6 +43,57 @@ function FindFriends() {
     <div className="max-w-2xl mx-auto mt-8">
       <h1 className="text-3xl font-bold text-white mb-2">Find Friends</h1>
       <p className="text-gray-400 mb-8">Search for users to follow.</p>
+
+      {/* SUGGESTIONS SECTION */}
+      {suggestions.length > 0 && (
+        <div className="mb-10">
+          <h2 className="text-xl font-bold text-papaya mb-4 flex items-center gap-2">
+            ⚡ Suggested Connections
+          </h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {suggestions.map(user => (
+              <div key={user._id} className="bg-anthracite-light border border-gray-800 rounded-xl p-4 flex gap-4 shadow-lg hover:border-papaya transition">
+                
+                {/* Avatar & Follow */}
+                <div className="flex flex-col items-center gap-3 min-w-[80px]">
+                  <div className="w-12 h-12 bg-gray-700 rounded-full flex items-center justify-center text-white font-bold text-xl">
+                    {user.username.charAt(0).toUpperCase()}
+                  </div>
+                  <Link to={`/profile/${user.username}`} className="text-xs font-bold text-white hover:underline">
+                    @{user.username}
+                  </Link>
+                  <button 
+                    onClick={() => navigate(`/profile/${user.username}`)}
+                    className="bg-papaya text-black text-xs font-bold px-3 py-1 rounded-full hover:bg-papaya-dark"
+                  >
+                    View
+                  </button>
+                </div>
+
+                {/* Top 3 Library Preview */}
+                <div className="flex-1">
+                   <p className="text-xs text-gray-500 mb-2 font-bold uppercase">Recently Watched</p>
+                   <div className="flex gap-2">
+                     {user.libraryPreviews.map((poster, index) => (
+                       <img 
+                         key={index}
+                         src={`https://image.tmdb.org/t/p/w92${poster}`}
+                         alt="Poster"
+                         className="w-14 h-20 object-cover rounded shadow-sm border border-gray-700"
+                       />
+                     ))}
+                     {user.libraryPreviews.length === 0 && (
+                       <span className="text-xs text-gray-600 italic">No activity yet</span>
+                     )}
+                   </div>
+                </div>
+
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Search Bar */}
       <div className="bg-anthracite-light p-4 rounded-lg shadow-lg border border-gray-800 mb-8">

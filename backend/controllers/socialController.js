@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const FriendRequest = require('../models/FriendRequest');
 const Notification = require('../models/Notification');
+const Post = require('../models/Post');
 
 // @desc    Search for users by username
 // @route   GET /api/social/search?query=john
@@ -187,4 +188,68 @@ const rejectRequest = async (req, res) => {
   }
 };
 
-module.exports = { searchUsers, sendRequest, getRequests, acceptRequest, rejectRequest };
+// @desc    Get Suggested Connections (Friends of Friends)
+// @route   GET /api/social/suggestions
+// @access  Private
+const getSuggestions = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    
+    // 1. Get My Tracking List
+    const me = await User.findById(userId).populate('tracking');
+    const myTrackingIds = me.tracking.map(u => u._id.toString());
+    
+    // 2. Find "Candidates": People followed by the people I follow
+    let candidateIds = new Set();
+    
+    // Fetch the 'tracking' list of everyone I follow
+    const myFriends = await User.find({ _id: { $in: myTrackingIds } });
+    
+    myFriends.forEach(friend => {
+      friend.tracking.forEach(id => {
+        const idStr = id.toString();
+        // Exclude myself and people I already follow
+        if (idStr !== userId && !myTrackingIds.includes(idStr)) {
+          candidateIds.add(idStr);
+        }
+      });
+    });
+
+    // 3. Fetch Details for Candidates
+    const candidates = await User.find({ _id: { $in: Array.from(candidateIds) } })
+      .select('username userImage')
+      .limit(10);
+
+    // 4. Build "Cards" with Top 3 Library Items
+    const suggestions = await Promise.all(candidates.map(async (user) => {
+      // Fetch latest posts for this user to build Top 3
+      const posts = await Post.find({ user: user._id })
+        .sort({ createdAt: -1 })
+        .limit(20);
+
+      const uniqueLibrary = [];
+      const seenTmdb = new Set();
+
+      for (let p of posts) {
+        if (!seenTmdb.has(p.tmdbId) && p.posterPath) {
+          seenTmdb.add(p.tmdbId);
+          uniqueLibrary.push(p.posterPath);
+        }
+        if (uniqueLibrary.length === 3) break;
+      }
+
+      return {
+        _id: user._id,
+        username: user.username,
+        libraryPreviews: uniqueLibrary,
+        mutuals: 1
+      };
+    }));
+
+    res.json(suggestions);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports = { searchUsers, sendRequest, getRequests, acceptRequest, rejectRequest, getSuggestions };

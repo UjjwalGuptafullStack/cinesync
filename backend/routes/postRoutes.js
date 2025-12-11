@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getPosts, createPost } = require('../controllers/postController');
+const { getPosts, createPost, deletePost } = require('../controllers/postController');
 const {
   togglePostLike,
   togglePostDislike,
@@ -28,6 +28,8 @@ router.route('/').get(protect, getPosts).post(protect, upload.single('image'), h
 
 // Engagement Routes
 router.put('/:id/like', protect, togglePostLike);
+router.put('/:id/dislike', protect, togglePostDislike);
+router.delete('/:id', protect, deletePost);
 router.put('/:id/dislike', protect, togglePostDislike);
 router.post('/:id/comment', protect, addComment);
 router.get('/:id/comments', protect, getComments);

@@ -172,6 +172,30 @@ const getNotifications = async (req, res) => {
     }
 }
 
+// @desc    Delete a comment
+// @route   DELETE /api/comments/:id
+// @access  Private
+const deleteComment = async (req, res) => {
+  try {
+    const comment = await Comment.findById(req.params.id);
+
+    if (!comment) {
+      return res.status(404).json({ message: 'Comment not found' });
+    }
+
+    // Check ownership
+    if (comment.user.toString() !== req.user.id) {
+      return res.status(401).json({ message: 'User not authorized' });
+    }
+
+    await comment.deleteOne();
+
+    res.json({ id: req.params.id });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   togglePostLike,
   togglePostDislike,
@@ -179,5 +203,6 @@ module.exports = {
   getComments,
   toggleCommentLike,
   toggleCommentDislike,
-  getNotifications
+  getNotifications,
+  deleteComment
 };

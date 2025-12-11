@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../api';
 import { Link } from 'react-router-dom';
-import { FaThumbsUp, FaThumbsDown, FaPaperPlane } from 'react-icons/fa';
+import { FaThumbsUp, FaThumbsDown, FaPaperPlane, FaTrash } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 
 function CommentSection({ postId }) {
@@ -62,6 +62,17 @@ function CommentSection({ postId }) {
     }
   };
 
+  const handleDeleteComment = async (commentId) => {
+    if (!window.confirm('Are you sure you want to delete this comment?')) return;
+    try {
+      await api.delete(`/api/comments/${commentId}`);
+      setComments(comments.filter(c => c._id !== commentId));
+      toast.success('Comment deleted.');
+    } catch (error) {
+      toast.error('Could not delete comment.');
+    }
+  };
+
   return (
     <div className="mt-4 pt-4 border-t border-gray-800">
       <h4 className="text-sm font-bold text-gray-400 mb-4 uppercase tracking-wide">Comments ({comments.length})</h4>
@@ -91,6 +102,17 @@ function CommentSection({ postId }) {
                 </Link>
                 <span className="text-xs text-gray-500">{new Date(comment.createdAt).toLocaleDateString()}</span>
               </div>
+              
+              {/* DELETE BUTTON (Only for comment owner) */}
+              {user && user._id === comment.user._id && (
+                <button 
+                  onClick={() => handleDeleteComment(comment._id)}
+                  className="text-gray-600 hover:text-red-500 transition text-xs"
+                  title="Delete Comment"
+                >
+                  <FaTrash />
+                </button>
+              )}
             </div>
             
             <p className="text-gray-300 text-sm my-2">{comment.content}</p>

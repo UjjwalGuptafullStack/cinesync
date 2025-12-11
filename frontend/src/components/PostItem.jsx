@@ -1,13 +1,15 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../api';
-import { FaThumbsUp, FaThumbsDown, FaCommentAlt, FaUser } from 'react-icons/fa';
+import { FaThumbsUp, FaThumbsDown, FaCommentAlt, FaUser, FaTrash } from 'react-icons/fa';
 import CommentSection from './CommentSection';
+import { toast } from 'react-hot-toast';
 
 function PostItem({ post: initialPost }) {
   const [post, setPost] = useState(initialPost);
   const [isRevealed, setIsRevealed] = useState(false);
   const [showComments, setShowComments] = useState(false);
+  const [isDeleted, setIsDeleted] = useState(false);
   const user = JSON.parse(localStorage.getItem('user'));
 
   const toggleLike = async () => {
@@ -36,6 +38,19 @@ function PostItem({ post: initialPost }) {
     }
   };
 
+  const handleDelete = async () => {
+    if (!window.confirm('Are you sure you want to delete this log entry?')) return;
+    try {
+      await api.delete(`/api/posts/${post._id}`);
+      setIsDeleted(true);
+      toast.success('Entry deleted.');
+    } catch (error) {
+      toast.error('Could not delete post.');
+    }
+  };
+
+  if (isDeleted) return null;
+
   return (
     <div className="bg-anthracite-light border border-gray-800 rounded-xl overflow-hidden mb-8 shadow-xl">
       
@@ -52,11 +67,25 @@ function PostItem({ post: initialPost }) {
             <p className="text-xs text-gray-500">{new Date(post.createdAt).toLocaleDateString()}</p>
           </div>
         </div>
-        {/* Context Tag (Movie Name) */}
-        <div className="text-right">
-          <h3 className="text-sm font-bold text-papaya truncate max-w-[150px]">{post.mediaTitle}</h3>
-          {(post.season || post.episode) && (
-             <span className="text-[10px] text-gray-400 font-mono">S{post.season} E{post.episode}</span>
+        
+        <div className="flex items-center gap-3">
+          {/* Context Tag (Movie Name) */}
+          <div className="text-right">
+            <h3 className="text-sm font-bold text-papaya truncate max-w-[150px]">{post.mediaTitle}</h3>
+            {(post.season || post.episode) && (
+               <span className="text-[10px] text-gray-400 font-mono">S{post.season} E{post.episode}</span>
+            )}
+          </div>
+          
+          {/* DELETE BUTTON (Only show if current user owns post) */}
+          {user && user._id === post.user?._id && (
+            <button 
+              onClick={handleDelete}
+              className="text-gray-600 hover:text-red-500 transition p-1"
+              title="Delete Entry"
+            >
+              <FaTrash />
+            </button>
           )}
         </div>
       </div>

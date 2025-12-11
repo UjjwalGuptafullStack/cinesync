@@ -47,6 +47,20 @@ const createPost = async (req, res) => {
   }
 
   try {
+    // Check for spam prevention (5-min cooldown between posts)
+    const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+    const recentPost = await Post.findOne({
+      user: req.user.id,
+      createdAt: { $gt: fiveMinutesAgo }
+    }).sort({ createdAt: -1 });
+
+    if (recentPost) {
+      const timeLeft = Math.ceil((recentPost.createdAt.getTime() + 5 * 60 * 1000 - Date.now()) / 1000 / 60);
+      return res.status(429).json({ 
+        message: `Please wait ${timeLeft} minute${timeLeft > 1 ? 's' : ''} before posting again to prevent spam.` 
+      });
+    }
+
     let userImageUrl = '';
     
     // Check if file was uploaded
@@ -81,4 +95,29 @@ const createPost = async (req, res) => {
   }
 };
 
-module.exports = { getPosts, createPost };
+// @desc    Delete a post
+// @route   DELETE /api/posts/:id
+// @access  Private
+const deletePost = async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+
+    if (!post) {
+      return res.status(404).json({ message: 'Post not found' });
+    }
+
+    // Check ownership
+    if (post.user.toString() !== req.user.id) {
+      return res.status(401).json({ message: 'User not authorized' });
+    }
+
+    // Use deleteOne instead of remove
+    await post.deleteOne();
+
+    res.json({ id: req.params.id });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports = { getPosts, createPost, deletePost };
