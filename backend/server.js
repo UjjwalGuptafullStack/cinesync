@@ -8,12 +8,16 @@ const postRoutes = require('./routes/postRoutes');
 const socialRoutes = require('./routes/socialRoutes');
 const commentRoutes = require('./routes/commentRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
+const { startCleanupJob } = require('./utils/cleanup');
 
 // Load environment variables
 dotenv.config();
 
 // Connect to Database
 connectDB();
+
+// Start cleanup job for old rejected friend requests
+startCleanupJob();
 
 const app = express();
 

@@ -6,11 +6,13 @@ const {
   sendRequest,
   getRequests,
   acceptRequest,
+  rejectRequest,
 } = require('../controllers/socialController');
 
 router.get('/search', protect, searchUsers);
-router.post('/follow/:id', protect, sendRequest); // :id is the USER ID you want to follow
+router.post('/follow/:id', protect, sendRequest);
 router.get('/requests', protect, getRequests);
-router.post('/accept/:id', protect, acceptRequest); // :id is the REQUEST ID
+router.post('/accept/:id', protect, acceptRequest);
+router.post('/reject/:id', protect, rejectRequest);
 
 module.exports = router;

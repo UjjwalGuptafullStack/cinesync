@@ -2,10 +2,10 @@ const mongoose = require('mongoose');
 
 const notificationSchema = mongoose.Schema(
   {
-    recipient: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }, // Who gets the notif
-    sender: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }, // Who did the action
-    type: { type: String, enum: ['like', 'comment', 'follow'], required: true },
-    post: { type: mongoose.Schema.Types.ObjectId, ref: 'Post' }, // Optional (for likes/comments)
+    recipient: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    sender: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    type: { type: String, enum: ['like', 'comment', 'follow_request', 'follow_accepted', 'follow_rejected'], required: true },
+    post: { type: mongoose.Schema.Types.ObjectId, ref: 'Post' },
     read: { type: Boolean, default: false },
   },
   { timestamps: true }
