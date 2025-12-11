@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import api from '../api';
 import { FaThumbsUp, FaThumbsDown, FaCommentAlt, FaUser, FaTrash } from 'react-icons/fa';
 import CommentSection from './CommentSection';
-import { toast } from 'react-hot-toast';
+import { toast } from 'react-toastify';
 
 function PostItem({ post: initialPost }) {
   const [post, setPost] = useState(initialPost);
