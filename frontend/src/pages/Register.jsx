@@ -34,13 +34,17 @@ function Register() {
     try {
       const userData = { username, email, password };
       
-      // CALL THE BACKEND API
-      await api.post('/api/users', userData);
-
-      toast.success('Registration successful! Please login.');
-      navigate('/login'); // Redirect to login page
+      // Register and receive token
+      const res = await api.post('/api/users', userData);
+      
+      // Auto-Login: Save user data (including token) to localStorage
+      localStorage.setItem('user', JSON.stringify(res.data));
+      
+      toast.success(`Welcome to CineSync, ${res.data.username}!`);
+      
+      // Redirect directly to Home/Feed
+      navigate('/');
     } catch (error) {
-      // Show the error message from the backend (e.g., "User already exists")
       toast.error(error.response?.data?.message || 'Registration failed');
     }
   };

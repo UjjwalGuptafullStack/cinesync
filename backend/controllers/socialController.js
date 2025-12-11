@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const FriendRequest = require('../models/FriendRequest');
+const Notification = require('../models/Notification');
 
 // @desc    Search for users by username
 // @route   GET /api/social/search?query=john
@@ -51,6 +52,14 @@ const sendRequest = async (req, res) => {
     await FriendRequest.create({
       sender: senderId,
       receiver: receiverId,
+    });
+
+    // 4. Create Notification
+    await Notification.create({
+      recipient: receiverId,
+      sender: senderId,
+      type: 'follow',
+      read: false
     });
 
     res.status(200).json({ message: 'Follow request sent' });
