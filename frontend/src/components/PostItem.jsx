@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../api';
-import { FaThumbsUp, FaThumbsDown, FaCommentAlt } from 'react-icons/fa';
+import { FaThumbsUp, FaThumbsDown, FaCommentAlt, FaUser } from 'react-icons/fa';
 import CommentSection from './CommentSection';
 
 function PostItem({ post: initialPost }) {
@@ -10,7 +10,6 @@ function PostItem({ post: initialPost }) {
   const [showComments, setShowComments] = useState(false);
   const user = JSON.parse(localStorage.getItem('user'));
 
-  // --- Interaction Logic ---
   const toggleLike = async () => {
     try {
       const res = await api.put(`/api/posts/${post._id}/like`);
@@ -38,90 +37,123 @@ function PostItem({ post: initialPost }) {
   };
 
   return (
-    <div className="bg-anthracite-light border border-gray-800 rounded-lg overflow-hidden mb-6 shadow-lg">
-      <div className="flex flex-col sm:flex-row">
-        
-        {/* Poster Strip */}
-        <div className="sm:w-28 w-full bg-black flex-shrink-0 relative overflow-hidden">
-          {post.posterPath ? (
-            <img
-              src={`https://image.tmdb.org/t/p/w200${post.posterPath}`}
-              alt={post.mediaTitle}
-              className="w-full h-full object-cover opacity-80 hover:opacity-100 transition"
-            />
-          ) : (
-            <div className="w-full h-32 sm:h-full flex items-center justify-center text-3xl">🎬</div>
-          )}
+    <div className="bg-anthracite-light border border-gray-800 rounded-xl overflow-hidden mb-8 shadow-xl">
+      
+      {/* 1. HEADER: User Info */}
+      <div className="p-4 flex items-center justify-between border-b border-gray-800">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-gradient-to-tr from-gray-700 to-black rounded-full flex items-center justify-center text-white font-bold">
+            {post.user?.username.charAt(0).toUpperCase()}
+          </div>
+          <div>
+            <Link to={`/profile/${post.user?.username}`} className="font-bold text-white hover:text-papaya transition">
+              @{post.user?.username}
+            </Link>
+            <p className="text-xs text-gray-500">{new Date(post.createdAt).toLocaleDateString()}</p>
+          </div>
         </div>
-
-        {/* Content Sector */}
-        <div className="flex-1 p-5 flex flex-col justify-between">
-          
-          {/* Header */}
-          <div className="mb-3">
-             <div className="flex justify-between items-start">
-               <h3 className="text-xl font-bold text-papaya leading-tight">{post.mediaTitle}</h3>
-               {post.season && (
-                 <span className="text-xs font-mono bg-gray-800 text-gray-300 px-2 py-1 rounded">S{post.season} E{post.episode}</span>
-               )}
-             </div>
-             
-             <div className="text-xs text-gray-400 mt-1">
-               Review by <Link to={`/profile/${post.user?.username}`} className="text-white font-bold hover:underline">@{post.user?.username}</Link>
-             </div>
-          </div>
-
-          {/* Review Text */}
-          <div className="text-gray-300 leading-relaxed text-sm mb-4">
-            {post.isSpoiler && !isRevealed ? (
-              // --- FIXED SPOILER UI (Simple) ---
-              <button 
-                onClick={() => setIsRevealed(true)}
-                className="w-full text-left bg-gray-800 hover:bg-gray-700 p-3 rounded border-l-4 border-red-500 transition"
-              >
-                <span className="text-red-500 font-bold uppercase text-xs tracking-widest block mb-1">Spoiler Warning</span>
-                <span className="text-gray-400 text-sm">This post contains spoilers. Click to reveal.</span>
-              </button>
-            ) : (
-              <p className="whitespace-pre-wrap">{post.content}</p>
-            )}
-          </div>
-
-          {/* Interaction Bar */}
-          <div className="flex items-center gap-6 pt-3 border-t border-gray-800">
-            {/* LIKE */}
-            <button 
-              onClick={toggleLike}
-              className={`flex items-center gap-2 transition ${post.likes.includes(user._id) ? 'text-papaya font-bold' : 'text-gray-500 hover:text-white'}`}
-            >
-              <FaThumbsUp /> <span>{post.likes.length}</span>
-            </button>
-
-            {/* DISLIKE */}
-            <button 
-              onClick={toggleDislike}
-              className={`flex items-center gap-2 transition ${post.dislikes.includes(user._id) ? 'text-red-500 font-bold' : 'text-gray-500 hover:text-white'}`}
-            >
-              <FaThumbsDown /> <span>{post.dislikes.length}</span>
-            </button>
-
-            {/* COMMENT TOGGLE */}
-            <button 
-              onClick={() => setShowComments(!showComments)}
-              className={`flex items-center gap-2 transition ${showComments ? 'text-white' : 'text-gray-500 hover:text-white'}`}
-            >
-              <FaCommentAlt /> <span>Comments</span>
-            </button>
-          </div>
+        {/* Context Tag (Movie Name) */}
+        <div className="text-right">
+          <h3 className="text-sm font-bold text-papaya truncate max-w-[150px]">{post.mediaTitle}</h3>
+          {(post.season || post.episode) && (
+             <span className="text-[10px] text-gray-400 font-mono">S{post.season} E{post.episode}</span>
+          )}
         </div>
       </div>
 
-      {/* Comment Section (Hidden by default) */}
-      {showComments && (
-        <div className="px-5 pb-5">
-           <CommentSection postId={post._id} />
+      {/* 2. VISUAL STAGE: User Image + Poster Overlay */}
+      <div className="relative w-full bg-black min-h-[300px] flex items-center justify-center overflow-hidden bg-anthracite-dark">
+        
+        {/* DEBUG: Uncomment to see the URL on each post */}
+        {/* <div className="absolute top-0 left-0 bg-red-500 text-white text-xs z-50 p-1">
+          Debug URL: {post.userImage || 'No Image'}
+        </div> */}
+
+        {/* Main User Uploaded Image */}
+        {post.userImage ? (
+          <img 
+            src={post.userImage} 
+            alt="User upload" 
+            className={`w-full h-auto max-h-[600px] object-contain ${post.isSpoiler && !isRevealed ? 'blur-2xl' : ''}`}
+            onError={(e) => {
+              e.target.style.display = 'none';
+            }}
+          />
+        ) : (
+          // Fallback Layout if NO user image
+          <div className="w-full py-20 flex flex-col items-center justify-center text-gray-700">
+            <div className="text-4xl mb-2">📷</div>
+            <span className="text-sm italic">No image attached</span>
+          </div>
+        )}
+
+        {/* SPOILER OVERLAY */}
+        {post.isSpoiler && !isRevealed && (
+          <div className="absolute inset-0 flex items-center justify-center z-20">
+            <button 
+              onClick={() => setIsRevealed(true)}
+              className="bg-black/80 border border-papaya text-papaya px-6 py-3 rounded-full font-bold uppercase tracking-widest hover:bg-papaya hover:text-black transition"
+            >
+              Reveal Spoiler
+            </button>
+          </div>
+        )}
+
+        {/* OVERLAY: The Movie Poster (Lower Right) */}
+        {post.posterPath && (
+          <div className="absolute bottom-4 right-4 w-24 shadow-2xl border-2 border-white/20 rounded overflow-hidden z-10 transform rotate-2 hover:rotate-0 transition duration-300 hover:scale-110">
+            <img 
+              src={`https://image.tmdb.org/t/p/w200${post.posterPath}`} 
+              alt="Poster" 
+              className="w-full h-auto"
+            />
+          </div>
+        )}
+      </div>
+
+      {/* 3. CAPTION & ACTIONS */}
+      <div className="p-5">
+        
+        {/* Typography Improved Message */}
+        <div className="mb-4">
+           {post.isSpoiler && !isRevealed ? (
+             <p className="text-gray-600 italic text-sm">Caption hidden due to spoilers.</p>
+           ) : (
+             <p className="text-gray-200 text-lg leading-relaxed font-light whitespace-pre-wrap">
+               {post.content}
+             </p>
+           )}
         </div>
-      )}
+
+        {/* Action Bar */}
+        <div className="flex items-center gap-6 pt-4 border-t border-gray-800 text-gray-400">
+           {/* Like/Dislike/Comment Buttons */}
+           <button 
+             onClick={toggleLike} 
+             className={`flex items-center gap-2 hover:text-papaya transition ${post.likes.includes(user._id) ? 'text-papaya' : ''}`}
+           >
+             <FaThumbsUp className="text-xl" /> <span className="text-sm font-bold">{post.likes.length}</span>
+           </button>
+           
+           <button 
+             onClick={toggleDislike} 
+             className={`flex items-center gap-2 hover:text-red-500 transition ${post.dislikes.includes(user._id) ? 'text-red-500' : ''}`}
+           >
+             <FaThumbsDown className="text-xl" /> <span className="text-sm font-bold">{post.dislikes.length}</span>
+           </button>
+           
+           <button 
+             onClick={() => setShowComments(!showComments)}
+             className={`flex items-center gap-2 hover:text-white transition ${showComments ? 'text-white' : ''}`}
+           >
+             <FaCommentAlt className="text-xl" /> <span className="text-sm font-bold">Comments</span>
+           </button>
+        </div>
+
+        {/* Comment Section Dropdown */}
+        {showComments && <div className="mt-4"><CommentSection postId={post._id} /></div>}
+      </div>
+
     </div>
   );
 }

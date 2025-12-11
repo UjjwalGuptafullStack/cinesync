@@ -11,6 +11,7 @@ const postSchema = mongoose.Schema(
     tmdbId: { type: String, required: true },
     mediaTitle: { type: String, required: true },
     posterPath: { type: String },
+    userImage: { type: String }, // NEW: Cloudinary URL for user's uploaded photo
     
     // User Content
     content: { type: String, required: [true, 'Please add some text'] },

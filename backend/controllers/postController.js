@@ -47,21 +47,37 @@ const createPost = async (req, res) => {
   }
 
   try {
+    let userImageUrl = '';
+    
+    // Check if file was uploaded
+    if (req.file) {
+      userImageUrl = req.file.path || req.file.url || '';
+    }
+
     const post = await Post.create({
       user: req.user.id,
       tmdbId,
       mediaTitle,
       posterPath,
+      userImage: userImageUrl,
       content,
-      isSpoiler: isSpoiler || false,
-      mediaType, // NEW: 'movie' or 'tv'
-      season: mediaType === 'tv' ? season : undefined, // Only save if TV
-      episode: mediaType === 'tv' ? episode : undefined, // Only save if TV
+      isSpoiler: isSpoiler === 'true' || isSpoiler === true,
+      mediaType,
+      season: mediaType === 'tv' ? season : undefined,
+      episode: mediaType === 'tv' ? episode : undefined,
     });
 
     res.status(201).json(post);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    // Handle Cloudinary-specific errors
+    if (error.message.includes('File size too large')) {
+      return res.status(400).json({ message: 'Image file is too large. Maximum size is 10MB.' });
+    }
+    if (error.message.includes('image files')) {
+      return res.status(400).json({ message: error.message });
+    }
+    
+    res.status(500).json({ message: 'Failed to create post. Please try again.' });
   }
 };
 

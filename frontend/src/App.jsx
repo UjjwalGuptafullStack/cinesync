@@ -11,6 +11,7 @@ import FindFriends from './pages/FindFriends';
 import FriendRequests from './pages/FriendRequests';
 import Profile from './pages/Profile';
 import NotificationPage from './pages/NotificationPage';
+import NotFound from './pages/NotFound';
 
 function App() {
   return (
@@ -31,6 +32,9 @@ function App() {
               <Route path="/requests" element={<FriendRequests />} />
               <Route path="/profile/:username" element={<Profile />} />
               <Route path="/notifications" element={<NotificationPage />} />
+              
+              {/* 404 Catch-all */}
+              <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
         </div>

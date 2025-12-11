@@ -20,8 +20,15 @@ function Header() {
       
       <div className="container mx-auto px-4 h-16 flex justify-between items-center">
         {/* Logo */}
-        <Link to="/" className="text-2xl font-bold tracking-tight hover:opacity-80 transition text-black dark:text-white">
-          Cine<span className="text-white dark:text-papaya">Sync</span>
+        <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition group">
+          <img 
+            src="/cinesync-logo.svg" 
+            alt="CineSync Logo" 
+            className="h-10 w-10 transition-transform group-hover:scale-110"
+          />
+          <span className="text-xl font-bold tracking-tight text-black dark:text-white hidden sm:inline">
+            Cine<span className="text-white dark:text-papaya">Sync</span>
+          </span>
         </Link>
 
         {/* Navigation */}

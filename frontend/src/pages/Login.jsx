@@ -46,8 +46,17 @@ function Login() {
   return (
     <div className="min-h-[80vh] flex items-center justify-center">
       <div className="card-theme p-8 rounded-lg shadow-lg w-full max-w-md border border-gray-200 dark:border-gray-700">
+        {/* Logo */}
+        <div className="flex justify-center mb-6">
+          <img 
+            src="/cinesync-logo.svg" 
+            alt="CineSync Logo" 
+            className="h-24 w-24"
+          />
+        </div>
+        
         <h1 className="text-3xl font-bold mb-6 text-center text-papaya">
-          Login 🎬
+          Login
         </h1>
         
         <form onSubmit={onSubmit} className="space-y-4">

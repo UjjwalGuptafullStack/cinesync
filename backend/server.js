@@ -19,6 +19,7 @@ const app = express();
 
 // Middleware
 app.use(express.json()); // Allows us to accept JSON data in the body
+app.use(express.urlencoded({ extended: true })); // Allows us to parse form data
 app.use(cors({
   origin: ["https://cinesync-test.netlify.app", "http://localhost:5173"],
   credentials: true

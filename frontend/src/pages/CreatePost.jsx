@@ -2,6 +2,8 @@ import { useState } from 'react';
 import api from '../api';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import imageCompression from 'browser-image-compression';
+import { FaCamera, FaTimesCircle } from 'react-icons/fa';
 
 function CreatePost() {
   const [query, setQuery] = useState('');
@@ -15,6 +17,9 @@ function CreatePost() {
   const [selectedSeason, setSelectedSeason] = useState('');
   const [episodesTotal, setEpisodesTotal] = useState(0);
   const [selectedEpisode, setSelectedEpisode] = useState('');
+  const [imageFile, setImageFile] = useState(null);
+  const [isCompressing, setIsCompressing] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState(null);
 
   const navigate = useNavigate();
 
@@ -62,6 +67,61 @@ function CreatePost() {
     }
   };
 
+  // Handle image selection with compression and preview
+  const handleImageChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Check file size before compression
+    const fileSizeMB = file.size / 1024 / 1024;
+    
+    if (fileSizeMB > 20) {
+      toast.error('Image is too large. Please select an image smaller than 20MB.');
+      e.target.value = ''; // Reset input
+      return;
+    }
+
+    try {
+      setIsCompressing(true);
+      toast.info('Compressing image...');
+
+      const options = {
+        maxSizeMB: 2, // Max file size in MB
+        maxWidthOrHeight: 1920, // Max dimensions
+        useWebWorker: true,
+        fileType: 'image/jpeg', // Convert to JPEG for better compression
+      };
+
+      const compressedFile = await imageCompression(file, options);
+      
+      // Create a new File object with the original name
+      const finalFile = new File([compressedFile], file.name, {
+        type: 'image/jpeg',
+        lastModified: Date.now(),
+      });
+
+      setImageFile(finalFile);
+      // Create preview URL
+      setPreviewUrl(URL.createObjectURL(finalFile));
+      
+      const originalSizeMB = (file.size / 1024 / 1024).toFixed(2);
+      const compressedSizeMB = (finalFile.size / 1024 / 1024).toFixed(2);
+      
+      toast.success(`Image compressed: ${originalSizeMB}MB → ${compressedSizeMB}MB`);
+    } catch (error) {
+      console.error('Compression error:', error);
+      toast.error('Failed to compress image. Please try a different image.');
+      e.target.value = '';
+    } finally {
+      setIsCompressing(false);
+    }
+  };
+
+  const clearImage = () => {
+    setImageFile(null);
+    setPreviewUrl(null);
+  };
+
   // 2. SUBMIT POST FUNCTION
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -70,34 +130,58 @@ function CreatePost() {
         return;
     }
 
+    if (isCompressing) {
+      toast.warning('Please wait for image compression to complete.');
+      return;
+    }
+
     try {
       const user = JSON.parse(localStorage.getItem('user'));
       const token = user.token;
 
-      // Prepare the data
-      const postData = {
-        tmdbId: selectedMedia.id.toString(),
-        mediaTitle: selectedMedia.title || selectedMedia.name, // TMDB uses 'title' for movies, 'name' for TV
-        posterPath: selectedMedia.poster_path,
-        content,
-        isSpoiler,
-        mediaType: selectedMedia.title ? 'movie' : 'tv',
-        season: (postContext !== 'general' && selectedSeason) ? Number(selectedSeason) : undefined,
-        episode: (postContext === 'episode' && selectedEpisode) ? Number(selectedEpisode) : undefined,
-      };
+      // Create FormData instead of JSON for file uploads
+      const formData = new FormData();
+      formData.append('tmdbId', selectedMedia.id.toString());
+      formData.append('mediaTitle', selectedMedia.title || selectedMedia.name);
+      formData.append('posterPath', selectedMedia.poster_path || '');
+      formData.append('content', content);
+      formData.append('isSpoiler', isSpoiler);
+      formData.append('mediaType', selectedMedia.title ? 'movie' : 'tv');
+      
+      if (postContext !== 'general' && selectedSeason) {
+        formData.append('season', selectedSeason);
+      }
+      if (postContext === 'episode' && selectedEpisode) {
+        formData.append('episode', selectedEpisode);
+      }
+      
+      if (imageFile) {
+        formData.append('image', imageFile);
+      }
 
-      // Send to Backend with the Bearer Token
-      const config = {
+      const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+      
+      const response = await fetch(`${baseURL}/api/posts`, {
+        method: 'POST',
         headers: {
-          Authorization: `Bearer ${token}`,
+          'Authorization': `Bearer ${token}`,
         },
-      };
+        body: formData,
+      });
 
-      await api.post('/api/posts', postData, config);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to create post');
+      }
+
+      const data = await response.json();
+      console.log('✅ Post created response:', data);
 
       toast.success('Post created successfully!');
       navigate('/'); // Go back to feed
     } catch (error) {
+      console.error('Post creation error:', error);
+      console.error('Error response:', error.response?.data);
       toast.error(error.response?.data?.message || 'Failed to create post');
     }
   };
@@ -250,6 +334,59 @@ function CreatePost() {
               onChange={(e) => setContent(e.target.value)}
               required
             ></textarea>
+
+            {/* Image Upload with Camera Icon & Preview */}
+            <div className="mb-6">
+              <label className="block text-gray-400 text-sm font-bold mb-2">
+                Visuals {isCompressing && <span className="ml-2 text-papaya animate-pulse">● Compressing...</span>}
+              </label>
+              
+              {!previewUrl ? (
+                // STATE 1: No Image Selected - Show Camera Button
+                <div>
+                  <input 
+                    type="file" 
+                    id="image-upload"
+                    accept="image/*"
+                    capture="environment"
+                    onChange={handleImageChange}
+                    disabled={isCompressing}
+                    className="hidden"
+                  />
+                  <label 
+                    htmlFor="image-upload"
+                    className={`flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-700 rounded-lg cursor-pointer hover:border-papaya hover:bg-anthracite-light transition group ${
+                      isCompressing ? 'opacity-50 cursor-not-allowed' : ''
+                    }`}
+                  >
+                    <FaCamera className="text-3xl text-gray-500 group-hover:text-papaya mb-2 transition" />
+                    <span className="text-gray-400 text-sm font-bold group-hover:text-white transition">
+                      Take Photo or Upload
+                    </span>
+                  </label>
+                </div>
+              ) : (
+                // STATE 2: Image Selected - Show Preview
+                <div className="relative w-full h-64 bg-black rounded-lg overflow-hidden flex items-center justify-center group">
+                  <img 
+                    src={previewUrl} 
+                    alt="Preview" 
+                    className="h-full w-full object-contain"
+                  />
+                  {/* Clear Button Overlay */}
+                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                    <button 
+                      type="button"
+                      onClick={clearImage}
+                      className="flex flex-col items-center text-white hover:text-red-500 transition"
+                    >
+                      <FaTimesCircle className="text-4xl mb-2" />
+                      <span className="font-bold uppercase tracking-wider text-sm">Remove</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
 
             <div className="flex items-center gap-2">
               <input

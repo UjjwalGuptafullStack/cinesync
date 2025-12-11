@@ -8,11 +8,23 @@ const {
   getComments,
 } = require('../controllers/engagementController');
 const { protect } = require('../middleware/authMiddleware');
+const upload = require('../config/cloudinary');
+
+// Multer error handling middleware
+const handleMulterError = (err, req, res, next) => {
+  if (err) {
+    if (err.code === 'LIMIT_FILE_SIZE') {
+      return res.status(400).json({ message: 'Image file is too large. Maximum size is 10MB.' });
+    }
+    if (err.message) {
+      return res.status(400).json({ message: err.message });
+    }
+  }
+  next();
+};
 
 // Route for "/"
-// GET request runs 'protect' FIRST, then getPosts
-// POST request runs 'protect' FIRST, then createPost
-router.route('/').get(protect, getPosts).post(protect, createPost);
+router.route('/').get(protect, getPosts).post(protect, upload.single('image'), handleMulterError, createPost);
 
 // Engagement Routes
 router.put('/:id/like', protect, togglePostLike);

@@ -48,8 +48,17 @@ function Register() {
   return (
     <div className="min-h-[80vh] flex items-center justify-center">
       <div className="card-theme p-8 rounded-lg shadow-lg w-full max-w-md border border-gray-200 dark:border-gray-700">
+        {/* Logo */}
+        <div className="flex justify-center mb-6">
+          <img 
+            src="/cinesync-logo.svg" 
+            alt="CineSync Logo" 
+            className="h-24 w-24"
+          />
+        </div>
+        
         <h1 className="text-3xl font-bold mb-6 text-center text-papaya">
-          Join CineSync 🎬
+          Join CineSync
         </h1>
         <p className="text-center text-gray-600 dark:text-gray-400 mb-6">
           Start tracking your binge journey.
