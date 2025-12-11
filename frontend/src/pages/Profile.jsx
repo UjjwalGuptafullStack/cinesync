@@ -45,17 +45,17 @@ function Profile() {
     }
   };
 
-  // Classified Overlay Component
-  const ClassifiedOverlay = () => (
+  // Private Content Overlay Component
+  const PrivateOverlay = () => (
     <div className="flex flex-col items-center justify-center py-16 bg-gray-100 dark:bg-white/5 rounded-lg border border-gray-200 dark:border-gray-800 border-dashed">
       <div className="w-16 h-16 bg-gray-200 dark:bg-white/10 rounded-full flex items-center justify-center mb-4 text-gray-400">
         <FaLock className="text-2xl" />
       </div>
       <h3 className="text-xl font-bold text-gray-900 dark:text-white uppercase tracking-widest mb-2">
-        Data Classified
+        Private Content
       </h3>
       <p className="text-gray-500 max-w-sm text-center">
-        You must be tracking this driver to view their telemetry and library data.
+        You must be following this user to view their posts and library.
       </p>
     </div>
   );
@@ -139,7 +139,7 @@ function Profile() {
       {activeTab === 'posts' && (
         <div className="space-y-6">
           {profile.isPrivate ? (
-            <ClassifiedOverlay />
+            <PrivateOverlay />
           ) : (
             profile.posts.length > 0 ? (
               profile.posts.map(post => (
@@ -147,7 +147,7 @@ function Profile() {
               ))
             ) : (
               <div className="text-center py-10 bg-white dark:bg-anthracite-light rounded-lg border border-gray-200 dark:border-gray-800">
-                <p className="text-gray-400">No telemetry data available.</p>
+                <p className="text-gray-400">No posts yet.</p>
               </div>
             )
           )}
@@ -158,7 +158,7 @@ function Profile() {
       {activeTab === 'library' && (
         <div>
           {profile.isPrivate ? (
-            <ClassifiedOverlay />
+            <PrivateOverlay />
           ) : (
             <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
               {profile.watchedList.length > 0 ? (

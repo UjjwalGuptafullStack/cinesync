@@ -78,7 +78,7 @@ function PostItem({ post: initialPost }) {
           </div>
           
           {/* DELETE BUTTON (Only show if current user owns post) */}
-          {user && user._id === post.user?._id && (
+          {user && (user._id === post.user?._id || user._id === post.user) && (
             <button 
               onClick={handleDelete}
               className="text-gray-600 hover:text-red-500 transition p-1"
