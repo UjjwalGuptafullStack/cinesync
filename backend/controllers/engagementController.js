@@ -165,7 +165,8 @@ const getNotifications = async (req, res) => {
         const notifs = await Notification.find({ recipient: req.user.id })
             .populate('sender', 'username')
             .populate('post', 'mediaTitle')
-            .sort({ createdAt: -1 });
+            .sort({ createdAt: -1 })
+            .limit(20); // Limit to 20 recent notifications
         res.json(notifs);
     } catch (error) {
         res.status(500).json({ message: error.message });

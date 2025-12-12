@@ -1,7 +1,7 @@
 {
   "name": "backend",
-  "version": "1.0.0",
-  "description": "",
+  "version": "7.1.2",
+  "description": "CineSync Backend - V7.1.2 Security Hardened",
   "main": "index.js",
   "scripts": {
     "start": "node server.js",

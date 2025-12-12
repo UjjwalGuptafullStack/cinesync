@@ -125,9 +125,12 @@ const getUserProfile = async (req, res) => {
     }
 
     // 5. Send Response
+    // SECURITY NOTE: This response does NOT include 'token' or 'password'
+    // Frontend must NEVER save this to localStorage as it would overwrite authentication
     res.json({
       _id: targetUser._id,
       username: targetUser.username,
+      userImage: targetUser.userImage, // Include avatar for profile display
       createdAt: targetUser.createdAt,
       stats: {
         trackingCount: targetUser.tracking.length,
@@ -145,6 +148,45 @@ const getUserProfile = async (req, res) => {
   }
 };
 
+// @desc    Update User Profile
+// @route   PUT /api/users/profile
+// @access  Private
+const updateUserProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // 1. Update Username
+    if (req.body.username) user.username = req.body.username;
+    
+    // 2. Update Password (if provided)
+    if (req.body.password) {
+      const salt = await bcrypt.genSalt(10);
+      user.password = await bcrypt.hash(req.body.password, salt);
+    }
+
+    // 3. Update Avatar (if file uploaded)
+    if (req.file) {
+      user.userImage = req.file.path; // Cloudinary URL
+    }
+
+    const updatedUser = await user.save();
+
+    res.json({
+      _id: updatedUser._id,
+      username: updatedUser.username,
+      email: updatedUser.email,
+      userImage: updatedUser.userImage,
+      token: generateToken(updatedUser._id), // Return new token as info might change
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // Generate JWT
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -156,4 +198,5 @@ module.exports = {
   registerUser,
   loginUser,
   getUserProfile,
+  updateUserProfile,
 };
