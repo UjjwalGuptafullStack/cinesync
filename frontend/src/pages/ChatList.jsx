@@ -11,9 +11,11 @@ function ChatList() {
     const fetchInbox = async () => {
       try {
         const res = await api.get('/api/chat/inbox');
-        setConversations(res.data);
+        // Filter out any invalid conversations
+        const validConversations = res.data.filter(chat => chat.user && chat.user._id);
+        setConversations(validConversations);
       } catch (error) {
-        console.error(error);
+        console.error('Failed to fetch inbox:', error);
       } finally {
         setLoading(false);
       }

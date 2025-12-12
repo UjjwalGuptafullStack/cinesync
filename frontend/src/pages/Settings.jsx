@@ -59,11 +59,20 @@ function Settings() {
       const user = JSON.parse(localStorage.getItem('user'));
       const res = await api.put('/api/users/profile', formData);
       
+      console.log('Profile update response:', res.data);
+      console.log('New userImage:', res.data.userImage);
+      
       // SECURITY: This merge is SAFE because:
       // 1. Endpoint is authenticated - only updates YOUR profile
       // 2. res.data contains YOUR updated data (same user ID)
       // 3. We merge to preserve existing token and fields
-      localStorage.setItem('user', JSON.stringify({ ...user, ...res.data }));
+      const updatedUser = { ...user, ...res.data };
+      console.log('Updated user object:', updatedUser);
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      
+      // Notify Header component to re-render with new user data
+      window.dispatchEvent(new Event('userUpdated'));
+      
       toast.success('Profile updated successfully');
       navigate(`/profile/${res.data.username}`);
     } catch (error) {

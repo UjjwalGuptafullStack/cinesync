@@ -1,12 +1,29 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { FaSignOutAlt, FaSun, FaMoon, FaSearch, FaBell, FaUser, FaComments } from 'react-icons/fa';
+import { FaSignOutAlt, FaSun, FaMoon, FaSearch, FaBell, FaComments } from 'react-icons/fa';
 import { useTheme } from '../context/ThemeContext';
+import { useState, useEffect } from 'react';
 
 function Header() {
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
   
-  const user = JSON.parse(localStorage.getItem('user'));
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')));
+
+  // Re-read user from localStorage when navigating (to catch profile updates)
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setUser(JSON.parse(localStorage.getItem('user')));
+    };
+
+    // Listen for custom storage events
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('userUpdated', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('userUpdated', handleStorageChange);
+    };
+  }, []);
 
   const onLogout = () => {
     localStorage.removeItem('user');
@@ -60,7 +77,17 @@ function Header() {
               {/* Profile Link */}
               <li>
                 <Link to={`/profile/${user.username}`} className="text-black dark:text-white font-bold hover:text-white dark:hover:text-papaya transition flex items-center gap-2">
-                  <FaUser className="text-white dark:text-papaya" />
+                  {user.userImage ? (
+                    <img 
+                      src={user.userImage} 
+                      alt={user.username}
+                      className="w-8 h-8 rounded-full object-cover border-2 border-white dark:border-papaya"
+                    />
+                  ) : (
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-papaya to-red-600 flex items-center justify-center text-white font-bold text-sm">
+                      {user.username.charAt(0).toUpperCase()}
+                    </div>
+                  )}
                   <span className="hidden md:inline">{user.username}</span>
                 </Link>
               </li>

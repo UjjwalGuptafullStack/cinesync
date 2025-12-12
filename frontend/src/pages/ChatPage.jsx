@@ -59,7 +59,8 @@ function ChatPage() {
   };
 
   // Derive the other user from the first message (if exists)
-  const otherUser = messages.length > 0 
+  // Safety check: Ensure sender and receiver are populated objects, not just IDs
+  const otherUser = messages.length > 0 && messages[0].sender && messages[0].receiver
     ? (messages[0].sender._id === currentUserRef.current._id ? messages[0].receiver : messages[0].sender)
     : null;
 

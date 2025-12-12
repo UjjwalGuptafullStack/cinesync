@@ -38,7 +38,8 @@ const getConversation = async (req, res) => {
       ]
     })
     .sort({ createdAt: 1 }) // Oldest first (like WhatsApp)
-    .populate('sender', 'username userImage');
+    .populate('sender', 'username userImage')
+    .populate('receiver', 'username userImage'); // CRITICAL: Must populate receiver too for ChatPage header
 
     res.json(messages);
   } catch (error) {
