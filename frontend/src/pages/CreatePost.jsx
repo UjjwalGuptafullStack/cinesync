@@ -83,7 +83,7 @@ function CreatePost() {
 
     try {
       setIsCompressing(true);
-      toast.info('Compressing image...');
+      // toast.info('Compressing image...'); // Silenced for cleaner UX
 
       const options = {
         maxSizeMB: 2, // Max file size in MB
@@ -348,7 +348,6 @@ function CreatePost() {
                     type="file" 
                     id="image-upload"
                     accept="image/*"
-                    capture="environment"
                     onChange={handleImageChange}
                     disabled={isCompressing}
                     className="hidden"

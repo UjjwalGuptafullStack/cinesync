@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import api from '../api';
 import PostItem from '../components/PostItem';
 import { FaUserSecret, FaLock } from 'react-icons/fa';
@@ -11,18 +11,21 @@ function Profile() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('posts'); // 'posts', 'library', 'network'
   const [requestSent, setRequestSent] = useState(false); // Track if follow request sent
+  const currentUser = JSON.parse(localStorage.getItem('user'));
 
   useEffect(() => {
     const fetchProfile = async () => {
       setLoading(true);
       try {
-        const user = JSON.parse(localStorage.getItem('user'));
-        const config = { headers: { Authorization: `Bearer ${user.token}` } };
+        // SECURITY: Read token from currentUser (already parsed at line 14)
+        // NEVER write profile data back to localStorage - this would cause identity contamination
+        const config = { headers: { Authorization: `Bearer ${currentUser.token}` } };
         
         const response = await api.get(
           `/api/users/profile/${username}`,
           config
         );
+        // CRITICAL: Only update local 'profile' state, never currentUser or localStorage
         setProfile(response.data);
       } catch (error) {
         console.error("Error fetching profile:", error);
@@ -72,9 +75,17 @@ function Profile() {
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-papaya to-red-600"></div>
 
         {/* Avatar Section */}
-        <div className="w-24 h-24 bg-gradient-to-tr from-papaya to-red-600 rounded-full flex items-center justify-center text-4xl font-bold text-white shadow-lg z-10">
-          {profile.username.charAt(0).toUpperCase()}
-        </div>
+        {profile.userImage ? (
+          <img 
+            src={profile.userImage} 
+            alt={profile.username}
+            className="w-24 h-24 rounded-full object-cover border-4 border-papaya shadow-lg z-10"
+          />
+        ) : (
+          <div className="w-24 h-24 bg-gradient-to-tr from-papaya to-red-600 rounded-full flex items-center justify-center text-4xl font-bold text-white shadow-lg z-10">
+            {profile.username.charAt(0).toUpperCase()}
+          </div>
+        )}
 
         {/* Text Info */}
         <div className="flex-1 text-center md:text-left z-10">
@@ -95,6 +106,26 @@ function Profile() {
                 <span className="text-[10px] text-gray-400 uppercase tracking-widest">{stat.label}</span>
               </div>
             ))}
+          </div>
+
+          {/* Action Buttons */}
+          <div className="mt-4 flex gap-3 justify-center md:justify-start">
+            {/* SECURITY: Compare IDs, not usernames (usernames can be changed) */}
+            {currentUser._id === profile._id && (
+              <Link to="/settings" className="bg-papaya hover:bg-papaya-dark text-black font-bold text-xs py-2 px-4 rounded transition uppercase tracking-wide">
+                Edit Profile
+              </Link>
+            )}
+
+            {/* Show Message if NOT me and have network access */}
+            {currentUser._id !== profile._id && profile.network && (
+              <Link 
+                to={`/chat/${profile._id}`} 
+                className="bg-gray-700 hover:bg-white hover:text-black text-white font-bold py-2 px-6 rounded transition uppercase tracking-wide text-sm border border-gray-600"
+              >
+                Message
+              </Link>
+            )}
           </div>
         </div>
         

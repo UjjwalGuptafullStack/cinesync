@@ -95,8 +95,19 @@ function CommentSection({ postId }) {
       <div className="space-y-4">
         {comments.map((comment) => (
           <div key={comment._id} className="bg-gray-800/50 p-3 rounded border border-gray-800">
-            <div className="flex justify-between items-start">
+            <div className="flex justify-between items-start mb-2">
               <div className="flex items-center gap-2">
+                {comment.user.userImage ? (
+                  <img 
+                    src={comment.user.userImage} 
+                    alt={comment.user.username}
+                    className="w-6 h-6 rounded-full object-cover border border-gray-600"
+                  />
+                ) : (
+                  <div className="w-6 h-6 bg-gray-700 rounded-full flex items-center justify-center text-white font-bold text-xs">
+                    {comment.user.username.charAt(0).toUpperCase()}
+                  </div>
+                )}
                 <Link to={`/profile/${comment.user.username}`} className="font-bold text-white text-sm hover:text-papaya">
                   @{comment.user.username}
                 </Link>

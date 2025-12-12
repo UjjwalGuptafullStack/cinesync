@@ -40,53 +40,57 @@ function FindFriends() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto mt-8">
+    <div className="max-w-4xl mx-auto mt-8 px-4">
       <h1 className="text-3xl font-bold text-white mb-2">Find Friends</h1>
-      <p className="text-gray-400 mb-8">Search for users to follow.</p>
+      <p className="text-gray-400 mb-8">Discover and connect with other cinephiles.</p>
 
       {/* SUGGESTIONS SECTION */}
       {suggestions.length > 0 && (
-        <div className="mb-10">
-          <h2 className="text-xl font-bold text-papaya mb-4 flex items-center gap-2">
-            ⚡ Suggested Connections
+        <div className="mb-12">
+          <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2 border-b border-gray-800 pb-2">
+            <span className="text-papaya">⚡</span> Networking Grid
           </h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {suggestions.map(user => (
-              <div key={user._id} className="bg-anthracite-light border border-gray-800 rounded-xl p-4 flex gap-4 shadow-lg hover:border-papaya transition">
+              <div key={user._id} className="bg-anthracite-light rounded-xl border border-gray-800 p-5 flex flex-col gap-4 shadow-lg hover:border-papaya transition group">
                 
-                {/* Avatar & Follow */}
-                <div className="flex flex-col items-center gap-3 min-w-[80px]">
-                  <div className="w-12 h-12 bg-gray-700 rounded-full flex items-center justify-center text-white font-bold text-xl">
-                    {user.username.charAt(0).toUpperCase()}
+                {/* Header: Avatar & Name */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-gray-700 to-black border border-gray-600 flex items-center justify-center text-white font-bold text-lg">
+                      {user.username.charAt(0).toUpperCase()}
+                    </div>
+                    <div>
+                      <Link to={`/profile/${user.username}`} className="font-bold text-white hover:text-papaya block leading-tight">
+                         @{user.username}
+                      </Link>
+                      <span className="text-[10px] text-gray-500 uppercase tracking-widest">Suggested</span>
+                    </div>
                   </div>
-                  <Link to={`/profile/${user.username}`} className="text-xs font-bold text-white hover:underline">
-                    @{user.username}
-                  </Link>
+                  {/* View Profile Button */}
                   <button 
                     onClick={() => navigate(`/profile/${user.username}`)}
-                    className="bg-papaya text-black text-xs font-bold px-3 py-1 rounded-full hover:bg-papaya-dark"
+                    className="bg-papaya text-black text-xs font-bold px-3 py-1.5 rounded hover:bg-papaya-dark transition"
                   >
                     View
                   </button>
                 </div>
 
-                {/* Top 3 Library Preview */}
-                <div className="flex-1">
-                   <p className="text-xs text-gray-500 mb-2 font-bold uppercase">Recently Watched</p>
-                   <div className="flex gap-2">
-                     {user.libraryPreviews.map((poster, index) => (
-                       <img 
-                         key={index}
-                         src={`https://image.tmdb.org/t/p/w92${poster}`}
-                         alt="Poster"
-                         className="w-14 h-20 object-cover rounded shadow-sm border border-gray-700"
-                       />
-                     ))}
-                     {user.libraryPreviews.length === 0 && (
-                       <span className="text-xs text-gray-600 italic">No activity yet</span>
-                     )}
-                   </div>
+                {/* Library Preview (Top 3) */}
+                <div className="bg-black/30 p-2 rounded-lg">
+                  <p className="text-[10px] text-gray-500 uppercase font-bold mb-2">Top Selections</p>
+                  <div className="flex gap-2 h-24">
+                    {user.libraryPreviews.map((poster, i) => (
+                      <img 
+                        key={i} 
+                        src={`https://image.tmdb.org/t/p/w92${poster}`} 
+                        alt="Show" 
+                        className="h-full w-16 object-cover rounded border border-gray-700" 
+                      />
+                    ))}
+                    {user.libraryPreviews.length === 0 && <span className="text-gray-600 text-xs italic self-center">No data</span>}
+                  </div>
                 </div>
 
               </div>
