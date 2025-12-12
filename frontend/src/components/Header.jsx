@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { FaSignOutAlt, FaSun, FaMoon, FaSearch, FaBell, FaUser } from 'react-icons/fa';
+import { FaSignOutAlt, FaSun, FaMoon, FaSearch, FaBell, FaUser, FaComments } from 'react-icons/fa';
 import { useTheme } from '../context/ThemeContext';
 
 function Header() {
@@ -44,6 +44,11 @@ function Header() {
               <li>
                 <Link to="/notifications" className="text-black/70 hover:text-black dark:text-gray-400 dark:hover:text-papaya text-lg transition" title="Notifications">
                   <FaBell />
+                </Link>
+              </li>
+              <li>
+                <Link to="/chat" className="text-black/70 hover:text-black dark:text-gray-400 dark:hover:text-papaya text-lg transition" title="Messages">
+                  <FaComments />
                 </Link>
               </li>
               <li>

@@ -12,6 +12,7 @@ import FriendRequests from './pages/FriendRequests';
 import Profile from './pages/Profile';
 import NotificationPage from './pages/NotificationPage';
 import Settings from './pages/Settings';
+import ChatList from './pages/ChatList';
 import ChatPage from './pages/ChatPage';
 import NotFound from './pages/NotFound';
 
@@ -35,6 +36,7 @@ function App() {
               <Route path="/profile/:username" element={<Profile />} />
               <Route path="/notifications" element={<NotificationPage />} />
               <Route path="/settings" element={<Settings />} />
+              <Route path="/chat" element={<ChatList />} />
               <Route path="/chat/:userId" element={<ChatPage />} />
               
               {/* 404 Catch-all */}

@@ -46,4 +46,45 @@ const getConversation = async (req, res) => {
   }
 };
 
-module.exports = { sendMessage, getConversation };
+// @desc    Get list of users I have chatted with (Inbox)
+// @route   GET /api/chat/inbox
+// @access  Private
+const getInbox = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    // Find all messages where I am sender OR receiver
+    const messages = await Message.find({
+      $or: [{ sender: userId }, { receiver: userId }]
+    })
+    .sort({ createdAt: -1 }) // Newest first
+    .populate('sender', 'username userImage')
+    .populate('receiver', 'username userImage');
+
+    // Extract unique conversation partners
+    const conversationMap = new Map();
+
+    messages.forEach(msg => {
+      // Determine who the "other" person is
+      const otherUser = msg.sender._id.toString() === userId ? msg.receiver : msg.sender;
+      const otherId = otherUser._id.toString();
+
+      // If we haven't seen this person yet, add them (this keeps the most recent message due to sort)
+      if (!conversationMap.has(otherId)) {
+        conversationMap.set(otherId, {
+          user: otherUser,
+          lastMessage: msg.content,
+          timestamp: msg.createdAt,
+          isRead: msg.read || msg.sender._id.toString() === userId // Read if I sent it or marked read
+        });
+      }
+    });
+
+    const inbox = Array.from(conversationMap.values());
+    res.json(inbox);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports = { sendMessage, getConversation, getInbox };

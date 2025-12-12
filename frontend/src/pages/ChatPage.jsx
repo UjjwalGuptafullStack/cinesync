@@ -58,12 +58,40 @@ function ChatPage() {
     }
   };
 
+  // Derive the other user from the first message (if exists)
+  const otherUser = messages.length > 0 
+    ? (messages[0].sender._id === currentUserRef.current._id ? messages[0].receiver : messages[0].sender)
+    : null;
+
   return (
     <div className="max-w-2xl mx-auto mt-4 h-[80vh] flex flex-col bg-anthracite-light border border-gray-800 rounded-xl overflow-hidden shadow-2xl">
-      {/* Header */}
-      <div className="p-4 bg-anthracite border-b border-gray-800 font-bold text-white flex items-center gap-2">
-        <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse"></div>
-        Live Chat
+      {/* Header - Dynamic with user info */}
+      <div className="p-4 bg-anthracite border-b border-gray-800 flex items-center gap-3">
+        {otherUser ? (
+          <>
+            <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-700 flex-shrink-0">
+              {otherUser.userImage ? (
+                <img src={otherUser.userImage} alt="avatar" className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center font-bold text-white bg-gradient-to-br from-papaya to-red-600">
+                  {otherUser.username[0].toUpperCase()}
+                </div>
+              )}
+            </div>
+            <div className="flex-1">
+              <h2 className="font-bold text-white text-lg">@{otherUser.username}</h2>
+              <span className="text-xs text-green-500 flex items-center gap-1">
+                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                Active now
+              </span>
+            </div>
+          </>
+        ) : (
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-gray-500 animate-pulse"></div>
+            <span className="text-white font-bold">Loading chat...</span>
+          </div>
+        )}
       </div>
 
       {/* Messages Area */}
