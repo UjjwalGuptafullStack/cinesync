@@ -1,9 +1,19 @@
 # CineSync 🎬
 
-A visual-first social network for movie and TV show enthusiasts to share their watching journey with images and thoughts.
+**Version 7.2.0 - McLaren Edition**
 
-## Features
+A visual-first social network for movie and TV show enthusiasts to share their watching journey with images and thoughts. Built with the McLaren-inspired "Papaya & Anthracite" theme.
 
+## ✨ Features
+
+### V7.2 - Latest Features
+✅ **Image Cropping** - React Easy Crop for perfect profile pictures  
+✅ **Chat System** - Real-time messaging with inbox and conversation view  
+✅ **Visual Avatar System** - Profile pictures across all components  
+✅ **McLaren Theme** - Papaya orange & anthracite dark design  
+✅ **Clear Notifications** - Bulk clear functionality  
+
+### Core Features
 ✅ **User Authentication** - Secure registration and login with JWT  
 ✅ **Visual Feed** - Instagram-style feed with user-uploaded images  
 ✅ **Image Upload** - Camera integration with automatic compression (Cloudinary)  
@@ -13,6 +23,22 @@ A visual-first social network for movie and TV show enthusiasts to share their w
 ✅ **Social Features** - Like/dislike, comments, follow/unfollow users  
 ✅ **Notifications** - Real-time alerts for interactions  
 ✅ **Context-Aware Posts** - Tag specific seasons/episodes for TV shows  
+
+## 🚀 Deployment
+
+### Quick Deploy
+See [DEPLOY-CHECKLIST.md](./DEPLOY-CHECKLIST.md) for step-by-step deployment instructions.
+
+**Recommended Stack:**
+- **Backend**: Render (Free tier)
+- **Frontend**: Vercel or Netlify (Free tier)
+- **Database**: MongoDB Atlas (Free tier)
+- **Images**: Cloudinary (Free tier)
+
+### Production URLs
+- Backend: Deploy to Render
+- Frontend: Deploy to Vercel/Netlify
+- Full guide: [DEPLOYMENT.md](./DEPLOYMENT.md)  
 
 ## Tech Stack
 

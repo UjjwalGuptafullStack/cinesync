@@ -58,9 +58,17 @@ function FindFriends() {
                 {/* Header: Avatar & Name */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-gray-700 to-black border border-gray-600 flex items-center justify-center text-white font-bold text-lg">
-                      {user.username.charAt(0).toUpperCase()}
-                    </div>
+                    {user.userImage ? (
+                      <img 
+                        src={user.userImage} 
+                        alt={user.username}
+                        className="w-12 h-12 rounded-full object-cover border border-gray-600"
+                      />
+                    ) : (
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-gray-700 to-black border border-gray-600 flex items-center justify-center text-white font-bold text-lg">
+                        {user.username.charAt(0).toUpperCase()}
+                      </div>
+                    )}
                     <div>
                       <Link to={`/profile/${user.username}`} className="font-bold text-white hover:text-papaya block leading-tight">
                          @{user.username}
@@ -128,9 +136,17 @@ function FindFriends() {
           >
             <div className="flex items-center gap-4">
               {/* Simple Avatar Circle */}
-              <div className="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center text-white font-bold text-lg">
-                {user.username.charAt(0).toUpperCase()}
-              </div>
+              {user.userImage ? (
+                <img 
+                  src={user.userImage} 
+                  alt={user.username}
+                  className="w-10 h-10 rounded-full object-cover border border-gray-600"
+                />
+              ) : (
+                <div className="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                  {user.username.charAt(0).toUpperCase()}
+                </div>
+              )}
               
               <div>
                 <h3 className="font-bold text-lg text-white group-hover:text-papaya transition">{user.username}</h3>

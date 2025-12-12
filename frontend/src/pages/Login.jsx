@@ -45,25 +45,20 @@ function Login() {
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center">
-      <div className="card-theme p-8 rounded-lg shadow-lg w-full max-w-md border border-gray-200 dark:border-gray-700">
+      <div className="bg-anthracite-light p-8 rounded-xl shadow-2xl w-full max-w-md border border-gray-800">
         {/* Logo */}
-        <div className="flex justify-center mb-6">
-          <img 
-            src="/cinesync-logo.svg" 
-            alt="CineSync Logo" 
-            className="h-24 w-24"
-          />
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold">
+            <span className="text-white">Cine</span><span className="text-papaya">Sync</span>
+          </h1>
+          <p className="text-gray-400 text-sm mt-2 uppercase tracking-widest">Welcome Back, Driver</p>
         </div>
         
-        <h1 className="text-3xl font-bold mb-6 text-center text-papaya">
-          Login
-        </h1>
-        
-        <form onSubmit={onSubmit} className="space-y-4">
+        <form onSubmit={onSubmit} className="space-y-5">
           <div>
             <input
               type="email"
-              className="input-theme w-full p-3 rounded"
+              className="w-full p-3 bg-anthracite border border-gray-700 rounded text-white placeholder-gray-500 focus:border-papaya focus:outline-none focus:ring-2 focus:ring-papaya/50 transition"
               placeholder="Email"
               name="email"
               value={email}
@@ -74,7 +69,7 @@ function Login() {
           <div>
             <input
               type="password"
-              className="input-theme w-full p-3 rounded"
+              className="w-full p-3 bg-anthracite border border-gray-700 rounded text-white placeholder-gray-500 focus:border-papaya focus:outline-none focus:ring-2 focus:ring-papaya/50 transition"
               placeholder="Password"
               name="password"
               value={password}
@@ -84,15 +79,15 @@ function Login() {
           </div>
           <button
             type="submit"
-            className="btn-primary w-full py-3 rounded font-bold transition duration-300"
+            className="w-full py-3 bg-papaya hover:bg-papaya-dark text-black font-bold rounded-lg transition uppercase tracking-wider shadow-lg"
           >
             Login
           </button>
         </form>
 
-        <p className="mt-4 text-center text-gray-600 dark:text-gray-400">
+        <p className="mt-6 text-center text-gray-400">
           New here?{' '}
-          <Link to="/register" className="text-papaya hover:text-papaya-dark font-bold">
+          <Link to="/register" className="text-papaya hover:text-papaya-light font-bold">
             Create an account
           </Link>
         </p>

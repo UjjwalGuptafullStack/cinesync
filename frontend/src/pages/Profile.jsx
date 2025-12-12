@@ -68,13 +68,13 @@ function Profile() {
 
   return (
     <div className="max-w-4xl mx-auto pb-20">
-      {/* 1. Header Section */}
+      {/* 1. Header Dashboard */}
       <div className="bg-anthracite-light p-8 rounded-xl shadow-lg mb-8 flex flex-col md:flex-row items-center gap-8 border border-gray-800 relative overflow-hidden">
         
         {/* The Orange Top Border Accent */}
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-papaya to-red-600"></div>
 
-        {/* Avatar Section */}
+        {/* Avatar Section - Large Circular Profile Picture */}
         {profile.userImage ? (
           <img 
             src={profile.userImage} 
@@ -82,48 +82,51 @@ function Profile() {
             className="w-24 h-24 rounded-full object-cover border-4 border-papaya shadow-lg z-10"
           />
         ) : (
-          <div className="w-24 h-24 bg-gradient-to-tr from-papaya to-red-600 rounded-full flex items-center justify-center text-4xl font-bold text-white shadow-lg z-10">
+          <div className="w-24 h-24 bg-gradient-to-tr from-papaya to-red-600 rounded-full flex items-center justify-center text-4xl font-bold text-white shadow-lg z-10 border-4 border-papaya">
             {profile.username.charAt(0).toUpperCase()}
           </div>
         )}
 
-        {/* Text Info */}
+        {/* Identity Section */}
         <div className="flex-1 text-center md:text-left z-10">
-          <h1 className="text-3xl font-bold text-white mb-2">@{profile.username}</h1>
-          <p className="text-gray-400 text-sm mb-4 uppercase tracking-widest font-bold">
-            Joined {new Date(profile.createdAt).getFullYear()}
+          <h1 className="text-3xl font-bold text-white mb-1">@{profile.username}</h1>
+          <p className="text-gray-400 text-sm mb-4 uppercase tracking-widest font-semibold">
+            Rookie Driver • Joined {new Date(profile.createdAt).getFullYear()}
           </p>
 
-          {/* Stats Boxes */}
-          <div className="flex justify-center md:justify-start gap-4">
+          {/* Stats Boxes - Three rectangular metrics */}
+          <div className="flex justify-center md:justify-start gap-4 mb-4">
             {[
               { label: 'Watched', value: profile.stats.watchedCount },
               { label: 'Audience', value: profile.stats.audienceCount },
               { label: 'Tracking', value: profile.stats.trackingCount },
             ].map((stat) => (
-              <div key={stat.label} className="bg-gray-900 border border-gray-700 px-6 py-3 rounded text-center min-w-[100px]">
+              <div key={stat.label} className="bg-anthracite border border-gray-700 px-6 py-3 rounded-lg text-center min-w-[100px] shadow">
                 <span className="block text-2xl font-bold text-papaya">{stat.value}</span>
-                <span className="text-[10px] text-gray-400 uppercase tracking-widest">{stat.label}</span>
+                <span className="text-[10px] text-gray-400 uppercase tracking-widest font-semibold">{stat.label}</span>
               </div>
             ))}
           </div>
 
-          {/* Action Buttons */}
-          <div className="mt-4 flex gap-3 justify-center md:justify-start">
-            {/* SECURITY: Compare IDs, not usernames (usernames can be changed) */}
+          {/* Action Area */}
+          <div className="flex gap-3 justify-center md:justify-start flex-wrap">
+            {/* If viewing own profile */}
             {currentUser._id === profile._id && (
-              <Link to="/settings" className="bg-papaya hover:bg-papaya-dark text-black font-bold text-xs py-2 px-4 rounded transition uppercase tracking-wide">
+              <Link 
+                to="/settings" 
+                className="bg-papaya hover:bg-papaya-dark text-black font-bold text-sm py-2 px-6 rounded transition uppercase tracking-wide shadow-md"
+              >
                 Edit Profile
               </Link>
             )}
 
-            {/* Show Message if NOT me and have network access */}
+            {/* If viewing friend's profile */}
             {currentUser._id !== profile._id && profile.network && (
               <Link 
                 to={`/chat/${profile._id}`} 
-                className="bg-gray-700 hover:bg-white hover:text-black text-white font-bold py-2 px-6 rounded transition uppercase tracking-wide text-sm border border-gray-600"
+                className="bg-anthracite hover:bg-papaya hover:text-black text-white font-bold py-2 px-6 rounded transition uppercase tracking-wide text-sm border-2 border-papaya shadow-md"
               >
-                Message
+                Text Driver
               </Link>
             )}
           </div>
@@ -232,9 +235,17 @@ function Profile() {
                 <ul className="space-y-3">
                   {profile.network.tracking.map(u => (
                     <li key={u._id} className="flex items-center gap-3 group cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700/50 p-2 rounded transition">
-                       <div className="w-8 h-8 bg-papaya rounded-full flex items-center justify-center text-xs font-bold text-black">
-                           {u.username.charAt(0).toUpperCase()}
-                       </div>
+                       {u.userImage ? (
+                         <img 
+                           src={u.userImage} 
+                           alt={u.username}
+                           className="w-8 h-8 rounded-full object-cover border border-papaya"
+                         />
+                       ) : (
+                         <div className="w-8 h-8 bg-papaya rounded-full flex items-center justify-center text-xs font-bold text-black">
+                             {u.username.charAt(0).toUpperCase()}
+                         </div>
+                       )}
                        <a href={`/profile/${u.username}`} className="text-papaya-dark dark:text-papaya group-hover:text-papaya transition">
                            @{u.username}
                        </a>
@@ -253,9 +264,17 @@ function Profile() {
                 <ul className="space-y-3">
                   {profile.network.audience.map(u => (
                     <li key={u._id} className="flex items-center gap-3 group cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700/50 p-2 rounded transition">
-                       <div className="w-8 h-8 bg-gradient-to-tr from-gray-700 to-black rounded-full flex items-center justify-center text-xs font-bold text-white">
-                           {u.username.charAt(0).toUpperCase()}
-                       </div>
+                       {u.userImage ? (
+                         <img 
+                           src={u.userImage} 
+                           alt={u.username}
+                           className="w-8 h-8 rounded-full object-cover border border-gray-600"
+                         />
+                       ) : (
+                         <div className="w-8 h-8 bg-gradient-to-tr from-gray-700 to-black rounded-full flex items-center justify-center text-xs font-bold text-white">
+                             {u.username.charAt(0).toUpperCase()}
+                         </div>
+                       )}
                        <a href={`/profile/${u.username}`} className="text-gray-700 dark:text-gray-300 group-hover:text-papaya transition">
                            @{u.username}
                        </a>

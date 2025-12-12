@@ -85,7 +85,7 @@ const getUserProfile = async (req, res) => {
     // 2. Fetch all posts by this user
     // Populate the user field in the post so the PostItem component still works
     const posts = await Post.find({ user: targetUser._id })
-      .populate('user', 'username') 
+      .populate('user', 'username userImage') 
       .sort({ createdAt: -1 });
 
     // 3. Generate "Watched List" (Unique shows/movies from posts)
@@ -114,8 +114,8 @@ const getUserProfile = async (req, res) => {
 
     if (canViewFullProfile) {
       // ACCESS GRANTED: Show everything
-      await targetUser.populate('tracking', 'username');
-      await targetUser.populate('audience', 'username');
+      await targetUser.populate('tracking', 'username userImage');
+      await targetUser.populate('audience', 'username userImage');
       networkData = {
         tracking: targetUser.tracking,
         audience: targetUser.audience,

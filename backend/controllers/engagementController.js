@@ -91,7 +91,7 @@ const addComment = async (req, res) => {
     }
 
     // Return comment with user info populated
-    const populatedComment = await Comment.findById(comment._id).populate('user', 'username');
+    const populatedComment = await Comment.findById(comment._id).populate('user', 'username userImage');
     res.status(201).json(populatedComment);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -103,7 +103,7 @@ const addComment = async (req, res) => {
 const getComments = async (req, res) => {
   try {
     const comments = await Comment.find({ post: req.params.id })
-      .populate('user', 'username')
+      .populate('user', 'username userImage')
       .sort({ createdAt: -1 });
     res.json(comments);
   } catch (error) {
@@ -163,11 +163,23 @@ const toggleCommentDislike = async (req, res) => {
 const getNotifications = async (req, res) => {
     try {
         const notifs = await Notification.find({ recipient: req.user.id })
-            .populate('sender', 'username')
+            .populate('sender', 'username userImage')
             .populate('post', 'mediaTitle')
             .sort({ createdAt: -1 })
             .limit(20); // Limit to 20 recent notifications
         res.json(notifs);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
+// @desc    Clear all notifications
+// @route   DELETE /api/notifications
+// @access  Private
+const clearNotifications = async (req, res) => {
+    try {
+        await Notification.deleteMany({ recipient: req.user.id });
+        res.json({ message: 'All notifications cleared' });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -205,5 +217,6 @@ module.exports = {
   toggleCommentLike,
   toggleCommentDislike,
   getNotifications,
+  clearNotifications,
   deleteComment
 };

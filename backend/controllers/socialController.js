@@ -16,7 +16,7 @@ const searchUsers = async (req, res) => {
     const users = await User.find({
       username: { $regex: query, $options: 'i' },
       _id: { $ne: req.user.id }, 
-    }).select('username _id'); // Only return ID and Username
+    }).select('username userImage _id'); // Return ID, Username, and Profile Picture
 
     res.json(users);
   } catch (error) {
@@ -101,7 +101,7 @@ const getRequests = async (req, res) => {
     const requests = await FriendRequest.find({
       receiver: req.user.id,
       status: 'pending',
-    }).populate('sender', 'username'); // Get the sender's username
+    }).populate('sender', 'username userImage'); // Get the sender's username and profile picture
 
     res.json(requests);
   } catch (error) {

@@ -46,6 +46,17 @@ function NotificationPage() {
     }
   };
 
+  const handleClearAll = async () => {
+    if (!window.confirm('Clear all notifications?')) return;
+    try {
+      await api.delete('/api/notifications');
+      setNotifications([]);
+      toast.success('All notifications cleared');
+    } catch (error) {
+      toast.error('Failed to clear notifications');
+    }
+  };
+
   const getIcon = (type) => {
     switch(type) {
         case 'like': return <FaHeart className="text-papaya" />;
@@ -84,9 +95,17 @@ function NotificationPage() {
                 {requests.map(req => (
                   <div key={req._id} className="bg-anthracite-light p-4 rounded border border-gray-800 flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                      <div className="text-xl bg-gray-800 p-2 rounded-full">
-                        <FaUserPlus className="text-yellow-400" />
-                      </div>
+                      {req.sender.userImage ? (
+                        <img 
+                          src={req.sender.userImage} 
+                          alt={req.sender.username}
+                          className="w-10 h-10 rounded-full object-cover border-2 border-yellow-400"
+                        />
+                      ) : (
+                        <div className="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center text-white font-bold text-sm border-2 border-yellow-400">
+                          {req.sender.username.charAt(0).toUpperCase()}
+                        </div>
+                      )}
                       <div>
                         <p className="text-gray-300 text-sm">
                           <span className="font-bold text-white">@{req.sender.username}</span> wants to follow you
@@ -116,14 +135,32 @@ function NotificationPage() {
 
           {/* Notifications Section */}
           <div>
-            <h2 className="text-lg font-semibold text-papaya mb-3">Activity</h2>
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-lg font-semibold text-papaya">Activity</h2>
+              {notifications.length > 0 && (
+                <button
+                  onClick={handleClearAll}
+                  className="text-xs font-bold text-gray-400 hover:text-red-500 transition uppercase tracking-wide"
+                >
+                  Clear All
+                </button>
+              )}
+            </div>
             <div className="space-y-2">
               {notifications.length > 0 ? (
                 notifications.map(n => (
                   <div key={n._id} className="bg-anthracite-light p-4 rounded border border-gray-800 flex items-center gap-4">
-                    <div className="text-xl bg-gray-800 p-2 rounded-full">
-                      {getIcon(n.type)}
-                    </div>
+                    {n.sender.userImage ? (
+                      <img 
+                        src={n.sender.userImage} 
+                        alt={n.sender.username}
+                        className="w-10 h-10 rounded-full object-cover border border-gray-600"
+                      />
+                    ) : (
+                      <div className="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                        {n.sender.username.charAt(0).toUpperCase()}
+                      </div>
+                    )}
                     <div>
                       <p className="text-gray-300 text-sm">
                         <span className="font-bold text-white">@{n.sender.username}</span> {getMessage(n)}

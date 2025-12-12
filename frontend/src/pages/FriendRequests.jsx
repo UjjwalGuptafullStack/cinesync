@@ -66,9 +66,17 @@ function FriendRequests() {
               <div>
                 <p className="text-gray-300 text-sm">Follow Request from</p>
                 <div className="flex items-center gap-3 mt-1">
-                    <div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center text-xs font-bold">
-                        {req.sender.username.charAt(0).toUpperCase()}
-                    </div>
+                    {req.sender.userImage ? (
+                      <img 
+                        src={req.sender.userImage} 
+                        alt={req.sender.username}
+                        className="w-8 h-8 rounded-full object-cover border border-gray-600"
+                      />
+                    ) : (
+                      <div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center text-xs font-bold text-white">
+                          {req.sender.username.charAt(0).toUpperCase()}
+                      </div>
+                    )}
                     <span className="font-bold text-lg text-white">{req.sender.username}</span>
                 </div>
               </div>

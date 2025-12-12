@@ -2,9 +2,9 @@
 @config "../tailwind.config.js";
 
 @layer base {
-  /* DARK MODE (Default): Black Major, Orange Secondary */
+  /* DARK MODE (Default): Professional dark blue-gray background */
   body {
-    @apply bg-anthracite text-white font-sans antialiased;
+    @apply bg-[#111827] text-[#F9FAFB] font-sans antialiased;
   }
   
   /* LIGHT MODE: White/Orange Major, Black Secondary */

@@ -32,75 +32,87 @@ function Header() {
 
   return (
     <header className="sticky top-0 z-50 shadow-md transition-colors duration-300 
-      bg-papaya border-b border-papaya-dark text-black
-      dark:bg-anthracite-light dark:border-gray-800 dark:text-white">
+      bg-papaya border-b-2 border-papaya-dark text-black
+      dark:bg-anthracite dark:border-gray-800 dark:text-white">
       
       <div className="container mx-auto px-4 h-16 flex justify-between items-center">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition group">
-          <img 
-            src="/cinesync-logo.svg" 
-            alt="CineSync Logo" 
-            className="h-10 w-10 transition-transform group-hover:scale-110"
-          />
-          <span className="text-xl font-bold tracking-tight text-black dark:text-white hidden sm:inline">
-            Cine<span className="text-white dark:text-papaya">Sync</span>
+        <Link to="/" className="flex items-center gap-1 hover:opacity-80 transition">
+          <span className="text-2xl font-bold tracking-tight">
+            <span className="text-black dark:text-white">Cine</span><span className="text-white dark:text-papaya">Sync</span>
           </span>
         </Link>
 
         {/* Navigation */}
-        <ul className="flex items-center space-x-6">
+        <ul className="flex items-center space-x-4 md:space-x-6">
           {user ? (
             <>
-              {/* Links */}
+              {/* Icon Links */}
               <li>
-                <Link to="/find-friends" className="text-black/70 hover:text-black dark:text-gray-400 dark:hover:text-papaya text-lg transition" title="Find Friends">
+                <Link to="/find-friends" className="text-black/70 hover:text-papaya dark:text-gray-400 dark:hover:text-papaya text-xl transition" title="Search">
                   <FaSearch />
                 </Link>
               </li>
               <li>
-                <Link to="/notifications" className="text-black/70 hover:text-black dark:text-gray-400 dark:hover:text-papaya text-lg transition" title="Notifications">
-                  <FaBell />
-                </Link>
-              </li>
-              <li>
-                <Link to="/chat" className="text-black/70 hover:text-black dark:text-gray-400 dark:hover:text-papaya text-lg transition" title="Messages">
+                <Link to="/chat" className="text-black/70 hover:text-papaya dark:text-gray-400 dark:hover:text-papaya text-xl transition" title="Messages">
                   <FaComments />
                 </Link>
               </li>
               <li>
-                <Link to="/create" className="text-black/70 hover:text-black dark:text-gray-400 dark:hover:text-papaya font-bold transition">
+                <Link to="/notifications" className="text-black/70 hover:text-papaya dark:text-gray-400 dark:hover:text-papaya text-xl transition" title="Notifications">
+                  <FaBell />
+                </Link>
+              </li>
+              
+              {/* CREATE POST Button */}
+              <li>
+                <Link 
+                  to="/create" 
+                  className="bg-papaya hover:bg-papaya-dark text-black font-bold px-4 py-2 rounded transition dark:bg-papaya dark:hover:bg-orange-600"
+                >
                   + POST
                 </Link>
               </li>
 
-              {/* Profile Link */}
+              {/* Profile Avatar */}
               <li>
-                <Link to={`/profile/${user.username}`} className="text-black dark:text-white font-bold hover:text-white dark:hover:text-papaya transition flex items-center gap-2">
+                <Link to={`/profile/${user.username}`} className="flex items-center gap-2 hover:opacity-80 transition">
                   {user.userImage ? (
                     <img 
                       src={user.userImage} 
                       alt={user.username}
-                      className="w-8 h-8 rounded-full object-cover border-2 border-white dark:border-papaya"
+                      className="w-9 h-9 rounded-full object-cover border-2 border-black dark:border-papaya"
                     />
                   ) : (
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-papaya to-red-600 flex items-center justify-center text-white font-bold text-sm">
+                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-papaya to-red-600 flex items-center justify-center text-white font-bold text-sm border-2 border-black dark:border-papaya">
                       {user.username.charAt(0).toUpperCase()}
                     </div>
                   )}
-                  <span className="hidden md:inline">{user.username}</span>
+                  <span className="hidden md:inline font-semibold text-black dark:text-white">{user.username}</span>
                 </Link>
               </li>
 
-              {/* Actions */}
-              <div className="flex items-center gap-4 border-l border-black/20 dark:border-gray-700 pl-4 ml-2">
-                <button onClick={toggleTheme} className="text-black hover:text-white dark:text-gray-400 dark:hover:text-papaya transition">
+              {/* Theme Toggle */}
+              <li>
+                <button 
+                  onClick={toggleTheme} 
+                  className="text-black/70 hover:text-papaya dark:text-gray-400 dark:hover:text-papaya text-lg transition"
+                  title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+                >
                   {theme === 'dark' ? <FaSun /> : <FaMoon />}
                 </button>
-                <button onClick={onLogout} className="text-black/70 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-500 transition" title="Logout">
+              </li>
+              
+              {/* Logout */}
+              <li>
+                <button 
+                  onClick={onLogout} 
+                  className="text-black/70 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-500 transition text-lg" 
+                  title="Logout"
+                >
                   <FaSignOutAlt />
                 </button>
-              </div>
+              </li>
             </>
           ) : (
             <div className="flex gap-4">

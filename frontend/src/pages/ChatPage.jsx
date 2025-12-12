@@ -66,11 +66,11 @@ function ChatPage() {
 
   return (
     <div className="max-w-2xl mx-auto mt-4 h-[80vh] flex flex-col bg-anthracite-light border border-gray-800 rounded-xl overflow-hidden shadow-2xl">
-      {/* Header - Dynamic with user info */}
+      {/* Header - Shows other user's info with online indicator */}
       <div className="p-4 bg-anthracite border-b border-gray-800 flex items-center gap-3">
         {otherUser ? (
           <>
-            <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-700 flex-shrink-0">
+            <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-700 flex-shrink-0 border-2 border-papaya">
               {otherUser.userImage ? (
                 <img src={otherUser.userImage} alt="avatar" className="w-full h-full object-cover" />
               ) : (
@@ -81,9 +81,9 @@ function ChatPage() {
             </div>
             <div className="flex-1">
               <h2 className="font-bold text-white text-lg">@{otherUser.username}</h2>
-              <span className="text-xs text-green-500 flex items-center gap-1">
-                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                Active now
+              <span className="text-xs text-green-400 flex items-center gap-1 font-medium">
+                <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></div>
+                Online
               </span>
             </div>
           </>
@@ -95,36 +95,64 @@ function ChatPage() {
         )}
       </div>
 
-      {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-900/50">
+      {/* Messages Area - Bubble Layout */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-anthracite/50">
         {messages.map((msg) => {
           const isMe = msg.sender._id === currentUserRef.current._id;
+          const messageSender = msg.sender;
           return (
-            <div key={msg._id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
-              <div className={`max-w-[70%] p-3 rounded-lg text-sm ${
-                isMe ? 'bg-papaya text-black rounded-tr-none' : 'bg-gray-700 text-white rounded-tl-none'
+            <div key={msg._id} className={`flex gap-2 ${isMe ? 'justify-end' : 'justify-start'}`}>
+              {!isMe && (
+                <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 mt-1 border border-gray-600">
+                  {messageSender.userImage ? (
+                    <img src={messageSender.userImage} alt={messageSender.username} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full bg-gray-700 flex items-center justify-center text-white font-bold text-xs">
+                      {messageSender.username.charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                </div>
+              )}
+              <div className={`max-w-[70%] px-4 py-3 rounded-2xl text-sm shadow ${
+                isMe 
+                  ? 'bg-papaya text-black rounded-tr-sm font-medium' 
+                  : 'bg-gray-700 text-white rounded-tl-sm'
               }`}>
-                <p>{msg.content}</p>
+                <p className="leading-relaxed">{msg.content}</p>
                 <span className="text-[10px] opacity-70 block text-right mt-1">
                   {new Date(msg.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                 </span>
               </div>
+              {isMe && (
+                <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 mt-1 border border-papaya">
+                  {currentUserRef.current.userImage ? (
+                    <img src={currentUserRef.current.userImage} alt={currentUserRef.current.username} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-papaya to-red-600 flex items-center justify-center text-black font-bold text-xs">
+                      {currentUserRef.current.username.charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           );
         })}
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input Area */}
+      {/* Input Area - Rounded pill-shaped with circular Send button */}
       <form onSubmit={handleSend} className="p-4 bg-anthracite border-t border-gray-800 flex gap-2">
         <input
           type="text"
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
           placeholder="Type a message..."
-          className="flex-1 bg-gray-800 border border-gray-700 rounded-full px-4 py-2 text-white focus:border-papaya focus:outline-none"
+          className="flex-1 bg-gray-800 border border-gray-700 rounded-full px-5 py-3 text-white focus:border-papaya focus:outline-none focus:ring-2 focus:ring-papaya/50 transition"
         />
-        <button type="submit" className="bg-papaya p-3 rounded-full text-black hover:bg-papaya-dark transition">
+        <button 
+          type="submit" 
+          className="bg-papaya p-3 rounded-full text-black hover:bg-papaya-dark transition shadow-md w-12 h-12 flex items-center justify-center"
+        >
           <FaPaperPlane />
         </button>
       </form>

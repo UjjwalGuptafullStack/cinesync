@@ -25,10 +25,29 @@ const app = express();
 // Middleware
 app.use(express.json()); // Allows us to accept JSON data in the body
 app.use(express.urlencoded({ extended: true })); // Allows us to parse form data
+
+// CORS Configuration - Allow frontend from Vercel, Netlify, and local development
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:3000',
+  'https://cinesync.vercel.app',
+  'https://cinesync.netlify.app',
+  // Add your custom domain here when ready
+];
+
 app.use(cors({
-  origin: ["https://cinesync-test.netlify.app", "http://localhost:5173"],
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1 || origin.includes('vercel.app') || origin.includes('netlify.app')) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
-})); // Allows frontend requests from Netlify and local dev
+}));
 
 // Routes
 app.use('/api/users', userRoutes);

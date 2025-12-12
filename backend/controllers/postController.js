@@ -14,7 +14,7 @@ const getPosts = async (req, res) => {
 
     // 3. Find posts where the 'user' is in that list
     const posts = await Post.find({ user: { $in: userIds } })
-      .populate('user', 'username') // Get usernames
+      .populate('user', 'username userImage') // Get usernames and profile pictures
       .sort({ createdAt: -1 }); // Newest first
 
     res.json(posts);
