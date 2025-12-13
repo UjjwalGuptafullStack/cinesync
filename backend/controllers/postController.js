@@ -1,7 +1,7 @@
 const User = require('../models/User');
 const Post = require('../models/Post');
 
-// @desc    Get posts from me and people I follow
+// @desc    Get posts from me and people I follow (V8.0: Smart Feed with Production Houses)
 // @route   GET /api/posts
 // @access  Private
 const getPosts = async (req, res) => {
@@ -9,13 +9,32 @@ const getPosts = async (req, res) => {
     // 1. Get the current user to find who they're tracking
     const currentUser = await User.findById(req.user.id);
     
-    // 2. Create a list of IDs: My ID + Everyone I'm tracking
-    const userIds = [req.user.id, ...currentUser.tracking];
+    // 2. Get IDs of people I follow
+    const followingIds = currentUser.tracking || [];
+    
+    // 3. Get TMDB IDs from MY Library
+    const myLibraryTmdbIds = currentUser.library || [];
+    
+    // 4. Find all Production House User IDs (V8.0: Smart Feed)
+    const productionHouseIds = await User.find({ role: 'production' }).distinct('_id');
 
-    // 3. Find posts where the 'user' is in that list
-    const posts = await Post.find({ user: { $in: userIds } })
-      .populate('user', 'username userImage') // Get usernames and profile pictures
-      .sort({ createdAt: -1 }); // Newest first
+    // 5. Smart Feed Logic:
+    //    A. Posts from people I follow
+    //    B. My own posts
+    //    C. Production House posts about movies in MY library (Implicit Interest)
+    const posts = await Post.find({
+      $or: [
+        { user: { $in: followingIds } }, // Condition A: Following
+        { user: req.user.id },           // Condition B: My posts
+        { 
+          user: { $in: productionHouseIds },     // Condition C: It's a studio...
+          tmdbId: { $in: myLibraryTmdbIds }      // ...posting about something I watched
+        }
+      ]
+    })
+      .populate('user', 'username userImage role') // V8.0: Include role for badges
+      .sort({ createdAt: -1 }) // Newest first
+      .limit(50); // Limit for performance
 
     res.json(posts);
   } catch (error) {
@@ -120,4 +139,23 @@ const deletePost = async (req, res) => {
   }
 };
 
-module.exports = { getPosts, createPost, deletePost };
+// @desc    Get all posts for a specific TMDB ID (V8.0: The Movie Hub)
+// @route   GET /api/posts/media/:tmdbId
+// @access  Private
+const getPostsByMedia = async (req, res) => {
+  try {
+    const { tmdbId } = req.params;
+    
+    const posts = await Post.find({ tmdbId })
+      .sort({ createdAt: -1 }) // Latest first
+      .populate('user', 'username userImage role'); // Include role for badges
+      
+    const count = await Post.countDocuments({ tmdbId });
+
+    res.json({ count, posts });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports = { getPosts, createPost, deletePost, getPostsByMedia };

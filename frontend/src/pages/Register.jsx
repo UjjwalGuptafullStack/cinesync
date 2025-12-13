@@ -9,16 +9,18 @@ function Register() {
     email: '',
     password: '',
     confirmPassword: '',
+    isProduction: false, // V8.0: Production House toggle
   });
 
-  const { username, email, password, confirmPassword } = formData;
+  const { username, email, password, confirmPassword, isProduction } = formData;
   const navigate = useNavigate();
 
   // Update state when user types
   const onChange = (e) => {
+    const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
     setFormData((prevState) => ({
       ...prevState,
-      [e.target.name]: e.target.value,
+      [e.target.name]: value,
     }));
   };
 
@@ -32,7 +34,12 @@ function Register() {
     }
 
     try {
-      const userData = { username, email, password };
+      const userData = { 
+        username, 
+        email, 
+        password,
+        role: isProduction ? 'production' : 'user' // V8.0: Send role to backend
+      };
       
       // Register and receive token
       const res = await api.post('/api/users', userData);
@@ -109,6 +116,22 @@ function Register() {
               required
             />
           </div>
+          
+          {/* V8.0: Production House Toggle */}
+          <div className="flex items-center gap-3 p-3 bg-anthracite border border-gray-700 rounded">
+            <input
+              type="checkbox"
+              id="isProduction"
+              name="isProduction"
+              checked={isProduction}
+              onChange={onChange}
+              className="w-5 h-5 accent-papaya cursor-pointer"
+            />
+            <label htmlFor="isProduction" className="text-white cursor-pointer select-none">
+              I'm a <span className="text-papaya font-bold">Production House</span> (Studio/Creator)
+            </label>
+          </div>
+          
           <button
             type="submit"
             className="w-full py-3 bg-papaya hover:bg-papaya-dark text-black font-bold rounded-lg transition uppercase tracking-wider shadow-lg"

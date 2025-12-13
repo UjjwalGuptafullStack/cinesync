@@ -1,6 +1,6 @@
 {
   "name": "backend",
-  "version": "7.2.0",
+  "version": "8.0.0",
   "description": "CineSync Backend - V7.2 with Image Cropping and Chat Inbox",
   "main": "index.js",
   "scripts": {

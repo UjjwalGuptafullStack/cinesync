@@ -7,7 +7,7 @@ const Post = require('../models/Post');
 // @route   POST /api/users
 // @access  Public
 const registerUser = async (req, res) => {
-  const { username, email, password } = req.body;
+  const { username, email, password, role } = req.body;
 
   try {
     // 1. Check if user exists
@@ -20,11 +20,12 @@ const registerUser = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // 3. Create user
+    // 3. Create user (V8.0: Support for Production Houses)
     const user = await User.create({
       username,
       email,
       password: hashedPassword,
+      role: role || 'user', // Default to 'user' if not specified
     });
 
     if (user) {
@@ -58,6 +59,7 @@ const loginUser = async (req, res) => {
         _id: user.id,
         username: user.username,
         email: user.email,
+        role: user.role, // V8.0: Include role in response
         token: generateToken(user._id),
       });
     } else {
@@ -68,7 +70,7 @@ const loginUser = async (req, res) => {
   }
 };
 
-// @desc    Get User Profile (Info, Stats, Watched List)
+// @desc    Get User Profile (Info, Stats, Watched List) - V8.0: Production House Support
 // @route   GET /api/users/profile/:username
 // @access  Private
 const getUserProfile = async (req, res) => {
@@ -83,13 +85,50 @@ const getUserProfile = async (req, res) => {
     }
 
     // 2. Fetch all posts by this user
-    // Populate the user field in the post so the PostItem component still works
     const posts = await Post.find({ user: targetUser._id })
-      .populate('user', 'username userImage') 
+      .populate('user', 'username userImage role') 
       .sort({ createdAt: -1 });
 
+    // 3. V8.0: Check if this is a Production House
+    if (targetUser.role === 'production') {
+      // PRODUCTION HOUSE LOGIC
+      // Find all posts where the TMDB ID matches something in Studio's library
+      const studioLibraryPosts = await Post.find({ 
+        tmdbId: { $in: targetUser.library || [] } 
+      }).populate('user', 'username userImage');
+      
+      // Deduplicate users who posted about these movies ("Engaged Users")
+      const uniqueUsers = {};
+      studioLibraryPosts.forEach(p => {
+        if (p.user && p.user._id.toString() !== targetUser._id.toString()) {
+          uniqueUsers[p.user._id] = p.user;
+        }
+      });
+      
+      const engagedUsers = Object.values(uniqueUsers);
+      
+      // Generate filmography from library
+      const filmography = (targetUser.library || []).map(tmdbId => ({ tmdbId }));
+      
+      return res.json({
+        _id: targetUser._id,
+        username: targetUser.username,
+        userImage: targetUser.userImage,
+        role: targetUser.role,
+        createdAt: targetUser.createdAt,
+        stats: {
+          filmographyCount: filmography.length,
+          engagedUsers: engagedUsers.length,
+        },
+        network: engagedUsers, // The "Engaged" Network
+        filmography: filmography,
+        posts: posts,
+        isProduction: true,
+      });
+    }
+
+    // NORMAL USER LOGIC
     // 3. Generate "Watched List" (Unique shows/movies from posts)
-    // Map ensures no duplicates based on tmdbId
     const watchedMap = new Map();
     posts.forEach((post) => {
       if (!watchedMap.has(post.tmdbId)) {
@@ -125,22 +164,22 @@ const getUserProfile = async (req, res) => {
     }
 
     // 5. Send Response
-    // SECURITY NOTE: This response does NOT include 'token' or 'password'
-    // Frontend must NEVER save this to localStorage as it would overwrite authentication
     res.json({
       _id: targetUser._id,
       username: targetUser.username,
-      userImage: targetUser.userImage, // Include avatar for profile display
+      userImage: targetUser.userImage,
+      role: targetUser.role || 'user', // V8.0: Include role
       createdAt: targetUser.createdAt,
       stats: {
         trackingCount: targetUser.tracking.length,
         audienceCount: targetUser.audience.length,
-        watchedCount: watchedList.length, // We still show the COUNT, just not the items
+        watchedCount: watchedList.length,
       },
-      isPrivate: !canViewFullProfile, // Flag for Frontend
+      isPrivate: !canViewFullProfile,
       network: networkData, 
-      watchedList: safeWatchedList, // Empty if private
-      posts: safePosts, // Empty if private
+      watchedList: safeWatchedList,
+      posts: safePosts,
+      isProduction: false,
     });
 
   } catch (error) {

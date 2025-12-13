@@ -22,6 +22,15 @@ const userSchema = mongoose.Schema(
       type: String,
       default: '',
     },
+    // V8.0: Account Type (User vs Production House)
+    role: {
+      type: String,
+      enum: ['user', 'production'],
+      default: 'user',
+      index: true, // ⚡ Speed up production house queries
+    },
+    // V8.0: Library/Filmography (TMDB IDs)
+    library: [{ type: String }], // For users: watched content, For studios: filmography
     // RENAMED: Social Graph (Tracking & Audience)
     audience: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }], // Formerly 'followers'
     tracking: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }], // Formerly 'following'

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getPosts, createPost, deletePost } = require('../controllers/postController');
+const { getPosts, createPost, deletePost, getPostsByMedia } = require('../controllers/postController');
 const {
   togglePostLike,
   togglePostDislike,
@@ -25,6 +25,9 @@ const handleMulterError = (err, req, res, next) => {
 
 // Route for "/"
 router.route('/').get(protect, getPosts).post(protect, upload.single('image'), handleMulterError, createPost);
+
+// V8.0: Media Hub Route (must come before /:id routes)
+router.get('/media/:tmdbId', protect, getPostsByMedia);
 
 // Engagement Routes
 router.put('/:id/like', protect, togglePostLike);

@@ -14,6 +14,7 @@ import NotificationPage from './pages/NotificationPage';
 import Settings from './pages/Settings';
 import ChatList from './pages/ChatList';
 import ChatPage from './pages/ChatPage';
+import MediaHub from './pages/MediaHub'; // V8.0: Media Hub
 import NotFound from './pages/NotFound';
 
 function App() {
@@ -34,6 +35,7 @@ function App() {
               <Route path="/find-friends" element={<FindFriends />} />
               <Route path="/requests" element={<FriendRequests />} />
               <Route path="/profile/:username" element={<Profile />} />
+              <Route path="/hub/:tmdbId" element={<MediaHub />} /> {/* V8.0: Media Hub */}
               <Route path="/notifications" element={<NotificationPage />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="/chat" element={<ChatList />} />
