@@ -11,15 +11,16 @@ function FeedAd() {
   }, []);
 
   return (
-    <div className="bg-anthracite-light border border-gray-800 rounded-xl overflow-hidden mb-6 shadow-lg p-4 flex flex-col items-center justify-center min-h-[250px] relative">
+    <div className="bg-anthracite-light border border-gray-800 rounded-xl overflow-hidden mb-6 shadow-lg p-4 flex flex-col items-center justify-center min-h-[250px]">
       
-      {/* "Sponsored" Badge - Legal compliance */}
-      <span className="absolute top-2 right-2 text-xs text-gray-500 uppercase tracking-widest font-bold">Sponsored</span>
+      {/* "Advertisement" Label - Required by AdSense Policy */}
+      <span className="text-[10px] text-gray-500 uppercase tracking-widest mb-1 self-start">Advertisement</span>
 
-      {/* Google AdSense Auto Ad */}
+      {/* Google AdSense Display Ad - CineSync Feed Ad */}
       <ins className="adsbygoogle"
-           style={{ display: 'block' }}
+           style={{ display: 'block', width: '100%' }}
            data-ad-client="ca-pub-9731233775640589"
+           data-ad-slot="2549479936"
            data-ad-format="auto"
            data-full-width-responsive="true"></ins>
     </div>
