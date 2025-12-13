@@ -3,6 +3,7 @@ import api from '../api';
 import PostItem from '../components/PostItem';
 import FeedAd from '../components/FeedAd';
 import CreatePost from './CreatePost';
+import NetworkSuggestions from '../components/NetworkSuggestions';
 import { FaStream, FaPlusCircle, FaTimes } from 'react-icons/fa';
 
 function Home() {
@@ -73,6 +74,20 @@ function Home() {
               posts.map((post, index) => (
                 <div key={post._id}>
                   <PostItem post={post} />
+                  
+                  {/* Inject Network Suggestions after 2nd post */}
+                  {index === 2 && (
+                    <div className="my-8 transform scale-100 hover:scale-[1.01] transition duration-500">
+                      <div className="flex items-center gap-2 mb-4">
+                        <div className="h-px bg-gray-700 flex-1"></div>
+                        <span className="text-papaya font-bold tracking-widest text-xs uppercase">Discover</span>
+                        <div className="h-px bg-gray-700 flex-1"></div>
+                      </div>
+                      <NetworkSuggestions horizontal={true} />
+                    </div>
+                  )}
+                  
+                  {/* Inject Ad after every 5th post */}
                   {(index + 1) % 5 === 0 && <FeedAd />}
                 </div>
               ))

@@ -1,12 +1,14 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import api from '../api';
-import { FaPaperPlane } from 'react-icons/fa';
+import { FaPaperPlane, FaCamera, FaTimes } from 'react-icons/fa';
 
 function ChatPage() {
   const { userId } = useParams(); // ID of person we are talking to
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
+  const [image, setImage] = useState(null);
+  const [uploading, setUploading] = useState(false);
   const messagesEndRef = useRef(null);
   const currentUserRef = useRef(JSON.parse(localStorage.getItem('user')));
   const isMountedRef = useRef(true);
@@ -43,18 +45,58 @@ function ChatPage() {
     scrollToBottom();
   }, [messages]);
 
+  const handleImageSelect = (e) => {
+    if (e.target.files[0]) {
+      setImage(e.target.files[0]);
+    }
+  };
+
   const handleSend = async (e) => {
     e.preventDefault();
-    if (!newMessage.trim()) return;
+    if (!newMessage.trim() && !image) return;
+
+    let imageUrl = "";
 
     try {
-      const res = await api.post('/api/chat', { receiverId: userId, content: newMessage });
+      // 1. Upload image if exists
+      if (image) {
+        setUploading(true);
+        const formData = new FormData();
+        formData.append("image", image);
+        
+        const user = JSON.parse(localStorage.getItem('user'));
+        const token = user.token;
+        const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+        
+        const uploadRes = await fetch(`${baseURL}/api/posts/upload-image`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+          body: formData,
+        });
+
+        if (!uploadRes.ok) throw new Error('Upload failed');
+        const uploadData = await uploadRes.json();
+        imageUrl = uploadData.url;
+      }
+
+      // 2. Send message with optional image
+      const res = await api.post('/api/chat', { 
+        receiverId: userId, 
+        content: newMessage || '📷 Image',
+        image: imageUrl 
+      });
+      
       if (isMountedRef.current) {
         setMessages(prev => [...prev, res.data]);
         setNewMessage('');
+        setImage(null);
       }
     } catch (error) {
       console.error(error);
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -118,6 +160,14 @@ function ChatPage() {
                   ? 'bg-papaya text-black rounded-tr-sm font-medium' 
                   : 'bg-gray-700 text-white rounded-tl-sm'
               }`}>
+                {msg.image && (
+                  <img 
+                    src={msg.image} 
+                    alt="attachment" 
+                    className="rounded-lg mb-2 max-w-full cursor-pointer hover:opacity-90 transition"
+                    onClick={() => window.open(msg.image, '_blank')}
+                  />
+                )}
                 <p className="leading-relaxed">{msg.content}</p>
                 <span className="text-[10px] opacity-70 block text-right mt-1">
                   {new Date(msg.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
@@ -140,18 +190,50 @@ function ChatPage() {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input Area - Rounded pill-shaped with circular Send button */}
-      <form onSubmit={handleSend} className="p-4 bg-anthracite border-t border-gray-800 flex gap-2">
+      {/* Input Area - Rounded pill-shaped with camera and circular Send button */}
+      <form onSubmit={handleSend} className="p-4 bg-anthracite border-t border-gray-800 flex items-center gap-3">
+        {/* Camera Icon */}
+        <label className="cursor-pointer text-gray-400 hover:text-papaya transition flex-shrink-0">
+          <FaCamera className="text-xl" />
+          <input 
+            type="file" 
+            accept="image/*" 
+            className="hidden" 
+            onChange={handleImageSelect}
+            disabled={uploading}
+          />
+        </label>
+
+        {/* Image Preview */}
+        {image && (
+          <div className="relative flex-shrink-0">
+            <img 
+              src={URL.createObjectURL(image)} 
+              className="w-10 h-10 object-cover rounded border-2 border-papaya" 
+              alt="preview"
+            />
+            <button 
+              type="button"
+              onClick={() => setImage(null)} 
+              className="absolute -top-2 -right-2 bg-red-500 rounded-full w-5 h-5 flex items-center justify-center text-white text-xs hover:bg-red-600 transition"
+            >
+              <FaTimes />
+            </button>
+          </div>
+        )}
+
         <input
           type="text"
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
-          placeholder="Type a message..."
-          className="flex-1 bg-gray-800 border border-gray-700 rounded-full px-5 py-3 text-white focus:border-papaya focus:outline-none focus:ring-2 focus:ring-papaya/50 transition"
+          placeholder={uploading ? "Uploading image..." : "Type a message..."}
+          disabled={uploading}
+          className="flex-1 bg-gray-800 border border-gray-700 rounded-full px-5 py-3 text-white focus:border-papaya focus:outline-none focus:ring-2 focus:ring-papaya/50 transition disabled:opacity-50"
         />
         <button 
           type="submit" 
-          className="bg-papaya p-3 rounded-full text-black hover:bg-papaya-dark transition shadow-md w-12 h-12 flex items-center justify-center"
+          disabled={uploading}
+          className="bg-papaya p-3 rounded-full text-black hover:bg-papaya-dark transition shadow-md w-12 h-12 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <FaPaperPlane />
         </button>
