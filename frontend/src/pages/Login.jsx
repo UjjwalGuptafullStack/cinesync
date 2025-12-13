@@ -37,8 +37,9 @@ function Login() {
 
       // Removed excessive welcome toast - redirect is enough feedback
       
-      // 3. Redirect to Home Feed
-      navigate('/'); 
+      // 3. Redirect to Home Feed and reload to ensure full session initialization
+      navigate('/');
+      window.location.reload();
     } catch (error) {
       toast.error(error.response?.data?.message || 'Login failed');
     }
@@ -102,6 +103,7 @@ function Login() {
                   localStorage.setItem('user', JSON.stringify(res.data));
                   toast.success("Login Successful!");
                   navigate('/');
+                  window.location.reload();
                 } catch (error) {
                   toast.error(error.response?.data?.message || "Google Login Failed");
                 }

@@ -63,16 +63,6 @@ function Header() {
                   <FaBell />
                 </Link>
               </li>
-              
-              {/* CREATE POST Button */}
-              <li>
-                <Link 
-                  to="/create" 
-                  className="bg-papaya hover:bg-papaya-dark text-black font-bold px-4 py-2 rounded transition dark:bg-papaya dark:hover:bg-orange-600"
-                >
-                  + POST
-                </Link>
-              </li>
 
               {/* Profile Avatar */}
               <li>

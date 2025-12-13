@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 import imageCompression from 'browser-image-compression';
 import { FaCamera, FaTimesCircle } from 'react-icons/fa';
 
-function CreatePost() {
+function CreatePost({ onPostCreated }) {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
   const [selectedMedia, setSelectedMedia] = useState(null);
@@ -178,7 +178,29 @@ function CreatePost() {
       console.log('✅ Post created response:', data);
 
       toast.success('Post created successfully!');
-      navigate('/'); // Go back to feed
+      
+      // Reset form
+      setSelectedMedia(null);
+      setContent('');
+      setIsSpoiler(false);
+      setImageFile(null);
+      setPreviewUrl(null);
+      setPostContext('general');
+      setSelectedSeason('');
+      setSelectedEpisode('');
+      setQuery('');
+      setResults([]);
+      
+      // If callback provided (from Home.jsx), call it
+      if (onPostCreated) {
+        onPostCreated();
+      } else {
+        // Otherwise navigate to home (for standalone /create route)
+        navigate('/');
+      }
+      
+      // Refresh the page to show new post
+      window.location.reload();
     } catch (error) {
       console.error('Post creation error:', error);
       console.error('Error response:', error.response?.data);
@@ -187,12 +209,16 @@ function CreatePost() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="w-full">
       {/* STEP 1: SEARCH & SELECT */}
       {!selectedMedia ? (
-        <div className="max-w-2xl mx-auto mt-8">
-          <h1 className="text-3xl font-bold text-white mb-2">Create New Post</h1>
-          <p className="text-gray-400 mb-8">Search for a movie or TV show to talk about.</p>
+        <div className="w-full">
+          {!onPostCreated && (
+            <>
+              <h1 className="text-3xl font-bold text-white mb-2">Create New Post</h1>
+              <p className="text-gray-400 mb-8">Search for a movie or TV show to talk about.</p>
+            </>
+          )}
 
           <div className="bg-anthracite-light p-6 rounded-lg border border-gray-800 shadow-lg">
             <form onSubmit={searchMedia} className="flex gap-3">
@@ -214,7 +240,7 @@ function CreatePost() {
           </div>
           
           {/* Results Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+          <div className="grid grid-cols-1 gap-4 mt-6">
             {results.map((media) => (
               <div
                 key={media.id}
@@ -242,21 +268,21 @@ function CreatePost() {
         </div>
       ) : (
         /* STEP 2: WRITE REVIEW */
-        <div className="bg-white dark:bg-anthracite-light border border-gray-200 dark:border-gray-800 p-8 rounded-xl shadow-lg">
-          <div className="flex justify-between items-start mb-6">
-            <div className="flex gap-4">
+        <div className="bg-white dark:bg-anthracite-light border border-gray-200 dark:border-gray-800 p-4 md:p-8 rounded-xl shadow-lg">
+          <div className="flex justify-between items-start mb-4">
+            <div className="flex gap-3">
               <img
                 src={`https://image.tmdb.org/t/p/w92${selectedMedia.poster_path}`}
                 alt={selectedMedia.title}
-                className="w-20 rounded shadow"
+                className="w-16 md:w-20 rounded shadow"
               />
               <div>
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{selectedMedia.title || selectedMedia.name}</h2>
+                <h2 className="text-lg md:text-2xl font-bold text-gray-900 dark:text-white">{selectedMedia.title || selectedMedia.name}</h2>
                 <button
                   onClick={() => setSelectedMedia(null)}
-                  className="text-sm text-papaya hover:underline mt-2 font-bold"
+                  className="text-sm text-papaya hover:underline mt-1 font-bold"
                 >
-                  ← Change Selection
+                  ← Change
                 </button>
               </div>
             </div>
@@ -265,31 +291,31 @@ function CreatePost() {
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* SMART CONTEXT SELECTOR (Only for TV Shows) */}
             {(!selectedMedia.title) && (
-              <div className="mb-4 space-y-3 bg-gray-100 dark:bg-white/5 p-4 rounded border border-gray-200 dark:border-white/10">
-                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">What are you posting about?</label>
+              <div className="mb-4 space-y-3 bg-gray-100 dark:bg-white/5 p-3 rounded border border-gray-200 dark:border-white/10">
+                <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Posting About?</label>
                 
                 {/* 1. Scope Selector */}
-                <div className="flex gap-4">
+                <div className="flex flex-wrap gap-2">
                   <button 
                     type="button"
                     onClick={() => { setPostContext('general'); setSelectedSeason(''); setSelectedEpisode(''); }}
-                    className={`px-3 py-1 rounded text-sm font-bold ${postContext === 'general' ? 'bg-papaya text-black' : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300'}`}
+                    className={`px-2 py-1 rounded text-xs font-bold ${postContext === 'general' ? 'bg-papaya text-black' : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300'}`}
                   >
                     Whole Series
                   </button>
                   <button 
                      type="button"
                      onClick={() => setPostContext('season')}
-                     className={`px-3 py-1 rounded text-sm font-bold ${postContext === 'season' ? 'bg-papaya text-black' : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300'}`}
+                     className={`px-2 py-1 rounded text-xs font-bold ${postContext === 'season' ? 'bg-papaya text-black' : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300'}`}
                   >
-                    Specific Season
+                    Season
                   </button>
                   <button 
                      type="button"
                      onClick={() => setPostContext('episode')}
-                     className={`px-3 py-1 rounded text-sm font-bold ${postContext === 'episode' ? 'bg-papaya text-black' : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300'}`}
+                     className={`px-2 py-1 rounded text-xs font-bold ${postContext === 'episode' ? 'bg-papaya text-black' : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300'}`}
                   >
-                    Specific Episode
+                    Episode
                   </button>
                 </div>
 
@@ -297,7 +323,7 @@ function CreatePost() {
                 {postContext !== 'general' && (
                   <div>
                     <select 
-                      className="w-full p-2 bg-white dark:bg-gray-800 rounded text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600"
+                      className="w-full p-2 text-sm bg-white dark:bg-gray-800 rounded text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600"
                       value={selectedSeason}
                       onChange={(e) => onSeasonSelect(e.target.value)}
                     >
@@ -313,7 +339,7 @@ function CreatePost() {
                 {postContext === 'episode' && selectedSeason && (
                   <div>
                     <select 
-                      className="w-full p-2 bg-white dark:bg-gray-800 rounded text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600"
+                      className="w-full p-2 text-sm bg-white dark:bg-gray-800 rounded text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600"
                       value={selectedEpisode}
                       onChange={(e) => setSelectedEpisode(e.target.value)}
                     >
@@ -328,7 +354,7 @@ function CreatePost() {
             )}
 
             <textarea
-              className="w-full p-4 bg-gray-50 dark:bg-gray-900 rounded border border-gray-300 dark:border-gray-700 h-32 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-papaya transition"
+              className="w-full p-3 bg-gray-50 dark:bg-gray-900 rounded border border-gray-300 dark:border-gray-700 h-24 md:h-32 text-sm md:text-base text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-papaya transition resize-none"
               placeholder="What did you think? (No spoilers unless you tag it!)"
               value={content}
               onChange={(e) => setContent(e.target.value)}
@@ -336,8 +362,8 @@ function CreatePost() {
             ></textarea>
 
             {/* Image Upload with Camera Icon & Preview */}
-            <div className="mb-6">
-              <label className="block text-gray-400 text-sm font-bold mb-2">
+            <div className="mb-4">
+              <label className="block text-gray-400 text-xs md:text-sm font-bold mb-2">
                 Visuals {isCompressing && <span className="ml-2 text-papaya animate-pulse">● Compressing...</span>}
               </label>
               
@@ -354,19 +380,19 @@ function CreatePost() {
                   />
                   <label 
                     htmlFor="image-upload"
-                    className={`flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-700 rounded-lg cursor-pointer hover:border-papaya hover:bg-anthracite-light transition group ${
+                    className={`flex flex-col items-center justify-center w-full h-24 md:h-32 border-2 border-dashed border-gray-700 rounded-lg cursor-pointer hover:border-papaya hover:bg-anthracite-light transition group ${
                       isCompressing ? 'opacity-50 cursor-not-allowed' : ''
                     }`}
                   >
-                    <FaCamera className="text-3xl text-gray-500 group-hover:text-papaya mb-2 transition" />
-                    <span className="text-gray-400 text-sm font-bold group-hover:text-white transition">
-                      Take Photo or Upload
+                    <FaCamera className="text-2xl md:text-3xl text-gray-500 group-hover:text-papaya mb-2 transition" />
+                    <span className="text-gray-400 text-xs md:text-sm font-bold group-hover:text-white transition">
+                      Upload Image
                     </span>
                   </label>
                 </div>
               ) : (
                 // STATE 2: Image Selected - Show Preview
-                <div className="relative w-full h-64 bg-black rounded-lg overflow-hidden flex items-center justify-center group">
+                <div className="relative w-full h-48 md:h-64 bg-black rounded-lg overflow-hidden flex items-center justify-center group">
                   <img 
                     src={previewUrl} 
                     alt="Preview" 
@@ -379,8 +405,8 @@ function CreatePost() {
                       onClick={clearImage}
                       className="flex flex-col items-center text-white hover:text-red-500 transition"
                     >
-                      <FaTimesCircle className="text-4xl mb-2" />
-                      <span className="font-bold uppercase tracking-wider text-sm">Remove</span>
+                      <FaTimesCircle className="text-3xl md:text-4xl mb-2" />
+                      <span className="font-bold uppercase tracking-wider text-xs md:text-sm">Remove</span>
                     </button>
                   </div>
                 </div>
@@ -391,18 +417,18 @@ function CreatePost() {
               <input
                 type="checkbox"
                 id="spoiler"
-                className="w-5 h-5 accent-papaya"
+                className="w-4 h-4 md:w-5 md:h-5 accent-papaya"
                 checked={isSpoiler}
                 onChange={(e) => setIsSpoiler(e.target.checked)}
               />
-              <label htmlFor="spoiler" className="text-red-500 font-bold cursor-pointer text-sm uppercase tracking-wider">
-                This post contains spoilers ⚠️
+              <label htmlFor="spoiler" className="text-red-500 font-bold cursor-pointer text-xs md:text-sm uppercase tracking-wider">
+                Contains spoilers ⚠️
               </label>
             </div>
 
             <button
               type="submit"
-              className="w-full bg-papaya hover:bg-papaya-dark text-black font-bold py-3 rounded text-lg transition uppercase tracking-wider"
+              className="w-full bg-papaya hover:bg-papaya-dark text-black font-bold py-2 md:py-3 rounded text-sm md:text-lg transition uppercase tracking-wider"
             >
               Post Review 🚀
             </button>
