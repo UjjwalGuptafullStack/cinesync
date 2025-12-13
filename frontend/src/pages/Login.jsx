@@ -51,7 +51,7 @@ function Login() {
           <h1 className="text-4xl font-bold">
             <span className="text-white">Cine</span><span className="text-papaya">Sync</span>
           </h1>
-          <p className="text-gray-400 text-sm mt-2 uppercase tracking-widest">Welcome Back, Driver</p>
+          <p className="text-gray-400 text-sm mt-2 uppercase tracking-widest">Welcome Back, We were waiting for you!</p>
         </div>
         
         <form onSubmit={onSubmit} className="space-y-5">

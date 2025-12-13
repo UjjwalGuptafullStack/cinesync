@@ -91,7 +91,7 @@ function Profile() {
         <div className="flex-1 text-center md:text-left z-10">
           <h1 className="text-3xl font-bold text-white mb-1">@{profile.username}</h1>
           <p className="text-gray-400 text-sm mb-4 uppercase tracking-widest font-semibold">
-            Rookie Driver • Joined {new Date(profile.createdAt).getFullYear()}
+           Joined {new Date(profile.createdAt).getFullYear()}
           </p>
 
           {/* Stats Boxes - Three rectangular metrics */}
@@ -126,7 +126,7 @@ function Profile() {
                 to={`/chat/${profile._id}`} 
                 className="bg-anthracite hover:bg-papaya hover:text-black text-white font-bold py-2 px-6 rounded transition uppercase tracking-wide text-sm border-2 border-papaya shadow-md"
               >
-                Text Driver
+                Send Message
               </Link>
             )}
           </div>

@@ -57,7 +57,7 @@ function Register() {
           <h1 className="text-4xl font-bold">
             <span className="text-white">Cine</span><span className="text-papaya">Sync</span>
           </h1>
-          <p className="text-gray-400 text-sm mt-2 uppercase tracking-widest">Join the Grid</p>
+          <p className="text-gray-400 text-sm mt-2 uppercase tracking-widest">Join the Community</p>
         </div>
         
         <p className="text-center text-gray-400 mb-6 text-sm">
