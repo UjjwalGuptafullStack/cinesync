@@ -335,20 +335,21 @@ function Profile() {
                         <a href={`/profile/${u.username}`} className="text-gray-700 dark:text-gray-300 group-hover:text-papaya transition">
                           @{u.username}
                         </a>
-                    </li>
-                  ))}
-                  {profile.network.audience.length === 0 && <li className="text-gray-500 text-sm">No audience yet.</li>}
-                </ul>
+                      </li>
+                    ))}
+                    {profile.network.audience.length === 0 && <li className="text-gray-500 text-sm">No audience yet.</li>}
+                  </ul>
+                </div>
               </div>
-            </div>
-          ) : (
-            <div className="text-center py-10 flex flex-col items-center">
-              <FaLock className="text-5xl text-gray-400 mb-4" />
-              <h3 className="text-xl font-bold text-gray-700 dark:text-gray-400 uppercase tracking-wider">Network Hidden</h3>
-              <p className="text-gray-500 mt-2 max-w-sm">
-                @{profile.username}'s network is private. You can only view it if they are tracking you.
-              </p>
-            </div>
+            ) : (
+              <div className="text-center py-10 flex flex-col items-center">
+                <FaLock className="text-5xl text-gray-400 mb-4" />
+                <h3 className="text-xl font-bold text-gray-700 dark:text-gray-400 uppercase tracking-wider">Network Hidden</h3>
+                <p className="text-gray-500 mt-2 max-w-sm">
+                  @{profile.username}'s network is private. You can only view it if they are tracking you.
+                </p>
+              </div>
+            )
           )}
         </div>
       )}
