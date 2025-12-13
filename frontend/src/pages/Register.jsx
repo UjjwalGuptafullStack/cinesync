@@ -40,7 +40,7 @@ function Register() {
       // Auto-Login: Save user data (including token) to localStorage
       localStorage.setItem('user', JSON.stringify(res.data));
       
-      toast.success(`Welcome to CineSync, ${res.data.username}!`);
+      // Removed excessive welcome toast - account created successfully is implied by redirect
       
       // Redirect directly to Home/Feed
       navigate('/');

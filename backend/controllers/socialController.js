@@ -215,17 +215,17 @@ const getSuggestions = async (req, res) => {
       });
     });
 
-    // 3. Fetch Details for Candidates
+    // 3. Fetch Details for Candidates (removed .limit() - was causing "User Not Found" bug)
     const candidates = await User.find({ _id: { $in: Array.from(candidateIds) } })
       .select('username userImage')
-      .limit(10);
+      .limit(50); // Increased from 10 to 50 for better discovery
 
     // 4. Build "Cards" with Top 3 Library Items
     const suggestions = await Promise.all(candidates.map(async (user) => {
       // Fetch latest posts for this user to build Top 3
       const posts = await Post.find({ user: user._id })
         .sort({ createdAt: -1 })
-        .limit(20);
+        .limit(10); // Reduced from 20 to 10 for faster queries
 
       const uniqueLibrary = [];
       const seenTmdb = new Set();

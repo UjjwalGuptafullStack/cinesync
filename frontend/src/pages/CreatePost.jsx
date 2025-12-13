@@ -104,10 +104,10 @@ function CreatePost() {
       // Create preview URL
       setPreviewUrl(URL.createObjectURL(finalFile));
       
-      const originalSizeMB = (file.size / 1024 / 1024).toFixed(2);
-      const compressedSizeMB = (finalFile.size / 1024 / 1024).toFixed(2);
-      
-      toast.success(`Image compressed: ${originalSizeMB}MB → ${compressedSizeMB}MB`);
+      // Silently compress - no toast needed (reduces notification spam)
+      // const originalSizeMB = (file.size / 1024 / 1024).toFixed(2);
+      // const compressedSizeMB = (finalFile.size / 1024 / 1024).toFixed(2);
+      // toast.success(`Image compressed: ${originalSizeMB}MB → ${compressedSizeMB}MB`);
     } catch (error) {
       console.error('Compression error:', error);
       toast.error('Failed to compress image. Please try a different image.');

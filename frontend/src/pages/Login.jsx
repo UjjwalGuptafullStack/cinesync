@@ -34,7 +34,7 @@ function Login() {
         localStorage.setItem('user', JSON.stringify(response.data));
       }
 
-      toast.success(`Welcome back, ${response.data.username}!`);
+      // Removed excessive welcome toast - redirect is enough feedback
       
       // 3. Redirect to Home Feed
       navigate('/'); 
