@@ -5,12 +5,13 @@ const Message = require('../models/Message');
 // @access  Private
 const sendMessage = async (req, res) => {
   try {
-    const { receiverId, content } = req.body;
+    const { receiverId, content, image } = req.body;
     
     const message = await Message.create({
       sender: req.user.id,
       receiver: receiverId,
-      content
+      content,
+      image: image || undefined // Only save if provided
     });
 
     const populatedMessage = await Message.findById(message._id)

@@ -1,7 +1,7 @@
 {
   "name": "backend",
-  "version": "8.1.0",
-  "description": "CineSync Backend - V8.1 with Google OAuth & Feed Ads",
+  "version": "8.3.0",
+  "description": "CineSync Backend - V8.3 with Smart Feed Context & Image Sharing",
   "main": "index.js",
   "scripts": {
     "start": "node server.js",

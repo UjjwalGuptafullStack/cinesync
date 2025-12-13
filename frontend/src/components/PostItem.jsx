@@ -56,20 +56,30 @@ function PostItem({ post: initialPost }) {
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
+  // Helper to get high-res poster
+  const getPosterUrl = (path, size = 'w780') => {
+    if (!path) return null;
+    return `https://image.tmdb.org/t/p/${size}${path}`;
+  };
+
   return (
     <div className="bg-anthracite-light border border-gray-800 rounded-xl overflow-hidden mb-6 shadow-lg">
       
-      {/* 1. HEADER SECTION */}
+      {/* 1. HEADER SECTION - Context Aware */}
       <div className="flex justify-between items-center p-4">
         <div className="flex items-center gap-3">
           {/* Avatar */}
-          <div className="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center text-white font-bold text-lg overflow-hidden">
-            {post.user?.userImage ? (
-              <img src={post.user.userImage} alt={post.user.username} className="w-full h-full object-cover" />
-            ) : (
-              post.user?.username.charAt(0).toUpperCase()
-            )}
-          </div>
+          <Link to={`/profile/${post.user?.username}`}>
+            <div className="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center text-white font-bold text-lg overflow-hidden">
+              {post.user?.userImage ? (
+                <img src={post.user.userImage} alt={post.user.username} className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-gradient-to-tr from-papaya to-red-600">
+                  {post.user?.username?.charAt(0).toUpperCase()}
+                </div>
+              )}
+            </div>
+          </Link>
           
           {/* User Info */}
           <div>
@@ -80,11 +90,21 @@ function PostItem({ post: initialPost }) {
           </div>
         </div>
 
-        {/* Right Side: Movie Tag & Delete */}
-        <div className="flex items-center gap-3">
-          <span className="bg-papaya text-black text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider truncate max-w-[120px] md:max-w-none">
+        {/* Right Side: Title Tag + Context Tag + Delete */}
+        <div className="flex items-center gap-2">
+          {/* Main Title Tag */}
+          <span className="bg-papaya text-black text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider truncate max-w-[120px] md:max-w-[150px]">
             {post.mediaTitle}
           </span>
+
+          {/* NEW: Specific Context Tag (Season/Episode) */}
+          {post.season && (
+            <span className="bg-gray-700 text-gray-200 text-xs font-bold px-2 py-1 rounded-full border border-gray-600 whitespace-nowrap">
+              {post.episode ? `S${post.season} E${post.episode}` : `Season ${post.season}`}
+            </span>
+          )}
+
+          {/* Delete Button (Owner Only) */}
           {user && user._id === post.user._id && (
             <button onClick={handleDelete} className="text-gray-500 hover:text-red-500 transition p-1">
               <FaTrash />
@@ -93,24 +113,45 @@ function PostItem({ post: initialPost }) {
         </div>
       </div>
 
-      {/* 2. IMAGE SECTION (The Big Stage) */}
-      <div className="relative w-full bg-black flex items-center justify-center overflow-hidden bg-anthracite-dark group">
-        {/* Main User Image */}
+      {/* 2. MAIN IMAGE STAGE - Smart Switch */}
+      <div className="relative w-full bg-black flex items-center justify-center overflow-hidden bg-anthracite-dark group min-h-[300px]">
+        
         {post.userImage ? (
-          <img 
-            src={post.userImage} 
-            alt="User upload" 
-            className={`w-full h-auto object-cover min-h-[300px] md:min-h-[400px] max-h-[600px] ${post.isSpoiler && !isRevealed ? 'blur-2xl scale-110' : ''} transition-all duration-500`}
-          />
+          // SCENARIO A: User uploaded a photo
+          <>
+            <img 
+              src={post.userImage} 
+              alt="User upload" 
+              className={`w-full h-auto object-cover max-h-[600px] ${post.isSpoiler && !isRevealed ? 'blur-2xl scale-110' : ''} transition-all duration-500`}
+            />
+            
+            {/* Show Mini Poster Overlay (Only if user uploaded their own image) */}
+            {post.posterPath && (
+              <div className="absolute bottom-4 right-4 w-20 md:w-24 shadow-2xl border-2 border-white/20 rounded-lg overflow-hidden z-10 transform rotate-3 group-hover:rotate-0 group-hover:scale-105 transition duration-500 ease-out">
+                <img src={getPosterUrl(post.posterPath, 'w200')} alt="Poster" className="w-full h-auto" />
+              </div>
+            )}
+          </>
         ) : (
-          // Fallback for no image
-          <div className="w-full py-32 flex flex-col items-center justify-center text-gray-700 bg-anthracite-dark/50">
-             <div className="text-5xl mb-4 opacity-50">📷</div>
-             <span className="text-sm italic opacity-70">No image attached</span>
+          // SCENARIO B: No User Image -> Show Official Poster as Main Content
+          <div className="w-full bg-gradient-to-b from-anthracite-dark to-black py-8 flex justify-center items-center">
+            {post.posterPath ? (
+              <img 
+                src={getPosterUrl(post.posterPath, 'w780')} 
+                alt="Official Poster" 
+                className={`rounded-lg shadow-2xl max-h-[500px] w-auto border border-gray-800 ${post.isSpoiler && !isRevealed ? 'blur-xl' : ''}`}
+              />
+            ) : (
+              // Absolute fallback if API fails
+              <div className="text-gray-600 py-20 italic text-center">
+                <div className="text-5xl mb-4 opacity-50">📷</div>
+                <span className="text-sm">No image available</span>
+              </div>
+            )}
           </div>
         )}
 
-        {/* Spoiler Curtain */}
+        {/* Spoiler Curtain (Works for both scenarios) */}
         {post.isSpoiler && !isRevealed && (
           <div className="absolute inset-0 flex items-center justify-center z-20 bg-black/40 backdrop-blur-sm transition-all">
             <button 
@@ -119,17 +160,6 @@ function PostItem({ post: initialPost }) {
             >
               Reveal Spoiler
             </button>
-          </div>
-        )}
-
-        {/* Movie Poster Overlay (Bottom Right) */}
-        {post.posterPath && (
-          <div className="absolute bottom-4 right-4 w-20 md:w-24 shadow-2xl border-2 border-white/20 rounded-lg overflow-hidden z-10 transform rotate-3 group-hover:rotate-0 group-hover:scale-105 transition duration-500 ease-out">
-            <img 
-              src={`https://image.tmdb.org/t/p/w200${post.posterPath}`} 
-              alt="Poster" 
-              className="w-full h-auto"
-            />
           </div>
         )}
       </div>
