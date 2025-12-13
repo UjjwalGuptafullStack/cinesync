@@ -22,6 +22,11 @@ const userSchema = mongoose.Schema(
       type: String,
       default: '',
     },
+    // Email Verification (Google OAuth users are auto-verified)
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
     // V8.0: Account Type (User vs Production House)
     role: {
       type: String,

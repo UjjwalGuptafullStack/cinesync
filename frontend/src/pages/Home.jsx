@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import api from '../api';
 import PostItem from '../components/PostItem';
+import FeedAd from '../components/FeedAd';
 import { FaStream } from 'react-icons/fa';
 
 function Home() {
@@ -41,8 +42,14 @@ function Home() {
       {/* Posts Feed */}
       <div className="space-y-6">
         {posts.length > 0 ? (
-          posts.map((post) => (
-            <PostItem key={post._id} post={post} />
+          posts.map((post, index) => (
+            <div key={post._id}>
+              {/* 1. Render the Post */}
+              <PostItem post={post} />
+
+              {/* 2. Inject Ad after every 5th post (index 4, 9, 14...) */}
+              {(index + 1) % 5 === 0 && <FeedAd />}
+            </div>
           ))
         ) : (
           <div className="text-center py-16 bg-anthracite-light rounded-lg border border-gray-800">

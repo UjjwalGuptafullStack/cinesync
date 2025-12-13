@@ -1,7 +1,10 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const { OAuth2Client } = require('google-auth-library');
 const User = require('../models/User');
 const Post = require('../models/Post');
+
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 // @desc    Register new user
 // @route   POST /api/users
@@ -226,6 +229,62 @@ const updateUserProfile = async (req, res) => {
   }
 };
 
+// @desc    Auth user & get token via Google OAuth
+// @route   POST /api/users/google-login
+// @access  Public
+const googleLogin = async (req, res) => {
+  const { token } = req.body;
+
+  try {
+    // 1. Verify the token with Google servers (Security Check)
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+    
+    // 2. Get user info from the payload
+    const { name, email, picture, sub } = ticket.getPayload();
+
+    // 3. Check if user exists in OUR database
+    let user = await User.findOne({ email });
+
+    if (user) {
+      // User exists -> Log them in
+      res.json({
+        _id: user._id,
+        username: user.username,
+        email: user.email,
+        userImage: user.userImage,
+        role: user.role,
+        token: generateToken(user._id),
+      });
+    } else {
+      // User doesn't exist -> Register them automatically (Verified!)
+      const randomPassword = Math.random().toString(36).slice(-8) + "!!Aa";
+      
+      user = await User.create({
+        username: name.split(' ').join('').toLowerCase() + Math.floor(Math.random() * 1000), // Ensure unique username
+        email: email,
+        password: await bcrypt.hash(randomPassword, 10),
+        userImage: picture,
+        isVerified: true, // Mark as verified since it came from Google
+      });
+
+      res.status(201).json({
+        _id: user._id,
+        username: user.username,
+        email: user.email,
+        userImage: user.userImage,
+        role: user.role,
+        token: generateToken(user._id),
+      });
+    }
+  } catch (error) {
+    console.error('Google login error:', error);
+    res.status(400).json({ message: 'Invalid Google Token' });
+  }
+};
+
 // Generate JWT
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -236,6 +295,7 @@ const generateToken = (id) => {
 module.exports = {
   registerUser,
   loginUser,
+  googleLogin,
   getUserProfile,
   updateUserProfile,
 };

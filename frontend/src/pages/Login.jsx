@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { GoogleLogin } from '@react-oauth/google';
 import { toast } from 'react-toastify';
 import api from '../api';
 
@@ -84,6 +85,35 @@ function Login() {
             Login
           </button>
         </form>
+
+        {/* Google OAuth Divider */}
+        <div className="my-6 border-t border-gray-700 pt-6">
+          <p className="text-center text-gray-400 text-sm mb-4">Or sign in with verified account</p>
+          
+          <div className="flex justify-center">
+            <GoogleLogin
+              onSuccess={async (credentialResponse) => {
+                try {
+                  // Send the token to backend
+                  const res = await api.post('/api/users/google-login', {
+                    token: credentialResponse.credential
+                  });
+                  
+                  localStorage.setItem('user', JSON.stringify(res.data));
+                  toast.success("Login Successful!");
+                  navigate('/');
+                } catch (error) {
+                  toast.error(error.response?.data?.message || "Google Login Failed");
+                }
+              }}
+              onError={() => {
+                toast.error("Login Failed");
+              }}
+              theme="filled_black"
+              shape="pill"
+            />
+          </div>
+        </div>
 
         <p className="mt-6 text-center text-gray-400">
           New here?{' '}
