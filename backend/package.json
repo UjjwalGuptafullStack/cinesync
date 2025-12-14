@@ -1,7 +1,7 @@
 {
   "name": "backend",
-  "version": "8.3.0",
-  "description": "CineSync Backend - V8.3 with Smart Feed Context & Image Sharing",
+  "version": "8.4.0",
+  "description": "CineSync Backend - V8.4 with Bug Fixes, Online Status & Theme Overhaul",
   "main": "index.js",
   "scripts": {
     "start": "node server.js",

@@ -10,7 +10,7 @@ const sendMessage = async (req, res) => {
     const message = await Message.create({
       sender: req.user.id,
       receiver: receiverId,
-      content,
+      content: content || "", // Empty string if only image sent
       image: image || undefined // Only save if provided
     });
 

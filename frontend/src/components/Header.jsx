@@ -27,6 +27,7 @@ function Header() {
 
   const onLogout = () => {
     localStorage.removeItem('user');
+    setUser(null); // Clear state immediately to update navbar
     navigate('/login');
   };
 
@@ -44,44 +45,55 @@ function Header() {
         </Link>
 
         {/* Navigation */}
-        <ul className="flex items-center space-x-4 md:space-x-6">
+        <ul className="flex items-center space-x-2 md:space-x-4">
           {user ? (
             <>
-              {/* Icon Links */}
-              <li>
-                <Link to="/find-friends" className="text-black/70 hover:text-papaya dark:text-gray-400 dark:hover:text-papaya text-xl transition" title="Search">
-                  <FaSearch />
+              {/* Friends - Pill Button */}
+              <li className="hidden md:block">
+                <Link 
+                  to="/find-friends" 
+                  className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 px-4 py-2 rounded-full border border-gray-300 dark:border-gray-600 transition group"
+                >
+                  <FaSearch className="text-papaya text-sm" />
+                  <span className="text-gray-800 dark:text-gray-200 font-semibold text-sm group-hover:text-black dark:group-hover:text-white">Friends</span>
                 </Link>
               </li>
               
-              {/* Messages - Prominent Pill Button */}
+              {/* Messages - Pill Button */}
               <li className="hidden md:block">
                 <Link 
                   to="/chat" 
-                  className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 px-4 py-2 rounded-full border border-gray-300 dark:border-gray-600 transition group relative"
+                  className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 px-4 py-2 rounded-full border border-gray-300 dark:border-gray-600 transition group"
                 >
-                  <div className="relative">
-                    <FaComments className="text-papaya text-lg" />
-                    {/* Unread Badge - You can add logic later to show actual count */}
-                    {/* {unreadCount > 0 && (
-                      <span className="absolute -top-2 -right-2 bg-red-600 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full border border-anthracite">
-                        {unreadCount}
-                      </span>
-                    )} */}
-                  </div>
-                  <span className="text-gray-800 dark:text-gray-200 font-bold text-sm group-hover:text-black dark:group-hover:text-white">Messages</span>
+                  <FaComments className="text-papaya text-sm" />
+                  <span className="text-gray-800 dark:text-gray-200 font-semibold text-sm group-hover:text-black dark:group-hover:text-white">Messages</span>
                 </Link>
               </li>
               
-              {/* Mobile Messages Icon */}
+              {/* Pings (Notifications) - Pill Button */}
+              <li className="hidden md:block">
+                <Link 
+                  to="/notifications" 
+                  className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 px-4 py-2 rounded-full border border-gray-300 dark:border-gray-600 transition group"
+                >
+                  <FaBell className="text-papaya text-sm" />
+                  <span className="text-gray-800 dark:text-gray-200 font-semibold text-sm group-hover:text-black dark:group-hover:text-white">Pings</span>
+                </Link>
+              </li>
+              
+              {/* Mobile Icons (shown on small screens) */}
               <li className="md:hidden">
-                <Link to="/chat" className="text-black/70 hover:text-papaya dark:text-gray-400 dark:hover:text-papaya text-xl transition relative" title="Messages">
+                <Link to="/find-friends" className="text-black/70 hover:text-papaya dark:text-gray-400 dark:hover:text-papaya text-xl transition" title="Friends">
+                  <FaSearch />
+                </Link>
+              </li>
+              <li className="md:hidden">
+                <Link to="/chat" className="text-black/70 hover:text-papaya dark:text-gray-400 dark:hover:text-papaya text-xl transition" title="Messages">
                   <FaComments />
                 </Link>
               </li>
-              
-              <li>
-                <Link to="/notifications" className="text-black/70 hover:text-papaya dark:text-gray-400 dark:hover:text-papaya text-xl transition" title="Notifications">
+              <li className="md:hidden">
+                <Link to="/notifications" className="text-black/70 hover:text-papaya dark:text-gray-400 dark:hover:text-papaya text-xl transition" title="Pings">
                   <FaBell />
                 </Link>
               </li>

@@ -13,6 +13,13 @@ function ChatPage() {
   const currentUserRef = useRef(JSON.parse(localStorage.getItem('user')));
   const isMountedRef = useRef(true);
 
+  // Helper to check if user is online (active in last 2 minutes)
+  const isOnline = (lastActiveDate) => {
+    if (!lastActiveDate) return false;
+    const diff = new Date() - new Date(lastActiveDate);
+    return diff < 2 * 60 * 1000; // Online if active in last 2 mins
+  };
+
   const fetchMessages = useCallback(async () => {
     try {
       const res = await api.get(`/api/chat/${userId}`);
@@ -123,10 +130,17 @@ function ChatPage() {
             </div>
             <div className="flex-1">
               <h2 className="font-bold text-white text-lg">@{otherUser.username}</h2>
-              <span className="text-xs text-green-400 flex items-center gap-1 font-medium">
-                <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></div>
-                Online
-              </span>
+              {isOnline(otherUser.lastActive) ? (
+                <span className="text-xs text-green-400 flex items-center gap-1 font-medium">
+                  <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></div>
+                  Online
+                </span>
+              ) : (
+                <span className="text-xs text-gray-400 flex items-center gap-1 font-medium">
+                  <div className="w-2 h-2 rounded-full bg-gray-500"></div>
+                  Offline
+                </span>
+              )}
             </div>
           </>
         ) : (

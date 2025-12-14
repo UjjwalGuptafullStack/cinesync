@@ -39,6 +39,8 @@ const userSchema = mongoose.Schema(
     // RENAMED: Social Graph (Tracking & Audience)
     audience: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }], // Formerly 'followers'
     tracking: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }], // Formerly 'following'
+    // V8.3: Online Status
+    lastActive: { type: Date, default: Date.now },
   },
   {
     timestamps: true, // Automatically creates 'createdAt' and 'updatedAt' fields

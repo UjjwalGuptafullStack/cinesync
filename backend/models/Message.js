@@ -4,7 +4,7 @@ const messageSchema = mongoose.Schema(
   {
     sender: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     receiver: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    content: { type: String, required: true },
+    content: { type: String }, // Optional - user can send image only
     image: { type: String }, // Cloudinary URL for shared images
     read: { type: Boolean, default: false },
   },

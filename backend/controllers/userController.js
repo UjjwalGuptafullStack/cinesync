@@ -292,10 +292,23 @@ const generateToken = (id) => {
   });
 };
 
+// @desc    Update user's online status (heartbeat)
+// @route   PUT /api/users/ping
+// @access  Private
+const pingStatus = async (req, res) => {
+  try {
+    await User.findByIdAndUpdate(req.user._id, { lastActive: new Date() });
+    res.sendStatus(200);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
   googleLogin,
   getUserProfile,
   updateUserProfile,
+  pingStatus,
 };

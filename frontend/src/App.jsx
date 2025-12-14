@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { useEffect } from 'react';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { ThemeProvider } from './context/ThemeContext';
@@ -16,8 +17,26 @@ import ChatList from './pages/ChatList';
 import ChatPage from './pages/ChatPage';
 import MediaHub from './pages/MediaHub'; // V8.0: Media Hub
 import NotFound from './pages/NotFound';
+import api from './api';
 
 function App() {
+  // V8.3: Heartbeat for online status
+  useEffect(() => {
+    const sendPing = () => {
+      if (localStorage.getItem('user')) {
+        api.put('/api/users/ping').catch(err => console.error('Ping failed:', err));
+      }
+    };
+
+    // 1. Ping immediately on load
+    sendPing();
+
+    // 2. Ping every 60 seconds
+    const interval = setInterval(sendPing, 60000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <ThemeProvider>
       <Router>
