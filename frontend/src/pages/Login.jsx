@@ -19,7 +19,7 @@ function Login() {
       const res = await api.post('/api/users/login', formData);
       localStorage.setItem('user', JSON.stringify(res.data));
       toast.success("Welcome back!");
-      navigate('/');
+      navigate('/feed');
       window.location.reload();
     } catch (error) {
       toast.error(error.response?.data?.message || "Login failed");
@@ -31,7 +31,7 @@ function Login() {
       const res = await api.post('/api/users/google-login', { token: credentialResponse.credential });
       localStorage.setItem('user', JSON.stringify(res.data));
       toast.success("Google Login Successful!");
-      navigate('/');
+      navigate('/feed');
       window.location.reload();
     } catch (error) {
       toast.error("Google Login Failed");
@@ -39,7 +39,7 @@ function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 md:p-0">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 md:p-0 w-full">
       
       {/* --- MAX WIDTH CONTAINER (Keeps content centered on huge screens) --- */}
       <div className="flex w-full max-w-4xl gap-8 items-center justify-center">
@@ -85,17 +85,17 @@ function Login() {
         <div className="w-full md:w-[350px] flex flex-col gap-4">
           
           {/* CARD 1: Login Inputs */}
-          <div className="bg-white border border-gray-300 p-8 rounded-sm shadow-sm flex flex-col items-center">
+          <div className="bg-transparent p-8 flex flex-col items-center">
             
             {/* Logo */}
             <div className="flex items-center gap-2 mb-8">
                <div className="w-8 h-8 bg-papaya rounded-lg flex items-center justify-center -rotate-6">
                  <FaPlay className="text-black text-xs ml-0.5" />
                </div>
-               <h1 className="text-3xl font-bold tracking-tighter text-gray-900">CineSync</h1>
+               <h1 className="text-3xl font-bold tracking-tighter text-gray-800">CineSync</h1>
             </div>
 
-            <p className="text-gray-500 font-semibold mb-6 text-center text-sm">
+            <p className="text-gray-600 font-semibold mb-6 text-center text-sm">
                 Welcome back, we were waiting for you!
             </p>
 
@@ -105,7 +105,7 @@ function Login() {
                 name="email"
                 placeholder="Email" 
                 onChange={handleChange}
-                className="bg-gray-50 border border-gray-300 text-sm rounded-sm focus:ring-1 focus:ring-gray-400 focus:border-gray-400 block w-full p-2.5 outline-none text-gray-900 placeholder-gray-500"
+                className="bg-white border border-gray-300 text-sm rounded-sm focus:ring-1 focus:ring-papaya focus:border-papaya block w-full p-2.5 outline-none text-gray-900 placeholder-gray-500 shadow-sm"
                 required
               />
               <input 
@@ -113,7 +113,7 @@ function Login() {
                 name="password"
                 placeholder="Password" 
                 onChange={handleChange}
-                className="bg-gray-50 border border-gray-300 text-sm rounded-sm focus:ring-1 focus:ring-gray-400 focus:border-gray-400 block w-full p-2.5 outline-none text-gray-900 placeholder-gray-500"
+                className="bg-white border border-gray-300 text-sm rounded-sm focus:ring-1 focus:ring-papaya focus:border-papaya block w-full p-2.5 outline-none text-gray-900 placeholder-gray-500 shadow-sm"
                 required
               />
 
@@ -150,9 +150,9 @@ function Login() {
           </div>
 
           {/* CARD 2: Sign Up Link (Instagram Style) */}
-          <div className="bg-white border border-gray-300 p-4 rounded-sm shadow-sm text-center">
-            <p className="text-sm text-gray-800">
-              Don't have an account? <Link to="/register" className="text-papaya font-bold">Sign up</Link>
+          <div className="bg-transparent p-4 text-center">
+            <p className="text-sm text-gray-700">
+              Don't have an account? <Link to="/register" className="text-papaya font-bold hover:text-orange-600">Sign up</Link>
             </p>
           </div>
 

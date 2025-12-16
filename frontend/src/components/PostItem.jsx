@@ -86,7 +86,11 @@ function PostItem({ post: initialPost }) {
             <Link to={`/profile/${post.user?.username}`} className="font-bold text-white hover:text-papaya transition text-sm md:text-base">
               @{post.user?.username}
             </Link>
-            <p className="text-xs text-gray-500">{formatDate(post.createdAt)}</p>
+            <p className="text-xs text-gray-400 flex items-center gap-1">
+              {new Date(post.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+              <span>•</span>
+              {new Date(post.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            </p>
           </div>
         </div>
 

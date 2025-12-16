@@ -20,6 +20,18 @@ function ChatPage() {
     return diff < 2 * 60 * 1000; // Online if active in last 2 mins
   };
 
+  // Helper to format message dates for separators
+  const getMessageDate = (timestamp) => {
+    const date = new Date(timestamp);
+    const today = new Date();
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    if (date.toDateString() === today.toDateString()) return "Today";
+    if (date.toDateString() === yesterday.toDateString()) return "Yesterday";
+    return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+  };
+
   const fetchMessages = useCallback(async () => {
     try {
       const res = await api.get(`/api/chat/${userId}`);
@@ -153,51 +165,69 @@ function ChatPage() {
 
       {/* Messages Area - Bubble Layout */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-anthracite/50">
-        {messages.map((msg) => {
+        {messages.map((msg, index) => {
           const isMe = msg.sender._id === currentUserRef.current._id;
           const messageSender = msg.sender;
+          
+          // Check if we need a date separator
+          const showDateSeparator = 
+            index === 0 || 
+            getMessageDate(messages[index - 1].createdAt) !== getMessageDate(msg.createdAt);
+
           return (
-            <div key={msg._id} className={`flex gap-2 ${isMe ? 'justify-end' : 'justify-start'}`}>
-              {!isMe && (
-                <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 mt-1 border border-gray-600">
-                  {messageSender.userImage ? (
-                    <img src={messageSender.userImage} alt={messageSender.username} className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full bg-gray-700 flex items-center justify-center text-white font-bold text-xs">
-                      {messageSender.username.charAt(0).toUpperCase()}
-                    </div>
-                  )}
+            <div key={msg._id}>
+              {/* DATE SEPARATOR */}
+              {showDateSeparator && (
+                <div className="flex justify-center my-4">
+                  <span className="bg-gray-800 text-gray-400 text-xs px-3 py-1 rounded-full">
+                    {getMessageDate(msg.createdAt)}
+                  </span>
                 </div>
               )}
-              <div className={`max-w-[70%] px-4 py-3 rounded-2xl text-sm shadow ${
-                isMe 
-                  ? 'bg-papaya text-black rounded-tr-sm font-medium' 
-                  : 'bg-gray-700 text-white rounded-tl-sm'
-              }`}>
-                {msg.image && (
-                  <img 
-                    src={msg.image} 
-                    alt="attachment" 
-                    className="rounded-lg mb-2 max-w-full cursor-pointer hover:opacity-90 transition"
-                    onClick={() => window.open(msg.image, '_blank')}
-                  />
+
+              {/* MESSAGE BUBBLE */}
+              <div className={`flex gap-2 ${isMe ? 'justify-end' : 'justify-start'}`}>
+                {!isMe && (
+                  <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 mt-1 border border-gray-600">
+                    {messageSender.userImage ? (
+                      <img src={messageSender.userImage} alt={messageSender.username} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full bg-gray-700 flex items-center justify-center text-white font-bold text-xs">
+                        {messageSender.username.charAt(0).toUpperCase()}
+                      </div>
+                    )}
+                  </div>
                 )}
-                <p className="leading-relaxed">{msg.content}</p>
-                <span className="text-[10px] opacity-70 block text-right mt-1">
-                  {new Date(msg.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                </span>
-              </div>
-              {isMe && (
-                <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 mt-1 border border-papaya">
-                  {currentUserRef.current.userImage ? (
-                    <img src={currentUserRef.current.userImage} alt={currentUserRef.current.username} className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-papaya to-red-600 flex items-center justify-center text-black font-bold text-xs">
-                      {currentUserRef.current.username.charAt(0).toUpperCase()}
-                    </div>
+                <div className={`max-w-[70%] px-4 py-3 rounded-2xl text-sm shadow ${
+                  isMe 
+                    ? 'bg-papaya text-black rounded-tr-sm font-medium' 
+                    : 'bg-gray-700 text-white rounded-tl-sm'
+                }`}>
+                  {msg.image && (
+                    <img 
+                      src={msg.image} 
+                      alt="attachment" 
+                      className="rounded-lg mb-2 max-w-full cursor-pointer hover:opacity-90 transition"
+                      onClick={() => window.open(msg.image, '_blank')}
+                    />
                   )}
+                  <p className="leading-relaxed">{msg.content}</p>
+                  <span className="text-[10px] opacity-70 block text-right mt-1">
+                    {new Date(msg.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                  </span>
                 </div>
-              )}
+                {isMe && (
+                  <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 mt-1 border border-papaya">
+                    {currentUserRef.current.userImage ? (
+                      <img src={currentUserRef.current.userImage} alt={currentUserRef.current.username} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-papaya to-red-600 flex items-center justify-center text-black font-bold text-xs">
+                        {currentUserRef.current.username.charAt(0).toUpperCase()}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
           );
         })}

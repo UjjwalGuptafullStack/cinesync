@@ -38,7 +38,7 @@ function Register() {
       const res = await api.post('/api/users', userData);
       localStorage.setItem('user', JSON.stringify(res.data));
       toast.success("Account created successfully!");
-      navigate('/');
+      navigate('/feed');
       window.location.reload();
     } catch (error) {
       toast.error(error.response?.data?.message || "Registration failed");
@@ -46,7 +46,7 @@ function Register() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 md:p-0">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 md:p-0 w-full">
       
       {/* --- MAX WIDTH CONTAINER --- */}
       <div className="flex w-full max-w-4xl gap-8 items-center justify-center">
@@ -92,17 +92,17 @@ function Register() {
         <div className="w-full md:w-[350px] flex flex-col gap-4">
           
           {/* CARD 1: Register Inputs */}
-          <div className="bg-white border border-gray-300 p-8 rounded-sm shadow-sm flex flex-col items-center">
+          <div className="bg-transparent p-8 flex flex-col items-center">
             
             {/* Logo */}
             <div className="flex items-center gap-2 mb-6">
                <div className="w-8 h-8 bg-papaya rounded-lg flex items-center justify-center -rotate-6">
                  <FaPlay className="text-black text-xs ml-0.5" />
                </div>
-               <h1 className="text-3xl font-bold tracking-tighter text-gray-900">CineSync</h1>
+               <h1 className="text-3xl font-bold tracking-tighter text-gray-800">CineSync</h1>
             </div>
 
-            <p className="text-gray-500 font-semibold mb-4 text-center text-sm">
+            <p className="text-gray-600 font-semibold mb-4 text-center text-sm">
                 Sign up to see what your friends are watching
             </p>
 
@@ -112,7 +112,7 @@ function Register() {
                 name="email"
                 placeholder="Email" 
                 onChange={handleChange}
-                className="bg-gray-50 border border-gray-300 text-sm rounded-sm focus:ring-1 focus:ring-gray-400 focus:border-gray-400 block w-full p-2.5 outline-none text-gray-900 placeholder-gray-500"
+                className="bg-white border border-gray-300 text-sm rounded-sm focus:ring-1 focus:ring-papaya focus:border-papaya block w-full p-2.5 outline-none text-gray-900 placeholder-gray-500 shadow-sm"
                 required
               />
               <input 
@@ -120,7 +120,7 @@ function Register() {
                 name="username"
                 placeholder="Username" 
                 onChange={handleChange}
-                className="bg-gray-50 border border-gray-300 text-sm rounded-sm focus:ring-1 focus:ring-gray-400 focus:border-gray-400 block w-full p-2.5 outline-none text-gray-900 placeholder-gray-500"
+                className="bg-white border border-gray-300 text-sm rounded-sm focus:ring-1 focus:ring-papaya focus:border-papaya block w-full p-2.5 outline-none text-gray-900 placeholder-gray-500 shadow-sm"
                 required
               />
               <input 
@@ -128,7 +128,7 @@ function Register() {
                 name="password"
                 placeholder="Password" 
                 onChange={handleChange}
-                className="bg-gray-50 border border-gray-300 text-sm rounded-sm focus:ring-1 focus:ring-gray-400 focus:border-gray-400 block w-full p-2.5 outline-none text-gray-900 placeholder-gray-500"
+                className="bg-white border border-gray-300 text-sm rounded-sm focus:ring-1 focus:ring-papaya focus:border-papaya block w-full p-2.5 outline-none text-gray-900 placeholder-gray-500 shadow-sm"
                 required
               />
               <input 
@@ -136,12 +136,12 @@ function Register() {
                 name="confirmPassword"
                 placeholder="Confirm Password" 
                 onChange={handleChange}
-                className="bg-gray-50 border border-gray-300 text-sm rounded-sm focus:ring-1 focus:ring-gray-400 focus:border-gray-400 block w-full p-2.5 outline-none text-gray-900 placeholder-gray-500"
+                className="bg-white border border-gray-300 text-sm rounded-sm focus:ring-1 focus:ring-papaya focus:border-papaya block w-full p-2.5 outline-none text-gray-900 placeholder-gray-500 shadow-sm"
                 required
               />
 
               {/* Production House Toggle */}
-              <div className="flex items-center gap-2 mt-2 p-3 bg-gray-50 rounded-sm border border-gray-300">
+              <div className="flex items-center gap-2 mt-2 p-3 bg-white rounded-sm border border-gray-300 shadow-sm">
                 <input
                   type="checkbox"
                   name="isProduction"
@@ -169,9 +169,9 @@ function Register() {
           </div>
 
           {/* CARD 2: Login Link (Instagram Style) */}
-          <div className="bg-white border border-gray-300 p-4 rounded-sm shadow-sm text-center">
-            <p className="text-sm text-gray-800">
-              Have an account? <Link to="/login" className="text-papaya font-bold">Log in</Link>
+          <div className="bg-transparent p-4 text-center">
+            <p className="text-sm text-gray-700">
+              Have an account? <Link to="/login" className="text-papaya font-bold hover:text-orange-600">Log in</Link>
             </p>
           </div>
 

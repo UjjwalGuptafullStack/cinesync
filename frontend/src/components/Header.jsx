@@ -38,7 +38,7 @@ function Header() {
       
       <div className="container mx-auto px-4 h-16 flex justify-between items-center">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-1 hover:opacity-80 transition">
+        <Link to={user ? "/feed" : "/"} className="flex items-center gap-1 hover:opacity-80 transition">
           <span className="text-2xl font-bold tracking-tight">
             <span className="text-black dark:text-white">Cine</span><span className="text-white dark:text-papaya">Sync</span>
           </span>
