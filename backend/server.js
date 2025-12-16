@@ -9,6 +9,7 @@ const socialRoutes = require('./routes/socialRoutes');
 const commentRoutes = require('./routes/commentRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
 const chatRoutes = require('./routes/chatRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 const { startCleanupJob } = require('./utils/cleanup');
 
 // Load environment variables
@@ -57,6 +58,7 @@ app.use('/api/social', socialRoutes);
 app.use('/api/comments', commentRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/chat', chatRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Simple Route for testing
 app.get('/', (req, res) => {

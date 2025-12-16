@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../api';
 import PostItem from '../components/PostItem';
-import { FaUserSecret, FaLock } from 'react-icons/fa';
+import { FaUserSecret, FaLock, FaCheckCircle } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 
 function Profile() {
@@ -89,11 +89,38 @@ function Profile() {
 
         {/* Identity Section */}
         <div className="flex-1 text-center md:text-left z-10">
-          <h1 className="text-3xl font-bold text-white mb-1">@{profile.username}</h1>
-          <p className="text-gray-400 text-sm mb-4 uppercase tracking-widest font-semibold">
+          <div className="flex items-center justify-center md:justify-start gap-2 mb-1">
+            <h1 className="text-3xl font-bold text-white">@{profile.username}</h1>
+            
+            {/* VERIFIED BADGE for Production Houses */}
+            {profile.role === 'production' && (
+              <div className="relative group">
+                {/* Gold Checkmark for Studios */}
+                <FaCheckCircle className="text-yellow-500 text-2xl" />
+                
+                {/* Tooltip explaining status */}
+                <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block bg-gray-800 text-xs p-3 rounded-lg w-56 z-10 shadow-xl border border-gray-700">
+                  {profile.isClaimed 
+                    ? "✅ Official Verified Production House Account" 
+                    : "📦 Official Archive Page (Unclaimed). This library is auto-managed by CineSync."}
+                </div>
+              </div>
+            )}
+          </div>
+
+          <p className="text-gray-400 text-sm mb-2 uppercase tracking-widest font-semibold">
             {profile.role === 'production' && <span className="text-papaya font-bold mr-2">🎬 PRODUCTION HOUSE</span>}
             Joined {new Date(profile.createdAt).getFullYear()}
           </p>
+
+          {/* STATUS BADGE for Unclaimed Accounts */}
+          {!profile.isClaimed && profile.role === 'production' && (
+            <div className="mb-4">
+              <span className="bg-gray-700 text-gray-300 text-xs px-3 py-1 rounded-full border border-gray-600 inline-flex items-center gap-1">
+                ⚠️ Official Archive (Inactive)
+              </span>
+            </div>
+          )}
 
           {/* Stats Boxes - Different for Production Houses */}
           <div className="flex justify-center md:justify-start gap-4 mb-4">
@@ -146,24 +173,47 @@ function Profile() {
             )}
           </div>
         </div>
-        
-        {/* Request Access Button */}
-        {profile.isPrivate && (
-          <div className="mt-6 md:mt-0">
-            <button 
-              onClick={handleFollowRequest}
-              disabled={requestSent}
-              className={`px-8 py-3 rounded font-bold uppercase tracking-wider transition shadow-lg ${
-                requestSent 
-                  ? 'bg-gray-600 text-gray-300 cursor-not-allowed' 
-                  : 'bg-papaya hover:bg-papaya-dark text-black'
-              }`}
-            >
-              {requestSent ? 'Request Pending' : 'Request Access'}
-            </button>
-          </div>
-        )}
       </div>
+
+      {/* "Claim This Page" Banner for Unclaimed Production Houses */}
+      {!profile.isClaimed && profile.role === 'production' && (
+        <div className="mb-8 p-6 bg-gradient-to-r from-anthracite-light to-anthracite border-2 border-yellow-600 rounded-xl flex flex-col md:flex-row justify-between items-center gap-4 shadow-lg">
+          <div className="text-center md:text-left">
+            <h3 className="text-xl font-bold text-white mb-2 flex items-center gap-2 justify-center md:justify-start">
+              <FaCheckCircle className="text-yellow-500" />
+              Official {profile.username} Archive
+            </h3>
+            <p className="text-sm text-gray-300 max-w-2xl">
+              Are you a representative of <strong className="text-papaya">{profile.username}</strong>? 
+              This page has been pre-created to aggregate your content and audience. 
+              Claim it to gain full control, post updates, and engage with your {profile.audience?.length || 0} followers.
+            </p>
+          </div>
+          <Link 
+            to="/contact-sales" 
+            className="bg-yellow-500 hover:bg-yellow-600 text-black px-6 py-3 rounded-full font-bold text-sm shadow-lg transition whitespace-nowrap"
+          >
+            Claim This Page →
+          </Link>
+        </div>
+      )}
+
+      {/* Request Access Button for Private Accounts */}
+      {profile.isPrivate && (
+        <div className="bg-anthracite-light p-8 rounded-xl shadow-lg mb-8 border border-gray-800">
+          <button 
+            onClick={handleFollowRequest}
+            disabled={requestSent}
+            className={`px-8 py-3 rounded font-bold uppercase tracking-wider transition shadow-lg ${
+              requestSent 
+                ? 'bg-gray-600 text-gray-300 cursor-not-allowed' 
+                : 'bg-papaya hover:bg-papaya-dark text-black'
+            }`}
+          >
+            {requestSent ? 'Request Pending' : 'Request Access'}
+          </button>
+        </div>
+      )}
 
       {/* 2. Standard Navigation Tabs */}
       <div className="flex border-b border-gray-800 mb-8 sticky top-16 bg-anthracite z-20">

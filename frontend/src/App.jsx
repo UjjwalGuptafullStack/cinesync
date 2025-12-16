@@ -17,13 +17,15 @@ import Settings from './pages/Settings';
 import ChatList from './pages/ChatList';
 import ChatPage from './pages/ChatPage';
 import MediaHub from './pages/MediaHub'; // V8.0: Media Hub
+import ClaimAccount from './pages/ClaimAccount'; // V8.6: Ghost Account Claiming
+import ContactSales from './pages/ContactSales'; // V8.6: Studio Contact Form
 import NotFound from './pages/NotFound';
 import api from './api';
 
 function AppContent() {
   const location = useLocation();
-  const hideHeaderPaths = ['/', '/login', '/register'];
-  const shouldShowHeader = !hideHeaderPaths.includes(location.pathname);
+  const hideHeaderPaths = ['/', '/login', '/register', '/claim-account'];
+  const shouldShowHeader = !hideHeaderPaths.includes(location.pathname) && !location.pathname.startsWith('/claim-account/');
 
   return (
     <div className="min-h-screen bg-anthracite text-white">
@@ -35,6 +37,8 @@ function AppContent() {
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/claim-account/:token" element={<ClaimAccount />} />
+          <Route path="/contact-sales" element={<ContactSales />} />
           
           {/* Protected Routes */}
           <Route path="/feed" element={<Home />} />

@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
 import api from '../api';
 import { toast } from 'react-toastify';
-import { FaPlay, FaHeart, FaComment } from 'react-icons/fa';
+import { FaPlay, FaHeart, FaComment, FaStar } from 'react-icons/fa';
 
 function Login() {
   const [formData, setFormData] = useState({ email: '', password: '' });
@@ -45,39 +45,40 @@ function Login() {
       <div className="flex w-full max-w-4xl gap-8 items-center justify-center">
 
         {/* ================= LEFT SIDE: THE PHONE SHOWCASE (Hidden on Mobile) ================= */}
-        <div className="hidden md:flex relative w-1/2 justify-end">
+        <div className="hidden md:flex relative justify-end perspective-1000">
             
             {/* PHONE FRAME */}
-            <div className="relative border-[12px] border-gray-900 rounded-[2.5rem] h-[550px] w-[280px] bg-black shadow-2xl overflow-hidden z-10">
+            <div className="relative border-[14px] border-gray-900 rounded-[3rem] h-[600px] w-[300px] bg-black shadow-2xl overflow-hidden z-10 transform rotate-[-5deg] hover:rotate-0 transition duration-500 ease-out">
                 {/* Notch */}
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 h-6 w-32 bg-gray-900 rounded-b-xl z-20"></div>
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 h-7 w-32 bg-gray-900 rounded-b-xl z-20"></div>
                 
-                {/* SCREEN CONTENT (Grid of Posters) */}
-                <div className="grid grid-cols-2 gap-1 p-2 mt-6 h-full bg-anthracite overflow-hidden opacity-90">
-                    {/* Batman */}
-                    <img src="https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg" className="rounded mb-1 w-full h-40 object-cover" alt="Batman" />
-                    {/* Stranger Things */}
-                    <img src="https://image.tmdb.org/t/p/w500/49WJfeN0moxb9IPfGn8AIqMGskD.jpg" className="rounded mb-1 w-full h-40 object-cover" alt="Stranger Things" />
-                    {/* Oppenheimer */}
-                    <img src="https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg" className="rounded mb-1 w-full h-40 object-cover" alt="Oppenheimer" />
-                    {/* Barbie */}
-                    <img src="https://image.tmdb.org/t/p/w500/iuFNMS8U5cb6xfzi51Dbkovj7vM.jpg" className="rounded mb-1 w-full h-40 object-cover" alt="Barbie" />
-                    {/* Rush (F1) */}
-                    <img src="https://image.tmdb.org/t/p/w500/cjEepSetYE1vj4tcivilian8oyB0l6.jpg" className="rounded mb-1 w-full h-40 object-cover" alt="Rush" />
-                    {/* Interstellar */}
-                    <img src="https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg" className="rounded mb-1 w-full h-40 object-cover" alt="Interstellar" />
+                {/* SCREEN CONTENT - Grid of Posters */}
+                <div className="grid grid-cols-2 gap-1 p-2 mt-8 h-full bg-anthracite opacity-90">
+                    <img src="https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg" className="rounded-lg w-full h-48 object-cover" alt="Batman" />
+                    <img src="https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg" className="rounded-lg w-full h-48 object-cover" alt="Oppenheimer" />
+                    <img src="https://image.tmdb.org/t/p/w500/iuFNMS8U5cb6xfzi51Dbkovj7vM.jpg" className="rounded-lg w-full h-48 object-cover" alt="Barbie" />
+                    <img src="https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg" className="rounded-lg w-full h-48 object-cover" alt="Interstellar" />
+                    {/* FIXED: Replaced broken "Rush" link with "The Matrix" */}
+                    <img src="https://image.tmdb.org/t/p/w500/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg" className="rounded-lg w-full h-48 object-cover" alt="The Matrix" />
+                    <img src="https://image.tmdb.org/t/p/w500/r2J02Z2OpNTctfOSN1Ydgii51I3.jpg" className="rounded-lg w-full h-48 object-cover" alt="Arrival" />
                 </div>
             </div>
 
-            {/* FLOATING ICONS (Behind/Around Phone) - The "3D" Feel */}
-            <div className="absolute top-20 right-10 bg-white p-3 rounded-full shadow-xl animate-bounce z-20 text-red-500">
-                <FaHeart className="text-xl" />
+            {/* FIXED: Floating Icons (Positioned Further Out & Better Colors) */}
+            
+            {/* Icon 1: Top Left - Star (Rating) */}
+            <div className="absolute top-24 -left-12 bg-gray-800 p-4 rounded-2xl shadow-xl z-20 animate-bounce delay-100 border border-gray-700">
+                <FaStar className="text-2xl text-papaya" />
             </div>
-            <div className="absolute bottom-32 right-12 bg-white p-3 rounded-full shadow-xl animate-pulse z-20 text-blue-500 delay-700">
-                <FaComment className="text-xl" />
+
+            {/* Icon 2: Bottom Right - Heart (Like) */}
+            <div className="absolute bottom-32 -right-12 bg-white p-4 rounded-2xl shadow-xl z-20 animate-bounce delay-300 border border-red-300">
+                <FaHeart className="text-2xl text-red-500" />
             </div>
-            <div className="absolute top-40 right-48 bg-papaya p-2 rounded-lg shadow-lg -rotate-12 z-0 opacity-80">
-                <span className="text-black font-bold text-xs">JUST WATCHED</span>
+
+            {/* Icon 3: Middle Right - Comment (Chat) */}
+            <div className="absolute top-1/2 -right-16 bg-papaya p-3 rounded-full shadow-lg z-0 opacity-80 animate-pulse">
+                <FaComment className="text-xl text-black" />
             </div>
         </div>
 

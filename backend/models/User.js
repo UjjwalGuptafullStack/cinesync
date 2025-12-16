@@ -10,13 +10,12 @@ const userSchema = mongoose.Schema(
     },
     email: {
       type: String,
-      required: [true, 'Please add an email'],
       unique: true,
+      sparse: true, // Allows multiple nulls for ghost accounts
       index: true, // ⚡ Speed up email searches
     },
     password: {
-      type: String,
-      required: [true, 'Please add a password'],
+      type: String, // Optional for ghost accounts
     },
     userImage: {
       type: String,
@@ -30,9 +29,26 @@ const userSchema = mongoose.Schema(
     // V8.0: Account Type (User vs Production House)
     role: {
       type: String,
-      enum: ['user', 'production'],
+      enum: ['user', 'production', 'admin'],
       default: 'user',
       index: true, // ⚡ Speed up production house queries
+    },
+    // V8.6: Ghost Account System
+    isClaimed: {
+      type: Boolean,
+      default: true, // True for normal users, False for Ghost Studios
+    },
+    tmdbCompanyId: {
+      type: String,
+      unique: true,
+      sparse: true, // Allows nulls, e.g., "174" for Warner Bros
+      index: true,
+    },
+    website: {
+      type: String,
+    },
+    claimToken: {
+      type: String, // Secure token for claiming ghost accounts
     },
     // V8.0: Library/Filmography (TMDB IDs)
     library: [{ type: String }], // For users: watched content, For studios: filmography
