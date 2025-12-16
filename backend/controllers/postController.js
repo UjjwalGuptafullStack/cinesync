@@ -158,4 +158,30 @@ const getPostsByMedia = async (req, res) => {
   }
 };
 
-module.exports = { getPosts, createPost, deletePost, getPostsByMedia };
+// @desc    Get trending movies/shows (most posts)
+// @route   GET /api/posts/trending
+// @access  Public
+const getTrending = async (req, res) => {
+  try {
+    // Aggregate posts by tmdbId and count them
+    const trending = await Post.aggregate([
+      {
+        $group: {
+          _id: '$tmdbId',
+          count: { $sum: 1 },
+          mediaTitle: { $first: '$mediaTitle' },
+          posterPath: { $first: '$posterPath' },
+          mediaType: { $first: '$mediaType' }
+        }
+      },
+      { $sort: { count: -1 } },
+      { $limit: 4 }
+    ]);
+
+    res.json(trending);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports = { getPosts, createPost, deletePost, getPostsByMedia, getTrending };

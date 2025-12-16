@@ -1,7 +1,27 @@
 import { Link } from 'react-router-dom';
 import { FaPlay, FaStar, FaComments, FaFilm } from 'react-icons/fa';
+import { useState, useEffect } from 'react';
+import api from '../api';
 
 function Landing() {
+  const [trending, setTrending] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchTrending = async () => {
+      try {
+        const res = await api.get('/api/posts/trending');
+        setTrending(res.data);
+      } catch (error) {
+        console.error('Failed to fetch trending:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTrending();
+  }, []);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-anthracite via-anthracite-light to-anthracite text-white">
       
@@ -90,45 +110,41 @@ function Landing() {
       <div className="bg-anthracite py-20">
         <div className="container mx-auto px-6">
           <h2 className="text-3xl font-bold text-center mb-12 text-white">Trending on CineSync</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            <div className="bg-anthracite-light p-4 rounded-lg border border-gray-800 hover:border-papaya transition group">
-              <img src="https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg" className="rounded mb-3 w-full h-64 object-cover group-hover:scale-105 transition" alt="The Dark Knight" />
-              <h4 className="font-bold text-white mb-1">The Dark Knight</h4>
-              <div className="flex items-center gap-1 text-sm">
-                <FaStar className="text-papaya" />
-                <span className="text-gray-300">Rated 9.5/10 by users</span>
-              </div>
+          
+          {loading ? (
+            <div className="text-center text-gray-400">Loading trending content...</div>
+          ) : trending.length === 0 ? (
+            <div className="text-center text-gray-400">
+              <p className="mb-4">No content yet. Be the first to share what you're watching!</p>
+              <Link to="/register" className="bg-papaya text-black px-6 py-3 rounded-full font-bold hover:bg-orange-600 transition inline-block">
+                Join Now
+              </Link>
             </div>
-            <div className="bg-anthracite-light p-4 rounded-lg border border-gray-800 hover:border-papaya transition group">
-              <img src="https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg" className="rounded mb-3 w-full h-64 object-cover group-hover:scale-105 transition" alt="Oppenheimer" />
-              <h4 className="font-bold text-white mb-1">Oppenheimer</h4>
-              <div className="flex items-center gap-1 text-sm">
-                <FaStar className="text-papaya" />
-                <span className="text-gray-300">Rated 9.2/10 by users</span>
+          ) : (
+            <>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                {trending.map((item) => (
+                  <div key={item._id} className="bg-anthracite-light p-4 rounded-lg border border-gray-800 hover:border-papaya transition group">
+                    <img 
+                      src={item.posterPath ? `https://image.tmdb.org/t/p/w500${item.posterPath}` : '/placeholder-poster.png'} 
+                      className="rounded mb-3 w-full h-64 object-cover group-hover:scale-105 transition" 
+                      alt={item.mediaTitle} 
+                    />
+                    <h4 className="font-bold text-white mb-1 line-clamp-1">{item.mediaTitle}</h4>
+                    <div className="flex items-center gap-1 text-sm">
+                      <FaComments className="text-papaya" />
+                      <span className="text-gray-300">{item.count} {item.count === 1 ? 'post' : 'posts'}</span>
+                    </div>
+                  </div>
+                ))}
               </div>
-            </div>
-            <div className="bg-anthracite-light p-4 rounded-lg border border-gray-800 hover:border-papaya transition group">
-              <img src="https://image.tmdb.org/t/p/w500/49WJfeN0moxb9IPfGn8AIqMGskD.jpg" className="rounded mb-3 w-full h-64 object-cover group-hover:scale-105 transition" alt="Stranger Things" />
-              <h4 className="font-bold text-white mb-1">Stranger Things</h4>
-              <div className="flex items-center gap-1 text-sm">
-                <FaStar className="text-papaya" />
-                <span className="text-gray-300">Rated 8.9/10 by users</span>
+              <div className="text-center mt-12">
+                <Link to="/register" className="bg-papaya text-black px-8 py-3 rounded-full font-bold hover:bg-orange-600 transition inline-block">
+                  Join to See More
+                </Link>
               </div>
-            </div>
-            <div className="bg-anthracite-light p-4 rounded-lg border border-gray-800 hover:border-papaya transition group">
-              <img src="https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg" className="rounded mb-3 w-full h-64 object-cover group-hover:scale-105 transition" alt="Interstellar" />
-              <h4 className="font-bold text-white mb-1">Interstellar</h4>
-              <div className="flex items-center gap-1 text-sm">
-                <FaStar className="text-papaya" />
-                <span className="text-gray-300">Rated 9.4/10 by users</span>
-              </div>
-            </div>
-          </div>
-          <div className="text-center mt-12">
-            <Link to="/register" className="bg-papaya text-black px-8 py-3 rounded-full font-bold hover:bg-orange-600 transition inline-block">
-              Join to See More
-            </Link>
-          </div>
+            </>
+          )}
         </div>
       </div>
       
