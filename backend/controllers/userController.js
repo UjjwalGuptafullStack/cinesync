@@ -13,6 +13,11 @@ const registerUser = async (req, res) => {
   const { username, email, password, role } = req.body;
 
   try {
+    // V8.6: Validate required fields for normal user registration
+    if (!username || !email || !password) {
+      return res.status(400).json({ message: 'Please provide username, email, and password' });
+    }
+
     // 1. Check if user exists
     const userExists = await User.findOne({ email });
     if (userExists) {
@@ -29,6 +34,7 @@ const registerUser = async (req, res) => {
       email,
       password: hashedPassword,
       role: role || 'user', // Default to 'user' if not specified
+      isClaimed: true, // Normal registrations are always claimed
     });
 
     if (user) {
@@ -36,6 +42,8 @@ const registerUser = async (req, res) => {
         _id: user.id,
         username: user.username,
         email: user.email,
+        userImage: user.userImage,
+        role: user.role,
         token: generateToken(user._id), // Give them a token right away
       });
     } else {
@@ -56,13 +64,34 @@ const loginUser = async (req, res) => {
     // 1. Check for user email
     const user = await User.findOne({ email });
 
-    // 2. Check password (compare plain text input with hashed DB password)
-    if (user && (await bcrypt.compare(password, user.password))) {
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid credentials' });
+    }
+
+    // 2. V8.6: Check if this is an unclaimed ghost account
+    if (!user.isClaimed) {
+      return res.status(403).json({ 
+        message: 'This account has not been claimed yet. Please use the claim link provided by CineSync.' 
+      });
+    }
+
+    // 3. Check if password exists (ghost accounts might not have passwords set)
+    if (!user.password) {
+      return res.status(400).json({ 
+        message: 'Account setup incomplete. Please contact support.' 
+      });
+    }
+
+    // 4. Check password (compare plain text input with hashed DB password)
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    
+    if (isPasswordValid) {
       res.json({
         _id: user.id,
         username: user.username,
         email: user.email,
         role: user.role, // V8.0: Include role in response
+        userImage: user.userImage,
         token: generateToken(user._id),
       });
     } else {

@@ -17,24 +17,48 @@ function Login() {
     e.preventDefault();
     try {
       const res = await api.post('/api/users/login', formData);
+      
+      // Validate response data
+      if (!res.data || !res.data.token) {
+        toast.error("Invalid server response. Please try again.");
+        return;
+      }
+
       localStorage.setItem('user', JSON.stringify(res.data));
       toast.success("Welcome back!");
-      navigate('/feed');
-      window.location.reload();
+      
+      // Small delay to ensure localStorage is set
+      setTimeout(() => {
+        navigate('/feed');
+        window.location.reload();
+      }, 100);
     } catch (error) {
-      toast.error(error.response?.data?.message || "Login failed");
+      console.error('Login error:', error);
+      toast.error(error.response?.data?.message || "Login failed. Please try again.");
     }
   };
 
   const handleGoogleSuccess = async (credentialResponse) => {
     try {
       const res = await api.post('/api/users/google-login', { token: credentialResponse.credential });
+      
+      // Validate response data
+      if (!res.data || !res.data.token) {
+        toast.error("Invalid server response. Please try again.");
+        return;
+      }
+
       localStorage.setItem('user', JSON.stringify(res.data));
       toast.success("Google Login Successful!");
-      navigate('/feed');
-      window.location.reload();
+      
+      // Small delay to ensure localStorage is set
+      setTimeout(() => {
+        navigate('/feed');
+        window.location.reload();
+      }, 100);
     } catch (error) {
-      toast.error("Google Login Failed");
+      console.error('Google login error:', error);
+      toast.error(error.response?.data?.message || "Google Login Failed");
     }
   };
 

@@ -1,4 +1,5 @@
 const crypto = require('crypto');
+const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 
 // @desc    Generate a secure claim link for a ghost studio account
@@ -52,6 +53,15 @@ const claimAccount = async (req, res) => {
   const { token, email, password } = req.body;
 
   try {
+    // Validate required fields
+    if (!token || !email || !password) {
+      return res.status(400).json({ message: "Token, email, and password are required" });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({ message: "Password must be at least 6 characters" });
+    }
+
     // Find studio by claim token
     const studio = await User.findOne({ claimToken: token });
 
@@ -63,9 +73,13 @@ const claimAccount = async (req, res) => {
       return res.status(400).json({ message: "This account has already been claimed" });
     }
 
+    // Hash the password before saving
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
     // Update account with credentials
     studio.email = email;
-    studio.password = password; // Will be hashed by pre-save hook if you have one
+    studio.password = hashedPassword; // Store hashed password
     studio.isClaimed = true;
     studio.claimToken = null; // Clear the token
     studio.isVerified = true; // Mark as verified production house

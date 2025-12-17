@@ -36,11 +36,23 @@ function Register() {
       };
       
       const res = await api.post('/api/users', userData);
+      
+      // Validate response data
+      if (!res.data || !res.data.token) {
+        toast.error("Invalid server response. Please try again.");
+        return;
+      }
+
       localStorage.setItem('user', JSON.stringify(res.data));
       toast.success("Account created successfully!");
-      navigate('/feed');
-      window.location.reload();
+      
+      // Small delay to ensure localStorage is set
+      setTimeout(() => {
+        navigate('/feed');
+        window.location.reload();
+      }, 100);
     } catch (error) {
+      console.error('Registration error:', error);
       toast.error(error.response?.data?.message || "Registration failed");
     }
   };
