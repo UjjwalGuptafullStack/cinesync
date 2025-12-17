@@ -9,6 +9,7 @@ class User {
   final int followersCount;
   final int followingCount;
   final DateTime createdAt;
+  final String token;
 
   User({
     required this.id,
@@ -21,6 +22,7 @@ class User {
     this.followersCount = 0,
     this.followingCount = 0,
     required this.createdAt,
+    required this.token,
   });
 
   // From JSON
@@ -38,6 +40,7 @@ class User {
       createdAt: json['createdAt'] != null
           ? DateTime.parse(json['createdAt'])
           : DateTime.now(),
+      token: json['token'] ?? '',
     );
   }
 
@@ -54,6 +57,7 @@ class User {
       'followersCount': followersCount,
       'followingCount': followingCount,
       'createdAt': createdAt.toIso8601String(),
+      'token': token,
     };
   }
 
@@ -69,6 +73,7 @@ class User {
     int? followersCount,
     int? followingCount,
     DateTime? createdAt,
+    String? token,
   }) {
     return User(
       id: id ?? this.id,
@@ -81,6 +86,7 @@ class User {
       followersCount: followersCount ?? this.followersCount,
       followingCount: followingCount ?? this.followingCount,
       createdAt: createdAt ?? this.createdAt,
+      token: token ?? this.token,
     );
   }
 }

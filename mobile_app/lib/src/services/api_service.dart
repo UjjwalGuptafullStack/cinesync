@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../utils/constants.dart';
+import '../models/user.dart';
 
 class ApiService {
   final _storage = const FlutterSecureStorage();
@@ -19,6 +20,37 @@ class ApiService {
   // DELETE Token from storage
   Future<void> deleteToken() async {
     await _storage.delete(key: StorageKeys.jwtToken);
+  }
+
+  // LOGIN FUNCTION
+  Future<User> login(String email, String password) async {
+    final url = Uri.parse('${ApiConstants.baseUrl}/users/login');
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'email': email, 'password': password}),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final data = jsonDecode(response.body);
+
+        // Create User Object
+        User user = User.fromJson(data);
+
+        // Save Token Securely
+        await _storage.write(key: 'jwt_token', value: user.token);
+        await _storage.write(key: 'user_data', value: jsonEncode(data));
+
+        return user;
+      } else {
+        final errorData = jsonDecode(response.body);
+        throw Exception(errorData['message'] ?? 'Login failed');
+      }
+    } catch (e) {
+      throw Exception('Connection Error: $e');
+    }
   }
 
   // GENERIC GET REQUEST

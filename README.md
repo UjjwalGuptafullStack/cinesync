@@ -1,248 +1,194 @@
-# CineSync 🎬
+Here is a professional, comprehensive `README.md` for your **CineSync** project. This documentation captures everything we have built so far, from the MERN architecture to the specific AdSense and "Ghost Account" features.
 
-**Version 7.2.0 - McLaren Edition**
-
-A visual-first social network for movie and TV show enthusiasts to share their watching journey with images and thoughts. Built with the McLaren-inspired "Papaya & Anthracite" theme.
-
-## ✨ Features
-
-### V7.2 - Latest Features
-✅ **Image Cropping** - React Easy Crop for perfect profile pictures  
-✅ **Chat System** - Real-time messaging with inbox and conversation view  
-✅ **Visual Avatar System** - Profile pictures across all components  
-✅ **McLaren Theme** - Papaya orange & anthracite dark design  
-✅ **Clear Notifications** - Bulk clear functionality  
-
-### Core Features
-✅ **User Authentication** - Secure registration and login with JWT  
-✅ **Visual Feed** - Instagram-style feed with user-uploaded images  
-✅ **Image Upload** - Camera integration with automatic compression (Cloudinary)  
-✅ **Create Posts** - Search movies/shows via TMDB and share your reactions  
-✅ **Spoiler Protection** - Tag and reveal spoilers interactively  
-✅ **Media Integration** - Rich movie/TV data with posters from TMDB  
-✅ **Social Features** - Like/dislike, comments, follow/unfollow users  
-✅ **Notifications** - Real-time alerts for interactions  
-✅ **Context-Aware Posts** - Tag specific seasons/episodes for TV shows  
-
-## 🚀 Deployment
-
-### Quick Deploy
-See [DEPLOY-CHECKLIST.md](./DEPLOY-CHECKLIST.md) for step-by-step deployment instructions.
-
-**Recommended Stack:**
-- **Backend**: Render (Free tier)
-- **Frontend**: Vercel or Netlify (Free tier)
-- **Database**: MongoDB Atlas (Free tier)
-- **Images**: Cloudinary (Free tier)
-
-### Production URLs
-- Backend: Deploy to Render
-- Frontend: Deploy to Vercel/Netlify
-- Full guide: [DEPLOYMENT.md](./DEPLOYMENT.md)  
-
-## Tech Stack
-
-**Backend:**
-- Node.js + Express
-- MongoDB + Mongoose
-- JWT Authentication
-- TMDB API Proxy
-- **Cloudinary** - Cloud image storage
-- **Multer** - File upload handling
-
-**Frontend:**
-- React + Vite
-- Tailwind CSS v4
-- React Router DOM
-- Axios + React Toastify
-- **Browser Image Compression** - Client-side optimization
-
-## Setup Instructions
-
-### Prerequisites
-- Node.js (v14+)
-- MongoDB Atlas account or local MongoDB
-- TMDB API Key ([Get one here](https://www.themoviedb.org/settings/api))
-- **Cloudinary Account** ([Sign up free](https://cloudinary.com/))
-
-### Backend Setup
-
-1. Navigate to backend folder:
-```bash
-cd cinesync/backend
-```
-
-2. Install dependencies:
-```bash
-npm install
-```
-
-3. Create `.env` file:
-```env
-PORT=5000
-MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_secret_key
-TMDB_API_KEY=your_tmdb_api_key
-CLOUDINARY_CLOUD_NAME=your_cloud_name
-CLOUDINARY_API_KEY=your_api_key
-CLOUDINARY_API_SECRET=your_api_secret
-```
-
-4. Start server:
-```bash
-npm run dev
-```
-
-Backend runs on `http://localhost:5000`
-
-### Frontend Setup
-
-1. Navigate to frontend folder:
-```bash
-cd cinesync/frontend
-```
-
-2. Install dependencies:
-```bash
-npm install
-```
-
-3. Start development server:
-```bash
-npm run dev
-```
-
-Frontend runs on `http://localhost:5173`
-
-## Usage
-
-1. **Register** - Create an account with username, email, and password
-2. **Login** - Access your account and get authenticated
-3. **Browse Feed** - View visual posts from users you follow
-4. **Create Post**:
-   - Click "+ POST" 
-   - Search for a movie/show
-   - **Tap the camera icon** to upload an image (or take a photo on mobile)
-   - Write your thoughts
-   - Optionally tag specific seasons/episodes for TV shows
-5. **Spoiler Tags** - Mark posts as spoilers; readers can reveal them with a click
-6. **Engage** - Like/dislike posts, leave comments, follow other cinephiles
-7. **Notifications** - Get notified when others interact with your content
-
-## Project Structure
-
-```
-cinesync/
-├── backend/
-│   ├── config/          # Database & Cloudinary configuration
-│   ├── controllers/     # Business logic
-│   ├── middleware/      # Auth middleware
-│   ├── models/          # MongoDB schemas
-│   ├── routes/          # API endpoints
-│   ├── scripts/         # Utility scripts
-│   └── server.js        # Entry point
-└── frontend/
-    └── src/
-        ├── components/  # Reusable UI components
-        ├── pages/       # Route pages
-        └── App.jsx      # Main app component
-```
-
-## API Endpoints
-
-### Users
-- `POST /api/users` - Register new user
-- `POST /api/users/login` - Login user
-- `GET /api/users/:username` - Get user profile
-- `PUT /api/users/:id/track` - Follow/unfollow user
-
-### Posts
-- `GET /api/posts` - Get posts from followed users
-- `POST /api/posts` - Create new post with optional image (multipart/form-data)
-- `PUT /api/posts/:id/like` - Toggle like on post
-- `PUT /api/posts/:id/dislike` - Toggle dislike on post
-
-### Comments
-- `GET /api/comments/:postId` - Get comments for a post
-- `POST /api/comments/:postId` - Add comment to post
-
-### Notifications
-- `GET /api/notifications` - Get user notifications
-- `PUT /api/notifications/:id/read` - Mark notification as read
-
-### Media
-- `GET /api/media/search?query=` - Search movies/shows via TMDB
-- `GET /api/media/tv/:id` - Get TV show details
-- `GET /api/media/tv/:id/season/:seasonNum` - Get season episodes
-
-## Environment Variables
-
-| Variable | Description |
-|----------|-------------|
-| `PORT` | Backend server port (default: 5000) |
-| `MONGO_URI` | MongoDB connection string |
-| `JWT_SECRET` | Secret key for JWT tokens |
-| `TMDB_API_KEY` | The Movie Database API key |
-| **`CLOUDINARY_CLOUD_NAME`** | Cloudinary cloud name |
-| **`CLOUDINARY_API_KEY`** | Cloudinary API key |
-| **`CLOUDINARY_API_SECRET`** | Cloudinary API secret |
-
-## Deployment
-
-### Render (Backend)
-1. Create new Web Service
-2. Connect your GitHub repository
-3. Add environment variables (all 7 from above)
-4. Deploy
-
-### Netlify (Frontend)
-1. Create new site from Git
-2. Build command: `npm run build`
-3. Publish directory: `dist`
-4. Add environment variable: `VITE_API_URL=your_render_backend_url`
-5. Deploy
-
-## Version History
-
-### V5 (Current) - Visual-First Platform 📸
-- **Cloud Storage**: Cloudinary integration for image uploads
-- **Camera UI**: Mobile-friendly camera/gallery picker
-- **Image Compression**: Automatic client-side optimization (2MB limit)
-- **Visual Feed**: Instagram-style layout with user images
-- **Enhanced Design**: Orange/Black McLaren-inspired theme
-
-### V4 - Theme Overhaul
-- Inverted color scheme (Orange accents on black)
-- Modern card-based UI
-- Improved typography and spacing
-
-### V3 - Social Features
-- Like/Dislike system
-- Comments and replies
-- User notifications
-- Follow/Unfollow functionality
-
-### V2 - Engagement System
-- Post interactions
-- User tracking
-- Feed personalization
-
-### V1 - MVP
-- Basic authentication
-- Post creation
-- TMDB integration
-- Spoiler protection
-
-## Contributing
-
-Future enhancements planned:
-- Video upload support
-- Direct messaging
-- Trending posts algorithm
-- Advanced search filters
-- User analytics dashboard
+You can copy-paste this directly into the root of your project folder.
 
 ---
 
-**Built with ❤️ using the MERN stack + Cloudinary**  
-🟧⬛ *Inspired by the precision of McLaren*
+# 🎬 CineSync
+
+**The Social Network for Film Buffs & Binge Watchers.**
+
+CineSync is a full-stack social platform designed for movie and TV show enthusiasts. It allows users to track their watch history, review content with spoiler protection, connect with friends, and engage with official Production Houses. Built with the **MERN Stack** (MongoDB, Express, React, Node.js) and integrated with the **TMDB API**.
+
+---
+
+## 🚀 Features
+
+### **1. Core Social Experience**
+
+* **Smart Feed:** Dynamic scroll of posts from friends and following networks.
+* **Spoiler Protection:** Native "Spoiler Tag" system that blurs content until clicked. Users can tag specific Seasons/Episodes (e.g., "S1 E9").
+* **Media Integration:** Auto-fetches high-res posters and metadata from **TMDB** (The Movie Database) when users tag a movie/show.
+* **Rich Interactions:** Like, Comment, and Share functionality.
+
+### **2. Authentication & Security**
+
+* **Hybrid Auth:** Standard Email/Password login (JWT) + **Google OAuth 2.0** (Verified Email).
+* **Role-Based Access:** Distinction between Standard Users, Verified Production Houses, and Admins.
+* **Heartbeat System:** Real-time "Online/Offline" status tracking based on user activity.
+
+### **3. Messaging System**
+
+* **Real-Time Chat:** Instant messaging with friends.
+* **Media Sharing:** Direct image uploads in chat via **Cloudinary**.
+* **Smart UI:** Date separators (Today, Yesterday) and read receipts.
+
+### **4. "Production House" Ecosystem**
+
+* **Ghost Accounts:** Pre-seeded, unclaimed accounts for major studios (Warner Bros, Marvel, etc.) that users can follow before the studio officially joins.
+* **Verification:** Secure "Claim Token" system for studios to take ownership of their profiles.
+* **Official Badge:** Gold verification ticks for recognized industry accounts.
+
+### **5. Monetization & Growth**
+
+* **Programmatic Ads:** Integrated Google AdSense "Feed Ads" that inject natively between posts (every 5th item).
+* **GDPR Compliance:** Built-in consent management for European users.
+* **Network Discovery:** "People You May Know" suggestions injected directly into the feed (2nd-degree connections).
+
+---
+
+## 🛠 Tech Stack
+
+### **Frontend**
+
+* **Framework:** React (Vite)
+* **Styling:** Tailwind CSS (Custom "Anthracite & Papaya" Dark Mode Theme)
+* **State/Routing:** React Router DOM, React Hooks
+* **Auth:** `@react-oauth/google`
+* **Utilities:** `moment.js` (Time), `react-toastify` (Notifications), `react-icons`
+
+### **Backend**
+
+* **Runtime:** Node.js & Express.js
+* **Database:** MongoDB Atlas (Mongoose ODM)
+* **Storage:** Cloudinary (Image hosting & optimization)
+* **Security:** `bcryptjs` (Hashing), `jsonwebtoken` (Auth), `cors`
+* **External APIs:** TMDB API (Movie Data), Google Identity Services
+
+---
+
+## ⚙️ Installation & Setup
+
+Prerequisites: **Node.js** (v18+) and **MongoDB** (Local or Atlas URI).
+
+### **1. Clone the Repository**
+
+```bash
+git clone https://github.com/yourusername/cinesync.git
+cd cinesync
+
+```
+
+### **2. Backend Setup**
+
+Navigate to the backend folder and install dependencies:
+
+```bash
+cd backend
+npm install
+
+```
+
+Create a `.env` file in `backend/` with the following keys:
+
+```env
+PORT=5000
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_super_secret_jwt_key
+NODE_ENV=development
+
+# Cloudinary (Images)
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+
+# TMDB (Movie Data)
+TMDB_API_KEY=your_tmdb_api_key
+
+# Google Auth
+GOOGLE_CLIENT_ID=your_google_client_id
+
+```
+
+Run the server:
+
+```bash
+npm run server
+# Server should run on http://localhost:5000
+
+```
+
+### **3. Frontend Setup**
+
+Open a new terminal, navigate to frontend, and install dependencies:
+
+```bash
+cd frontend
+npm install
+
+```
+
+Create a `.env` file in `frontend/` (if using Vite, prefix with `VITE_`):
+
+```env
+VITE_GOOGLE_CLIENT_ID=your_google_client_id
+
+```
+
+Run the React app:
+
+```bash
+npm run dev
+# App should launch on http://localhost:5173
+
+```
+
+---
+
+## 📂 Project Structure
+
+```text
+cinesync/
+├── backend/
+│   ├── config/         # DB connection
+│   ├── controllers/    # Logic for Auth, Posts, Users, Chat
+│   ├── models/         # Mongoose Schemas (User, Post, Message)
+│   ├── routes/         # API Endpoints
+│   ├── scripts/        # Utility scripts (Seed Production Houses)
+│   └── server.js       # Entry point
+│
+├── frontend/
+│   ├── public/         # Static assets (ads.txt, favicon)
+│   ├── src/
+│   │   ├── components/ # Reusable UI (FeedAd, PostItem, Header)
+│   │   ├── pages/      # Views (Landing, Home, Profile, Chat)
+│   │   ├── context/    # Global State
+│   │   └── api.js      # Axios instance
+│   └── main.jsx        # React Entry
+│
+└── mobile_app/         # (Coming Soon) Flutter Cross-Platform App
+
+```
+
+---
+
+## 🔮 Roadmap
+
+* [x] **Beta Release:** Core social features and AdSense integration.
+* [x] **Production Hubs:** Ghost account infrastructure.
+* [ ] **Mobile App:** Cross-platform Flutter application (iOS/Android).
+* [ ] **Watch Parties:** Real-time synchronized viewing.
+* [ ] **AI Recommendations:** Movie suggestions based on social graph.
+
+---
+
+## 🤝 Contributing
+
+1. Fork the repository.
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`).
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`).
+4. Push to the branch (`git push origin feature/AmazingFeature`).
+5. Open a Pull Request.
+
+**License:** MIT
+**Contact:** [Ujjwal Gupta - ujjwal.gupta@research.iiit.ac.in]
