@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 // CineSync Color Palette
 class AppColors {
   // Primary Colors
-  static const Color papaya = Color(0xFFFF8700);      // Primary Brand Color
-  static const Color anthracite = Color(0xFF111827);  // Dark Background
-  static const Color coal = Color(0xFF1F2937);        // Card Background
-  
+  static const Color papaya = Color(0xFFFF8700); // Primary Brand Color
+  static const Color anthracite = Color(0xFF111827); // Dark Background
+  static const Color coal = Color(0xFF1F2937); // Card Background
+
   // Text Colors
-  static const Color textPrimary = Color(0xFFF9FAFB);   // White text
+  static const Color textPrimary = Color(0xFFF9FAFB); // White text
   static const Color textSecondary = Color(0xFF9CA3AF); // Gray text
-  
+
   // UI Elements
   static const Color inputBorder = Color(0xFF374151);
   static const Color error = Color(0xFFEF4444);
@@ -19,9 +19,17 @@ class AppColors {
 
 // API Configuration
 class ApiConstants {
-  static const String baseUrl = 'http://10.0.2.2:5000/api'; // Android Emulator
-  // For physical device, use: 'http://YOUR_LAPTOP_IP:5000/api'
-  
+  // Physical Device: Use your computer's WiFi IP address
+  // Run: ip addr | grep inet
+  // Look for: inet 192.168.x.x
+  static const String baseUrl = 'http://192.168.1.48:5000/api';
+
+  // Alternative if using adb reverse:
+  // static const String baseUrl = 'http://127.0.0.1:5000/api';
+
+  // For emulator (10.0.2.2):
+  // static const String baseUrl = 'http://10.0.2.2:5000/api';
+
   // Endpoints
   static const String login = '/auth/login';
   static const String register = '/auth/register';
