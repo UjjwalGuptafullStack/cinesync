@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
+import 'main_layout.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -17,17 +18,17 @@ class _LoginScreenState extends State<LoginScreen> {
   void _handleLogin() async {
     setState(() => _isLoading = true);
     try {
-      await _apiService.login(
-        _emailController.text,
-        _passwordController.text,
-      );
-      
+      await _apiService.login(_emailController.text, _passwordController.text);
+
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Login Successful! 🚀")),
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text("Login Successful! 🚀")));
+        // Navigate to Main Layout
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const MainLayout()),
         );
-        // Navigate to Home (We will build this next)
-        // Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => FeedScreen()));
       }
     } catch (e) {
       if (mounted) {
@@ -57,10 +58,14 @@ class _LoginScreenState extends State<LoginScreen> {
                   color: const Color(0xFFFF8700), // Papaya
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: const Icon(Icons.play_arrow, size: 40, color: Colors.black),
+                child: const Icon(
+                  Icons.play_arrow,
+                  size: 40,
+                  color: Colors.black,
+                ),
               ),
               const SizedBox(height: 20),
-              
+
               const Text(
                 "CineSync",
                 style: TextStyle(
@@ -120,12 +125,16 @@ class _LoginScreenState extends State<LoginScreen> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: _isLoading 
-                    ? const CircularProgressIndicator(color: Colors.black)
-                    : const Text(
-                        "Log In",
-                        style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold),
-                      ),
+                  child: _isLoading
+                      ? const CircularProgressIndicator(color: Colors.black)
+                      : const Text(
+                          "Log In",
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                 ),
               ),
             ],

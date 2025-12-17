@@ -3,6 +3,8 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../utils/constants.dart';
 import '../models/user.dart';
+import '../models/post.dart';
+import '../models/message.dart';
 
 class ApiService {
   final _storage = const FlutterSecureStorage();
@@ -157,5 +159,30 @@ class ApiService {
     } else {
       throw Exception('Error: ${response.statusCode}');
     }
+  }
+
+  // --- FEED ---
+  Future<List<Post>> getFeed() async {
+    final response = await get('/posts');
+    return (response as List).map((p) => Post.fromJson(p)).toList();
+  }
+
+  // --- CHAT ---
+  Future<List<Message>> getMessages(String receiverId) async {
+    final response = await get('/messages/$receiverId');
+    return (response as List).map((m) => Message.fromJson(m)).toList();
+  }
+
+  Future<Message> sendMessage(
+    String receiverId,
+    String content, {
+    String? imagePath,
+  }) async {
+    final response = await post('/messages/send', {
+      'receiverId': receiverId,
+      'content': content,
+      'image': imagePath,
+    });
+    return Message.fromJson(response);
   }
 }
