@@ -55,6 +55,8 @@ const userSchema = mongoose.Schema(
     // RENAMED: Social Graph (Tracking & Audience)
     audience: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }], // Formerly 'followers'
     tracking: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }], // Formerly 'following'
+    // Privacy Control
+    isPrivate: { type: Boolean, default: false }, // Private accounts hide posts from non-followers
     // V8.3: Online Status
     lastActive: { type: Date, default: Date.now },
   },

@@ -1,7 +1,7 @@
 const User = require('../models/User');
 const Post = require('../models/Post');
 
-// @desc    Get posts from me and people I follow (V8.0: Smart Feed with Production Houses)
+// @desc    Get posts from me and people I follow (V8.0: Hybrid Feed with Discovery)
 // @route   GET /api/posts
 // @access  Private
 const getPosts = async (req, res) => {
@@ -22,7 +22,7 @@ const getPosts = async (req, res) => {
     //    A. Posts from people I follow
     //    B. My own posts
     //    C. Production House posts about movies in MY library (Implicit Interest)
-    const posts = await Post.find({
+    let posts = await Post.find({
       $or: [
         { user: { $in: followingIds } }, // Condition A: Following
         { user: req.user.id },           // Condition B: My posts
@@ -32,9 +32,34 @@ const getPosts = async (req, res) => {
         }
       ]
     })
-      .populate('user', 'username userImage role') // V8.0: Include role for badges
+      .populate('user', 'username userImage role isPrivate') // Include isPrivate for filtering
       .sort({ createdAt: -1 }) // Newest first
       .limit(50); // Limit for performance
+
+    // 6. HYBRID FEED: If feed is empty (new user), show global public posts (Discovery Mode)
+    if (posts.length === 0) {
+      posts = await Post.find({ 
+        user: { $ne: req.user.id }, // Exclude my own posts (already checked above)
+      })
+        .populate('user', 'username userImage role isPrivate')
+        .sort({ createdAt: -1 }) // Newest first OR use .sort({ likes: -1 }) for trending
+        .limit(20); // Limit for performance
+    }
+
+    // 7. Privacy Filter: Remove posts from private accounts I don't follow
+    posts = posts.filter(post => {
+      // My own posts are always visible
+      if (post.user._id.equals(currentUser._id)) return true;
+      
+      // Public account posts are visible
+      if (!post.user.isPrivate) return true;
+      
+      // Private account posts are visible only if I follow them
+      if (followingIds.some(id => id.equals(post.user._id))) return true;
+      
+      // Otherwise, hide the post
+      return false;
+    });
 
     res.json(posts);
   } catch (error) {

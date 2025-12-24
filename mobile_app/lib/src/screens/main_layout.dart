@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'feed_screen.dart';
+import 'explore_screen.dart';
+import 'chat_list_screen.dart';
+import 'profile_screen.dart';
+import 'create_post_screen.dart';
 
 class MainLayout extends StatefulWidget {
   const MainLayout({super.key});
@@ -13,30 +17,26 @@ class _MainLayoutState extends State<MainLayout> {
 
   final List<Widget> _screens = [
     const FeedScreen(),
-    const Center(
-      child: Text(
-        "Search (Coming Soon)",
-        style: TextStyle(color: Colors.white),
-      ),
-    ),
-    const Center(
-      child: Text(
-        "Chat (Select a Friend)",
-        style: TextStyle(color: Colors.white),
-      ),
-    ),
-    const Center(
-      child: Text(
-        "Profile (Coming Soon)",
-        style: TextStyle(color: Colors.white),
-      ),
-    ),
+    const ExploreScreen(),
+    const ChatListScreen(),
+    const ProfileScreen(),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: _screens[_currentIndex],
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: const Color(0xFFFF8700),
+        child: const Icon(Icons.add, color: Colors.black),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const CreatePostScreen()),
+          );
+        },
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) => setState(() => _currentIndex = index),

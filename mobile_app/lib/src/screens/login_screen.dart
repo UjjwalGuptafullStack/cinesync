@@ -21,10 +21,9 @@ class _LoginScreenState extends State<LoginScreen> {
       await _apiService.login(_emailController.text, _passwordController.text);
 
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text("Login Successful! 🚀")));
-        // Navigate to Main Layout
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Login Successful! 🚀")),
+        );
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (_) => const MainLayout()),
@@ -42,20 +41,26 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF111827), // Anthracite
+      backgroundColor: const Color(0xFF111827),
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // LOGO
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFF8700), // Papaya
+                  color: const Color(0xFFFF8700),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: const Icon(
@@ -65,7 +70,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-
               const Text(
                 "CineSync",
                 style: TextStyle(
@@ -75,14 +79,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               const SizedBox(height: 40),
-
-              // EMAIL INPUT
               TextField(
                 controller: _emailController,
                 style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
                   filled: true,
-                  fillColor: const Color(0xFF1F2937), // Anthracite Light
+                  fillColor: const Color(0xFF1F2937),
                   hintText: "Email",
                   hintStyle: const TextStyle(color: Colors.grey),
                   border: OutlineInputBorder(
@@ -93,8 +95,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-
-              // PASSWORD INPUT
               TextField(
                 controller: _passwordController,
                 obscureText: true,
@@ -112,15 +112,13 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               const SizedBox(height: 30),
-
-              // LOGIN BUTTON
               SizedBox(
                 width: double.infinity,
                 height: 50,
                 child: ElevatedButton(
                   onPressed: _isLoading ? null : _handleLogin,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFFF8700), // Papaya
+                    backgroundColor: const Color(0xFFFF8700),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),

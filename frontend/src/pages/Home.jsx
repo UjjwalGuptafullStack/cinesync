@@ -71,30 +71,41 @@ function Home() {
           {/* Posts Feed */}
           <div className="space-y-6">
             {posts.length > 0 ? (
-              posts.map((post, index) => (
-                <div key={post._id}>
-                  <PostItem post={post} />
-                  
-                  {/* Inject Network Suggestions after 2nd post */}
-                  {index === 2 && (
-                    <div className="my-8 transform scale-100 hover:scale-[1.01] transition duration-500">
-                      <div className="flex items-center gap-2 mb-4">
-                        <div className="h-px bg-gray-700 flex-1"></div>
-                        <span className="text-papaya font-bold tracking-widest text-xs uppercase">Discover</span>
-                        <div className="h-px bg-gray-700 flex-1"></div>
+              posts.map((post, index) => {
+                // Smart Network Panel Injection Logic
+                const showNetworkPanel = 
+                  index === 2 || 
+                  (posts.length === 2 && index === 1) ||
+                  (posts.length === 1 && index === 0);
+
+                return (
+                  <div key={post._id}>
+                    <PostItem post={post} />
+                    
+                    {/* Inject Network Suggestions Intelligently */}
+                    {showNetworkPanel && (
+                      <div className="my-8 transform scale-100 hover:scale-[1.01] transition duration-500">
+                        <div className="flex items-center gap-2 mb-4">
+                          <div className="h-px bg-gray-700 flex-1"></div>
+                          <span className="text-papaya font-bold tracking-widest text-xs uppercase">People You Should Know</span>
+                          <div className="h-px bg-gray-700 flex-1"></div>
+                        </div>
+                        <NetworkSuggestions horizontal={true} />
                       </div>
-                      <NetworkSuggestions horizontal={true} />
-                    </div>
-                  )}
-                  
-                  {/* Inject Ad after every 5th post */}
-                  {(index + 1) % 5 === 0 && <FeedAd />}
-                </div>
-              ))
+                    )}
+                    
+                    {/* Inject Ad after every 5th post */}
+                    {(index + 1) % 5 === 0 && <FeedAd />}
+                  </div>
+                );
+              })
             ) : (
               <div className="text-center py-16 bg-anthracite-light rounded-lg border border-gray-800">
-                <h3 className="text-xl font-bold text-white mb-2">No activity yet</h3>
-                <p className="text-gray-400">Follow users to see their reviews here.</p>
+                <div className="mb-6">
+                  <h3 className="text-2xl font-bold text-white mb-3">Welcome to CineSync! 🎬</h3>
+                  <p className="text-gray-400 mb-4">Start by following some movie buffs to see their reviews</p>
+                </div>
+                <NetworkSuggestions horizontal={false} />
               </div>
             )}
           </div>
@@ -144,16 +155,40 @@ function Home() {
         {/* Posts Feed */}
         <div className="space-y-6">
           {posts.length > 0 ? (
-            posts.map((post, index) => (
-              <div key={post._id}>
-                <PostItem post={post} />
-                {(index + 1) % 5 === 0 && <FeedAd />}
-              </div>
-            ))
+            posts.map((post, index) => {
+              // Smart Network Panel Injection Logic for Mobile
+              const showNetworkPanel = 
+                index === 2 || 
+                (posts.length === 2 && index === 1) ||
+                (posts.length === 1 && index === 0);
+
+              return (
+                <div key={post._id}>
+                  <PostItem post={post} />
+                  
+                  {/* Inject Network Suggestions */}
+                  {showNetworkPanel && (
+                    <div className="my-8">
+                      <div className="flex items-center gap-2 mb-4">
+                        <div className="h-px bg-gray-700 flex-1"></div>
+                        <span className="text-papaya font-bold tracking-widest text-xs uppercase">People You Should Know</span>
+                        <div className="h-px bg-gray-700 flex-1"></div>
+                      </div>
+                      <NetworkSuggestions horizontal={true} />
+                    </div>
+                  )}
+                  
+                  {(index + 1) % 5 === 0 && <FeedAd />}
+                </div>
+              );
+            })
           ) : (
             <div className="text-center py-16 bg-anthracite-light rounded-lg border border-gray-800">
-              <h3 className="text-xl font-bold text-white mb-2">No activity yet</h3>
-              <p className="text-gray-400">Follow users to see their reviews here.</p>
+              <div className="mb-6">
+                <h3 className="text-xl font-bold text-white mb-3">Welcome to CineSync! 🎬</h3>
+                <p className="text-gray-400 text-sm mb-4">Start by following some movie buffs</p>
+              </div>
+              <NetworkSuggestions horizontal={false} />
             </div>
           )}
         </div>

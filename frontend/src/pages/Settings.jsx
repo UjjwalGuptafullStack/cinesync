@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import api from '../api';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
@@ -8,6 +8,7 @@ import getCroppedImg from '../utils/cropImage';
 function Settings() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [isPrivate, setIsPrivate] = useState(false);
   
   // Cropper State
   const [imageSrc, setImageSrc] = useState(null);
@@ -17,6 +18,22 @@ function Settings() {
   const [finalImageFile, setFinalImageFile] = useState(null); // The file to upload
 
   const navigate = useNavigate();
+
+  // Load current user settings on mount
+  useEffect(() => {
+    const loadUserSettings = async () => {
+      try {
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (user && user.username) {
+          const res = await api.get(`/api/users/profile/${user.username}`);
+          setIsPrivate(res.data.isPrivate || false);
+        }
+      } catch (error) {
+        console.error('Failed to load user settings:', error);
+      }
+    };
+    loadUserSettings();
+  }, []);
 
   // 1. Handle File Select
   const onFileChange = async (e) => {
@@ -54,6 +71,7 @@ function Settings() {
     if (username) formData.append('username', username);
     if (password) formData.append('password', password);
     if (finalImageFile) formData.append('image', finalImageFile);
+    formData.append('isPrivate', isPrivate); // Always send privacy state
 
     try {
       const user = JSON.parse(localStorage.getItem('user'));
@@ -78,6 +96,30 @@ function Settings() {
     } catch (error) {
       console.error(error); // Log exact error
       toast.error(error.response?.data?.message || 'Update failed');
+    }
+  };
+
+  // 5. Delete Account Handler
+  const handleDeleteAccount = async () => {
+    const confirmed = window.confirm(
+      '⚠️ WARNING: This action is irreversible!\n\n' +
+      'Deleting your account will:\n' +
+      '• Permanently remove all your posts\n' +
+      '• Remove you from all followers/following lists\n' +
+      '• Delete all your data from CineSync\n\n' +
+      'Are you absolutely sure you want to continue?'
+    );
+
+    if (!confirmed) return;
+
+    try {
+      await api.delete('/api/users/profile');
+      localStorage.removeItem('user');
+      toast.success('Account deleted successfully');
+      navigate('/login');
+    } catch (error) {
+      console.error(error);
+      toast.error(error.response?.data?.message || 'Failed to delete account');
     }
   };
 
@@ -173,10 +215,55 @@ function Settings() {
           )}
         </div>
 
+        {/* PRIVACY TOGGLE */}
+        <div className="bg-gray-800 p-5 rounded-lg border border-gray-700">
+          <div className="flex items-center justify-between mb-3">
+            <div>
+              <h3 className="text-white font-bold text-lg">Private Account</h3>
+              <p className="text-gray-400 text-sm mt-1">
+                Only your followers can see your posts and watchlist
+              </p>
+            </div>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                checked={isPrivate}
+                onChange={(e) => setIsPrivate(e.target.checked)}
+                className="sr-only peer"
+              />
+              <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-papaya/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-papaya"></div>
+            </label>
+          </div>
+        </div>
+
         <button type="submit" className="bg-papaya hover:bg-papaya-dark text-black font-bold py-3 px-6 rounded w-full transition uppercase tracking-wide">
           Save Changes
         </button>
       </form>
+
+      {/* DANGER ZONE */}
+      <div className="mt-10 border-t border-red-900/50 pt-6">
+        <h3 className="text-red-500 font-bold text-xl mb-3 flex items-center gap-2">
+          <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+          </svg>
+          Danger Zone
+        </h3>
+        <p className="text-gray-400 text-sm mb-4 leading-relaxed">
+          Once you delete your account, there is no going back. All your posts, watchlist, 
+          and connections will be permanently removed from CineSync.
+        </p>
+        
+        <button 
+          onClick={handleDeleteAccount}
+          className="bg-red-600/20 text-red-500 border-2 border-red-600 px-6 py-3 rounded-lg hover:bg-red-600 hover:text-white transition font-bold uppercase tracking-wide flex items-center gap-2"
+        >
+          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+          </svg>
+          Delete Account
+        </button>
+      </div>
     </div>
   );
 }

@@ -91,7 +91,31 @@ function Landing() {
         </div>
       </div>
 
-      {/* 2. FEATURES SECTION (Text-Rich for Google SEO) */}
+      {/* 2. AD SECTION FOR GOOGLE ADSENSE CRAWLERS */}
+      <div className="bg-anthracite-light py-12 border-y border-gray-800">
+        <div className="container mx-auto px-6">
+          <p className="text-gray-500 text-xs text-center mb-3 uppercase tracking-wider">Sponsored</p>
+          <div className="max-w-4xl mx-auto bg-gray-900 rounded-xl p-8 min-h-[250px] flex items-center justify-center border border-gray-800">
+            {/* 
+              INSERT YOUR GOOGLE ADSENSE CODE HERE
+              Example: <AdSenseBanner slot="1234567890" />
+              
+              This placement ensures AdSense bots can crawl your site and see:
+              1. Valid public content (Hero Section above)
+              2. A properly placed ad unit
+              3. More content below (Features Section)
+              
+              This satisfies "Valuable Inventory" policy requirements.
+            */}
+            <div className="text-center">
+              <p className="text-gray-500 text-sm mb-2">Advertisement Space</p>
+              <p className="text-gray-600 text-xs">Insert AdSense code component here</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 3. FEATURES SECTION (Text-Rich for Google SEO) */}
       <div className="bg-anthracite-light py-20 border-t border-gray-800">
         <div className="container mx-auto px-6">
           <h2 className="text-3xl font-bold text-center mb-16 text-white tracking-tight">The Social Network for Film Buffs</h2>

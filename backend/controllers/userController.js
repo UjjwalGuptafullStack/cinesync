@@ -244,6 +244,11 @@ const updateUserProfile = async (req, res) => {
       user.userImage = req.file.path; // Cloudinary URL
     }
 
+    // 4. Update Privacy Setting
+    if (req.body.isPrivate !== undefined) {
+      user.isPrivate = req.body.isPrivate;
+    }
+
     const updatedUser = await user.save();
 
     res.json({
@@ -251,6 +256,7 @@ const updateUserProfile = async (req, res) => {
       username: updatedUser.username,
       email: updatedUser.email,
       userImage: updatedUser.userImage,
+      isPrivate: updatedUser.isPrivate,
       token: generateToken(updatedUser._id), // Return new token as info might change
     });
   } catch (error) {
@@ -333,11 +339,38 @@ const pingStatus = async (req, res) => {
   }
 };
 
+// @desc    Delete user account with cascade cleanup
+// @route   DELETE /api/users/profile
+// @access  Private
+const deleteUser = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    // 1. Delete all posts by this user
+    await Post.deleteMany({ user: userId });
+
+    // 2. Remove this user from everyone's 'audience' (followers) and 'tracking' (following) lists
+    // This is the cascade cleanup to prevent ghost references
+    await User.updateMany(
+      { $or: [{ audience: userId }, { tracking: userId }] },
+      { $pull: { audience: userId, tracking: userId } }
+    );
+
+    // 3. Delete the user account
+    await User.findByIdAndDelete(userId);
+
+    res.status(200).json({ message: 'User account deleted and data cleaned up successfully.' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
   googleLogin,
   getUserProfile,
   updateUserProfile,
+  deleteUser,
   pingStatus,
 };

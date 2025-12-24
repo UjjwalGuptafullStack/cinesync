@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../utils/constants.dart';
@@ -167,6 +168,69 @@ class ApiService {
     return (response as List).map((p) => Post.fromJson(p)).toList();
   }
 
+  // --- INTERACTIONS ---
+  Future<void> likePost(String postId) async {
+    // Assumes PUT /posts/:id/like toggles the like
+    await put('/posts/$postId/like', {});
+  }
+
+  Future<List<dynamic>> getComments(String postId) async {
+    final response = await get('/posts/$postId/comments');
+    return response as List<dynamic>;
+  }
+
+  Future<void> postComment(String postId, String text) async {
+    await post('/posts/$postId/comments', {'text': text});
+  }
+
+  // --- NETWORK ---
+  Future<List<dynamic>> getNetworkSuggestions() async {
+    // Fetches "People you may know"
+    try {
+      final response = await get('/users/suggestions');
+      return response as List<dynamic>;
+    } catch (e) {
+      return []; // Return empty if endpoint fails
+    }
+  }
+
+  Future<List<dynamic>> searchUsers(String query) async {
+    if (query.isEmpty) return [];
+    final response = await get('/users/search?query=$query');
+    return response as List<dynamic>;
+  }
+
+  Future<void> followUser(String userId) async {
+    await post('/users/follow/$userId', {});
+  }
+
+  // --- GOOGLE AUTH ---
+  Future<User> googleLogin(String googleIdToken) async {
+    final url = Uri.parse('${ApiConstants.baseUrl}/users/google-login');
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'token': googleIdToken}),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final data = jsonDecode(response.body);
+        User user = User.fromJson(data);
+
+        await _storage.write(key: 'jwt_token', value: user.token);
+        await _storage.write(key: 'user_data', value: jsonEncode(data));
+
+        return user;
+      } else {
+        throw Exception('Google Auth Failed with Backend');
+      }
+    } catch (e) {
+      throw Exception('Network Error: $e');
+    }
+  }
+
   // --- CHAT ---
   Future<List<Message>> getMessages(String receiverId) async {
     final response = await get('/messages/$receiverId');
@@ -184,5 +248,75 @@ class ApiService {
       'image': imagePath,
     });
     return Message.fromJson(response);
+  }
+
+  // UPLOAD PROFILE IMAGE (Multipart for Cloudinary)
+  Future<void> uploadProfileImage(File imageFile) async {
+    final uri = Uri.parse('${ApiConstants.baseUrl}/users/upload-profile-pic');
+    final token = await getToken();
+
+    var request = http.MultipartRequest('POST', uri);
+    if (token != null) {
+      request.headers['Authorization'] = 'Bearer $token';
+    }
+
+    request.files.add(
+      await http.MultipartFile.fromPath(
+        'image', // Field name your backend expects
+        imageFile.path,
+      ),
+    );
+
+    var response = await request.send();
+    if (response.statusCode != 200) {
+      throw Exception('Image upload failed');
+    }
+  }
+
+  // CREATE POST WITH IMAGE (Multipart for Cloudinary)
+  Future<void> createPostWithImage(
+    Map<String, String> fields,
+    File? imageFile,
+  ) async {
+    final uri = Uri.parse('${ApiConstants.baseUrl}/posts');
+    final token = await getToken();
+
+    var request = http.MultipartRequest('POST', uri);
+    if (token != null) {
+      request.headers['Authorization'] = 'Bearer $token';
+    }
+
+    // Add text fields
+    request.fields.addAll(fields);
+
+    // Add image if exists
+    if (imageFile != null) {
+      request.files.add(
+        await http.MultipartFile.fromPath('image', imageFile.path),
+      );
+    }
+
+    var response = await request.send();
+    if (response.statusCode != 201 && response.statusCode != 200) {
+      throw Exception('Post creation failed');
+    }
+  }
+
+  // LOGOUT
+  Future<void> logout() async {
+    await _storage.delete(key: 'jwt_token');
+    await _storage.delete(key: 'user_data');
+  }
+
+  // UPDATE USER PROFILE (Including Privacy Settings)
+  Future<void> updateUserProfile(Map<String, dynamic> updates) async {
+    final response = await put('/users/profile', updates);
+    return response;
+  }
+
+  // DELETE ACCOUNT (Cascade delete posts and connections)
+  Future<void> deleteAccount() async {
+    await delete('/users/profile');
+    await logout(); // Clear local storage after deletion
   }
 }

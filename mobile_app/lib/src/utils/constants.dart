@@ -19,10 +19,9 @@ class AppColors {
 
 // API Configuration
 class ApiConstants {
-  // Physical Device: Use your computer's WiFi IP address
-  // Run: ip addr | grep inet
-  // Look for: inet 192.168.x.x
-  static const String baseUrl = 'http://192.168.1.48:5000/api';
+  // Using ADB reverse tunnel: adb reverse tcp:5000 tcp:5000
+  // This maps phone's localhost:5000 to computer's localhost:5000
+  static const String baseUrl = 'http://localhost:5000/api';
 
   // Alternative if using adb reverse:
   // static const String baseUrl = 'http://127.0.0.1:5000/api';
